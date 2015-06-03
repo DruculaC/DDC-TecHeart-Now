@@ -59,13 +59,15 @@ tWord GetADCResult(tByte ch)
     	ADCS = 1;  
 		
 		DataL = ADCCON0;
-		DataL = DataL>>6; 
+		DataL = DataL >> 6; 
 
 		DataH = ADCH;
-		DataH = (DataH<<2) + DataL;
+		DataH = (DataH << 2) + DataL;
 
 		return DataH;
 		}
+		else
+			return 0;
 	}
 
 /*---------------------------------------------------

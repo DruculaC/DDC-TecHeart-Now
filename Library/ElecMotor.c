@@ -15,6 +15,22 @@
 extern tByte myTxRxData[7];
 
 /*-------------------------------------------------------
+	InitElecmotor()
+--------------------------------------------------------*/
+void InitElecmotor(void)
+	{
+	MagentControl_1 = 1;
+	MagentControl_2 = 1;
+	
+	#ifdef Guxingzha
+	ElecMotor_ACW();
+	#endif
+	
+	#ifdef Suidongzha
+	ElecMotor_CW();
+	#endif
+	}
+/*-------------------------------------------------------
 	ElecMotor_CW()
 	Electric Motor rotates clockwise.
 --------------------------------------------------------*/
@@ -27,7 +43,7 @@ void ElecMotor_CW(void)
 	ElecMotor_Delay();
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
-	motor_lock = 0;
+	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -36,7 +52,7 @@ void ElecMotor_CW(void)
 --------------------------------------------------------*/
 void ElecMotor_ACW(void)
 	{
-	motor_lock = 1;
+	Externalmotor = 1;
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	ElecMotor_Delay_ACW();
@@ -88,7 +104,10 @@ void ElecMotor_Delay(void)
 		{
 		Delay_500ms();
 		Delay_500ms();
+		#ifdef Suidongzha
 		Delay_500ms();
+		Delay_500ms();
+		#endif
 		}
 	}
 /*----------------------------------------------------
@@ -103,8 +122,10 @@ void ElecMotor_Delay_ACW(void)
 		{
 		Delay_500ms();
 		Delay_500ms();
+		#ifdef Guxingzha
 		Delay_500ms();
 		Delay_500ms();
+		#endif
 		}
 	}
 

@@ -13,7 +13,7 @@
 
 void SC_Speech(unsigned char cnt);
 void SC_Speech2(unsigned char cnt);
-void noVoice();
+void InitVoice();
 void key_rotate_on_speech(void);
 void motorBAT_low_speech(void);
 //void key_rotate_off_speech(void);
@@ -24,6 +24,7 @@ void close_lock_speech(void);
 void host_touch_speech(void);
 void host_2ndtouch_speech(void);
 void battery_stolen_speech(void);
+void IDcerted_speech(void);
 
 // ≤‚ ‘”√µƒ”Ô“Ù≤•±®
 void Product_Test_Voice(void);

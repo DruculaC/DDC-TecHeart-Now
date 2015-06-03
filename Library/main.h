@@ -1,5 +1,5 @@
 /*---------------------------------------------------
-	main.h (v1.00)
+	Main.h (v1.00)
 	
 	'project header' (see chap 5)
 ---------------------------------------------------*/
@@ -9,7 +9,33 @@
 
 //--------header file--------------------------------
 
-// must include the appropriate microcontroller header file here
+// Program version
+//#define Taili, Generan, Tailing			
+// Define customer, such as TaiLi, Shengbaolong, Wangpai.
+#define General
+
+// Define PCB board, such as Z2, Z3 etc.
+#define Z2
+
+// #define F2
+
+// Define model.
+// ID, WX, 
+#define ID         
+
+// Define the Lock model.
+//#define Suidongzha, Guxingzha  
+#define Suidongzha
+
+// Define whether check the battery
+//#define Batterycheck   
+
+// Define Motor battery parameter and whether main board with battery.
+// Withbattery_60V10A, Withbattery_48V10A
+// Withoutbattery_48V10A
+//#define Withbattery_48V20A
+
+// Must include the appropriate microcontroller header file here
 #include "N79E81x.h"
 #include <intrins.h>
 
@@ -42,8 +68,18 @@ typedef unsigned long tLong;
 #define True (!False)
 #endif
 
-#define Return_Normal (bit) 0
-#define Return_Error (bit) 1
+#ifndef Open
+#define Close 1
+#define Open (!Close)
+#endif
+
+#ifndef High
+#define Low 1
+#define High (!Low)
+#endif
+
+#define RETURN_NORMAL (bit) 0
+#define RETURN_ERROR (bit) 1
 
 // Interrupts
 #define interrupt_timer_0_overflow 1

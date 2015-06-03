@@ -1,30 +1,45 @@
-/*-----------------------------------------------------------------*-
+/*------------------------------------------------------------------*-
 
-	Copyright(c) 2014 Techeart Technology Corp. All rights reserved.
-    Date: 14/Nov/2014
-    E-Mail: DruculaC@gmail.com
-   
+   hSCH51.C (v1.00) 
+
+  ------------------------------------------------------------------
+
+   /// HYBRID SCHEDULER CORE ///
+
    *** THESE ARE THE CORE SCHEDULER FUNCTIONS ***
    --- These functions may be used with all 8051 devices ---
 
-   *** SCH_MAX_TASKS *must* be set by the user ***
-   --- see "Sch51.H" ---
+   *** hSCH_MAX_TASKS *must* be set by the user ***
+   --- see "Sch51.h" ---
 
-   *** Includes (optional) power-saving mode ***
-   --- You must ensure that the power-down mode is adapted ---
-   --- to match your chosen device (or disabled altogether) ---
-	
--*-----------------------------------------------------------------*/
+   *** Includes power-saving mode ***
+   --- You *MUST* confirm that the power-down mode is adapted ---
+   --- to match your chosen device (usually only necessary with 
+   --- Extended 8051s, such as c515c, c509, etc ---
 
-#include "Main.H"
-#include "Port.H"
+   COPYRIGHT
+   ---------
 
-#include "Schedular.H"
+   This code is from the book:
+
+   PATTERNS FOR TIME-TRIGGERED EMBEDDED SYSTEMS by Michael J. Pont 
+   [Pearson Education, 2001; ISBN: 0-201-33138-1].
+
+   This code is copyright (c) 2001 by Michael J. Pont.
+ 
+   See book for copyright details and other information.
+
+-*------------------------------------------------------------------*/
+
+#include "Main.h"
+#include "Port.h"
+
+#include "schedular.h"
 
 // ------ Public variable definitions ------------------------------
 
 // The array of tasks
-sTask SCH_tasks_G[SCH_MAX_TASKS];
+sTaskH hSCH_tasks_G[hSCH_MAX_TASKS];
 
 // Used to display the error code
 // See Main.H for details of error codes
@@ -32,7 +47,8 @@ sTask SCH_tasks_G[SCH_MAX_TASKS];
 tByte Error_code_G = 0;
 
 // ------ Private function prototypes ------------------------------
-static void SCH_Go_To_Sleep(void);
+
+static void hSCH_Go_To_Sleep(void);
 
 // ------ Private variables ----------------------------------------
 
@@ -42,104 +58,110 @@ static tWord Error_tick_count_G;
 // The code of the last error (reset after ~1 minute)
 static tByte Last_error_code_G;
 
+
 /*------------------------------------------------------------------*-
 
-  SCH_Dispatch_Tasks()
+  hSCH_Dispatch_Tasks()
 
   This is the 'dispatcher' function.  When a task (function)
-  is due to run, SCH_Dispatch_Tasks() will run it.
+  is due to run, hSCH_Dispatch_Tasks() will run it.
   This function must be called (repeatedly) from the main loop.
 
 -*------------------------------------------------------------------*/
-void SCH_Dispatch_Tasks(void) 
+void hSCH_Dispatch_Tasks(void) 
    {
    tByte Index;
 
    // Dispatches (runs) the next task (if one is ready)
-   for (Index = 0; Index < SCH_MAX_TASKS; Index++)
+   for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
       {
-      if (SCH_tasks_G[Index].RunMe > 0) 
+      // Only dispatching co-operative tasks
+      if ((hSCH_tasks_G[Index].Co_op) && (hSCH_tasks_G[Index].RunMe > 0)) 
          {
-         SCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
+         (*hSCH_tasks_G[Index].pTask)();  // Run the task
 
-         (*SCH_tasks_G[Index].pTask)();  // Run the task
-
+         hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
 
          // Periodic tasks will automatically run again
          // - if this is a 'one shot' task, remove it from the array
-         if (SCH_tasks_G[Index].Period == 0)
+         if (hSCH_tasks_G[Index].Period == 0)
             {
-            SCH_Delete_Task(Index);
+            // Faster than call to delete task
+            hSCH_tasks_G[Index].pTask = 0;
             }
          }
       }
 
    // Report system status
-   SCH_Report_Status();  
+   hSCH_Report_Status();  
 
    // The scheduler enters idle mode at this point 
-   SCH_Go_To_Sleep();          
+   hSCH_Go_To_Sleep();          
    }
 
 /*------------------------------------------------------------------*-
 
-  SCH_Add_Task()
+  hSCH_Add_Task()
 
   Causes a task (function) to be executed at regular intervals 
   or after a user-defined delay
 
-  Fn_P   - The name of the function which is to be scheduled.
-           NOTE: All scheduled functions must be 'void, void' -
-           that is, they must take no parameters, and have 
-           a void return type. 
+  Fn_P  - The name of the function which is to be scheduled.
+          NOTE: All scheduled functions must be 'void, void' -
+          that is, they must take no parameters, and have 
+          a void return type. 
                    
-  DELAY  - The interval (TICKS) before the task is first executed
+  Del   - The interval (TICKS) before the task is first executed
 
-  PERIOD - If 'PERIOD' is 0, the function is only called once,
-           at the time determined by 'DELAY'.  If PERIOD is non-zero,
-           then the function is called repeatedly at an interval
-           determined by the value of PERIOD (see below for examples
-           which should help clarify this).
+  Rep   - If 'Rep' is 0, the function is only called once,
+          at the time determined by 'Del'.  If Rep is non-zero,
+          then the function is called repeatedly at an interval
+          determined by the vakue of Rep (see below for examples
+          that should help clarify this).
 
+  Co-op - Set to 1 if it a co-op task; 0 if pre-emptive
 
-  RETURN VALUE:  
+  RETN:   The position in the task array at which the task has been added.
+          If the return value is hSCH_MAX_TASKS then the task could not be
+          added to the array (there was insufficient space).  If the
+          return value is < hSCH_MAX_TASKS, then the task was added 
+          successfully.  
 
-  Returns the position in the task array at which the task has been 
-  added.  If the return value is SCH_MAX_TASKS then the task could 
-  not be added to the array (there was insufficient space).  If the
-  return value is < SCH_MAX_TASKS, then the task was added 
-  successfully.  
+          Note: this return value may be required, if a task is
+          to be subsequently deleted - see hSCH_Delete_Task().
 
-  Note: this return value may be required, if a task is
-  to be subsequently deleted - see SCH_Delete_Task().
 
   EXAMPLES:
 
-  Task_ID = SCH_Add_Task(Do_X,1000,0);
-  Causes the function Do_X() to be executed once after 1000 sch ticks.            
+  Task_ID = hSCH_Add_Task(Do_X,1000,0,0);
+  Causes the function Do_X() to be executed once after 1000 ticks.
+  (Pre-emptive task)          
 
-  Task_ID = SCH_Add_Task(Do_X,0,1000);
-  Causes the function Do_X() to be executed regularly, every 1000 sch ticks.            
+  Task_ID = hSCH_Add_Task(Do_X,0,1000,1);
+  Causes the function Do_X() to be executed regularly, every 1000 ticks.            
+  (co-operative task)          
 
-  Task_ID = SCH_Add_Task(Do_X,300,1000);
+  Task_ID = hSCH_Add_Task(Do_X,300,1000,0);
   Causes the function Do_X() to be executed regularly, every 1000 ticks.
   Task will be first executed at T = 300 ticks, then 1300, 2300, etc.            
+  (Pre-emptive task)          
  
 -*------------------------------------------------------------------*/
-tByte SCH_Add_Task(void (code * pFunction)(), 
-                   const tWord DELAY, 
-                   const tWord PERIOD)    
+tByte hSCH_Add_Task(void (code* Fn_p)(), // Task function pointer
+                   tWord   Del,    // Num ticks 'til task first runs 
+                   tWord   Per,    // Num ticks between repeat runs
+                   bit     Co_op)  // Co_op / pre_emp
    {
    tByte Index = 0;
    
    // First find a gap in the array (if there is one)
-   while ((SCH_tasks_G[Index].pTask != 0) && (Index < SCH_MAX_TASKS))
+   while ((hSCH_tasks_G[Index].pTask != 0) && (Index < hSCH_MAX_TASKS))
       {
       Index++;
       } 
    
    // Have we reached the end of the list?   
-   if (Index == SCH_MAX_TASKS)
+   if (Index == hSCH_MAX_TASKS)
       {
       // Task list is full
       //
@@ -147,38 +169,40 @@ tByte SCH_Add_Task(void (code * pFunction)(),
       Error_code_G = ERROR_SCH_TOO_MANY_TASKS;
 
       // Also return an error code
-      return SCH_MAX_TASKS;  
+      return hSCH_MAX_TASKS;  
       }
       
    // If we're here, there is a space in the task array
-   SCH_tasks_G[Index].pTask  = pFunction;
+   hSCH_tasks_G[Index].pTask = Fn_p;
      
-   SCH_tasks_G[Index].Delay  = DELAY;
-   SCH_tasks_G[Index].Period = PERIOD;
+   hSCH_tasks_G[Index].Delay  = Del;
+   hSCH_tasks_G[Index].Period = Per;
 
-   SCH_tasks_G[Index].RunMe  = 1;
+   hSCH_tasks_G[Index].Co_op = Co_op;
+
+   hSCH_tasks_G[Index].RunMe  = 0;
 
    return Index; // return position of task (to allow later deletion)
    }
 
 /*------------------------------------------------------------------*-
 
-  SCH_Delete_Task()
+  hSCH_Delete_Task()
 
   Removes a task from the scheduler.  Note that this does
   *not* delete the associated function from memory: 
   it simply means that it is no longer called by the scheduler. 
- 
-  TASK_INDEX - The task index.  Provided by SCH_Add_Task(). 
 
-  RETURN VALUE:  RETURN_ERROR or RETURN_NORMAL
+  PARAMS:   Task_index - The task index.  Provided by hSCH_Add_Task(). 
+
+  RETURNS:  RETURN_ERROR or RETURN_NORMAL
 
 -*------------------------------------------------------------------*/
-bit SCH_Delete_Task(const tByte TASK_INDEX) 
+bit hSCH_Delete_Task(tByte Task_index) 
    {
    bit Return_code;
 
-   if (SCH_tasks_G[TASK_INDEX].pTask == 0)
+   if (hSCH_tasks_G[Task_index].pTask == 0)
       {
       // No task at this location...
       //
@@ -186,48 +210,26 @@ bit SCH_Delete_Task(const tByte TASK_INDEX)
       Error_code_G = ERROR_SCH_CANNOT_DELETE_TASK;
 
       // ...also return an error code
-//      Return_code = RETURN_ERROR;
+      Return_code = RETURN_ERROR;
       }
    else
       {
-//      Return_code = RETURN_NORMAL;
+      Return_code = RETURN_NORMAL;
       }      
    
-   SCH_tasks_G[TASK_INDEX].pTask   = 0x0000;
-   SCH_tasks_G[TASK_INDEX].Delay   = 0;
-   SCH_tasks_G[TASK_INDEX].Period  = 0;
+   hSCH_tasks_G[Task_index].pTask   = 0;
+   hSCH_tasks_G[Task_index].Delay   = 0;
+   hSCH_tasks_G[Task_index].Period  = 0;
 
-   SCH_tasks_G[TASK_INDEX].RunMe   = 0;
+   hSCH_tasks_G[Task_index].RunMe   = 0;
 
    return Return_code;       // return status
    }
 
 
-/*------------------------------------------------------------------
-	SCH_Delete_Program()
-	删除某一个其他任务
--------------------------------------------------------------------*/
-void SCH_Delete_Program(void (code * pProgram)())
-	{
-	tByte Program_INDEX = 0;
-	
-   for (Program_INDEX = 0; Program_INDEX < SCH_MAX_TASKS; Program_INDEX++)
-		{
-		if(SCH_tasks_G[Program_INDEX].pTask == pProgram)
-			{
-			SCH_tasks_G[Program_INDEX].pTask   = 0x0000;
-			SCH_tasks_G[Program_INDEX].Delay   = 0;
-			SCH_tasks_G[Program_INDEX].Period  = 0;
-
-			SCH_tasks_G[Program_INDEX].RunMe   = 0;
-			}
-		}
-	}
-
-
 /*------------------------------------------------------------------*-
 
-  SCH_Report_Status()
+  hSCH_Report_Status()
 
   Simple function to display error codes.
 
@@ -242,10 +244,10 @@ void SCH_Delete_Program(void (code * pProgram)())
   error 'for ever': this may be appropriate in your
   application.
 
-  See Chapter 10 for further information.
-
+  See Chapter 14 for further information.
+ 
 -*------------------------------------------------------------------*/
-void SCH_Report_Status(void)
+void hSCH_Report_Status(void)
    {
 #ifdef SCH_REPORT_ERRORS
    // ONLY APPLIES IF WE ARE REPORTING ERRORS
@@ -282,7 +284,7 @@ void SCH_Report_Status(void)
 
 /*------------------------------------------------------------------*-
 
-  SCH_Go_To_Sleep()
+  hSCH_Go_To_Sleep()
 
   This scheduler enters 'idle mode' between clock ticks
   to save power.  The next clock tick will return the processor
@@ -302,7 +304,7 @@ void SCH_Report_Status(void)
   *** ADAPT AS REQUIRED FOR YOUR HARDWARE ***
 
 -*------------------------------------------------------------------*/
-void SCH_Go_To_Sleep()
+void hSCH_Go_To_Sleep()
    {
    PCON |= 0x01;    // Enter idle mode (generic 8051 version)
 
@@ -312,6 +314,65 @@ void SCH_Go_To_Sleep()
    //PCON |= 0x20;    // Enter idle mode (#2)
    }
 
+
+
+/*-------------------------------------------------------------
+	hSCH_Update()
+	This is the scheduler ISR.  It is called at a rate 
+	determined by the timer settings in hSCH_Init().
+	This version is triggered by Timer 0 interrupts:
+	timer is manually reloaded.
+--------------------------------------------------------------*/
+void hSCH_Update(void)
+	{
+	tByte Index;
+	// NOTE: calculations are in *TICKS* (not milliseconds)
+	for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
+		{
+		// Check if there is a task at this location
+		if (hSCH_tasks_G[Index].pTask)
+			{
+				if (hSCH_tasks_G[Index].Delay == 0)
+				{
+				// The task is due to run
+				// 
+				if (hSCH_tasks_G[Index].Co_op)
+				   {
+				   // If it is a co-operative task, increment the RunMe flag
+				   hSCH_tasks_G[Index].RunMe += 1;  
+				   }
+				else
+				   {
+				   // If it is a pre-emptive task, run it IMMEDIATELY
+				   (*hSCH_tasks_G[Index].pTask)();  // Run the task
+
+				   hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
+
+				   // Periodic tasks will be scheduled again (see below)
+				   // - if this is a 'one shot' task, remove it from the array
+				   if (hSCH_tasks_G[Index].Period == 0)
+					  {
+					  hSCH_tasks_G[Index].pTask  = 0;
+					  }
+				   }
+
+				if (hSCH_tasks_G[Index].Period)
+				   {
+				   // Schedule this periodic task to run again
+				   hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
+				   }
+				}
+				else
+				{
+				// Not yet ready to run: just decrement the delay 
+				hSCH_tasks_G[Index].Delay -= 1;
+				}
+			}         
+		}	
+	}
+
 /*------------------------------------------------------------------*-
   ---- END OF FILE -------------------------------------------------
 -*------------------------------------------------------------------*/
+
+

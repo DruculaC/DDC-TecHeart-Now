@@ -14,7 +14,7 @@
 -----------------------------------------------------*/
 
 // P2.4£¬PIN15£¬Á¬½Óµ½Ô¿³××ª¶¯£¬Ô¿³××ª¿ªÊ±£¬´ËpinÎª1£»Ô¿³×¹Ø±ÕÊ±£¬´ËpinÎª0
-sbit key_rotate = P2^5;			
+sbit key_rotate = P2^4;			
 
 // P2.6£¬PIN27£¬·¢Éä»úµÄ¹¦ÂÊ¿ØÖÆ¡£1±íÊ¾Ğ¡¹¦ÂÊ£¬0±íÊ¾´ó¹¦ÂÊ¡£´ó¹¦ÂÊ·¢Éä¾àÀëÔ¶¡£
 sbit transmiter_power = P2^6;
@@ -50,13 +50,16 @@ sbit horizontal_sensor = P0^7;
 sbit receiver_EN = P1^3;
 
 // P0.5, PIN22, Íâ²¿µç¶¯³µµç»úËøËÀĞÅºÅÊä³ö£¬·ÀÖ¹Ëø»¹Ã»ÍêÈ«´ò¿ªµÄÊ±ºò£¬³µÊÖ¼Óµçµ¼Ö ÂÂÖ×ÓÓëËøµÄ¸æËßÅö×²¡£0ÊÇ´ò¿ªÍâ²¿ÂÖ×Ó£¬1ÊÇ¹Ø±ÕÍâ²¿ÂÖ×Ó 
-sbit motor_lock = P0^5;
+sbit Externalmotor = P0^5;
 
 // P0.2, PIN25, µç´ÅÌú×´Ì¬¼ÇÒäÊäÈë
 sbit magnet_status = P0^2;
 
 // P0.1, PIN26, ¶ÏÏß±¨¾¯¼ì²â¹Ü½Å£¬³£Ì¬Îª1£¬µ±Îª0Ê±£¬Ôò±íÊ¾ÓĞÈË¼ôÏß¡£
-sbit wire_broken = P0^1;
+//sbit wire_broken = P0^1;
+sbit wire_broken = P1^7;
+
+
 sbit lock_code = P0^1;
 
 // P1.2, PIN12, µç´ÅÌú¹ıÁ÷¼ì²â
@@ -95,7 +98,12 @@ sbit press_open_button = P0^0;
 sbit match_button = P0^0;
 
 // P0.2, PIN25, ÎŞÏßÄ£¿éµçÔ´¿ØÖÆ
+#ifdef F3
 sbit transceiver_power_enable = P0^2;
+#endif
+#ifdef F2
+sbit transceiver_power_enable = P2^4;
+#endif
 
 #endif
 											

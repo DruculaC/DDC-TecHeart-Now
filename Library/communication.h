@@ -32,12 +32,14 @@
 #define ComMode_10 0xc10	// ◊‘—ßœ∞≈‰∂‘√‹¬Î	
 
 //---------public function prototype
-
+void InitTransceiver(void);
 void initsignal(void);
+void initsignal_F(void);
 void Send_Data(tByte x);
 void ComMode_Data(tByte ComMode, x);
 void ComMode_Data_WX(tByte ComMode, x);
 void receive_byte(void);
+void receive_byte_Lock(void);
 void receive_word(void);
 void send_code_to_lock(tByte x, y);	
 void send_code_to_lock_Taili(tByte x, y);	

@@ -32,6 +32,18 @@ extern code tByte IDkey9;
 extern code tByte IDkey10;
 
 /*----------------------------------------------------
+	InitTransceiver()
+	Initialise Transceiver
+----------------------------------------------------*/
+void InitTransceiver(void)
+	{
+	P10 = High;
+	transmiter_EN = Close;
+	receiver_EN = Open;	
+	transmiter_power = 0; 		// High power mode
+	}
+	
+/*----------------------------------------------------
 	initsignal()
 	
 	初始化信号程序，接收机在接接收信号的时候，需要有
@@ -45,6 +57,38 @@ void initsignal()
 	for(k1 = 0; k1 < 2; k1++)
 		{
 		for(k=0;k<8;k++)
+			{
+			if((mystartbuffer&0x80) == 0x80)//为1
+				{
+				P10=0;
+				Custom_Delay(46, 20);
+//				Delay_5ms();
+				}
+			else
+				{
+				P10=0;
+				Custom_Delay(46, 20);
+//				Delay_5ms();
+				}
+			P10=1;
+			mystartbuffer<<=1;
+			Custom_Delay(40, 24);
+//			Delay_5ms();
+			}
+		mystartbuffer=0xaa;
+//		Delay_5ms();
+//		Custom_Delay(23, 28);
+		}
+	P10=1;
+	}
+
+void initsignal_F(void)
+	{
+	tByte k,k1;
+	tByte mystartbuffer = 0xaa;
+	for(k1 = 0; k1 < 2; k1++)
+		{
+		for(k=0;k<6;k++)
 			{
 			if((mystartbuffer&0x80) == 0x80)//为1
 				{
@@ -176,25 +220,18 @@ void UART_Send_Data_F(tByte command)
 	{
    tByte ii = 0;
 	open_tranceiver();
-	myTxRxData[0] = CmdHead;
-	myTxRxData[1] = MyAddress;
-	myTxRxData[2] = IDkey6;
-	myTxRxData[3] = IDkey7;
-	myTxRxData[4] = IDkey8;
-	myTxRxData[5] = IDkey9;
-	myTxRxData[6] = IDkey10;
-	myTxRxData[7] = command;
+	myTxRxData[0] = IDkey6;
+	myTxRxData[1] = IDkey7;
+	myTxRxData[2] = IDkey8;
+	myTxRxData[3] = IDkey9;
+	myTxRxData[4] = IDkey10;
+	myTxRxData[5] = command;
 	
-	initsignal();
+	initsignal_F();
 	
-	for(ii = 0; ii < 2; ii++)
-		{
-		SendNByte(myTxRxData, 8);
-		Delay_5ms();		
-		}
+	SendNByte(myTxRxData, 6);
 
-	close_tranceiver();
-	
+	close_tranceiver();	
 	}
 
 /*------------------------------------------------------------------
@@ -203,7 +240,11 @@ void UART_Send_Data_F(tByte command)
 -------------------------------------------------------------------*/
 void open_tranceiver(void)
 	{
+	#ifdef ID
 	InitUART600();
+	TR0 = 1;
+	#endif
+	
 	receiver_EN = 1;
 //	Delay(5);
 	transmiter_EN = 0;	
@@ -217,8 +258,12 @@ void close_tranceiver(void)
 	{
 	transmiter_EN = 1;
 	receiver_EN = 0;
+	TXD = 0;
+	
+	#ifdef ID
 	InitUART9600();
 	TR0 = 1;
+	#endif
 	}
 
 /*------------------------------------------------------------------
@@ -226,10 +271,8 @@ void close_tranceiver(void)
 ------------------------------------------------------------------*/
 void UART_Send_Data_match(void)
 	{
-	InitUART600();
-	receiver_EN = 1;
-//	Delay(5);
-	transmiter_EN = 0;
+	open_tranceiver();
+	
 	myTxRxData[0] = CmdHead;
 	myTxRxData[1] = ComMode_1;
 	myTxRxData[2] = IDkey6;
@@ -243,10 +286,7 @@ void UART_Send_Data_match(void)
 	SendNByte(myTxRxData, 7);
    Delay_50ms();
 	
-	transmiter_EN = 1;
-	receiver_EN = 0;
-	InitUART9600();
-	TR0 = 1;
+	close_tranceiver();
 	}
 
 /*-----------------------------------------------------------------------------
@@ -257,6 +297,70 @@ void receive_byte(void)
 	{
 	// P11 constantly HV, if detected a LV, judge it.
 	if(P11 == 0)
+		{
+		// count the LV time, if more than 12ms, reset it.
+		if(++receive_LV_count >= 120)
+			{
+			receive_LV_count = 0;
+			}
+		receive_wire_flag = 0;
+		}
+	// if P11 return to HV
+	else
+		{
+		// and already have LV before, so we think it maybe a bit signal
+		if(receive_wire_flag == 0)
+			{
+			// set the flag, to judge a bit only one time
+			receive_wire_flag = 1;
+
+			// judge the LV time, if 3.5ms < time < 8ms, we think it is a "0". time<3.5ms means a noise.
+			if((receive_LV_count > 35)&&(receive_LV_count <= 80))	
+				{
+				// save "0" to one byte
+				one_receive_byte <<= 1;
+				one_receive_byte &= 0xfe;
+				one_receive_byte_count++;
+				receive_HV_count = 0;
+				}
+			// time > 8ms, means a "1"
+			else if((receive_LV_count > 80))
+				{
+				// save "1" to one byte
+				one_receive_byte <<= 1;
+				one_receive_byte |= 0x01;
+				one_receive_byte_count++;
+				receive_HV_count = 0;
+				}			
+			else
+				{
+				// increase the count for HV
+				receive_HV_count++;	
+				}
+         // reset LV count
+			receive_LV_count = 0;
+			}
+		else
+			{
+			// judge whether HV count > 6ms, if yes, means a restart
+			if(++receive_HV_count >= 60)
+				{
+				one_receive_byte_count = 0;
+				receive_wire_flag = 1;
+				data_count = 0;
+				}		
+			}
+		}
+	}
+
+/*-----------------------------------------------------------------------------
+	receive_byte_Lock()
+	receive a byte program
+-----------------------------------------------------------------------------*/
+void receive_byte_Lock(void)
+	{
+	// P11 constantly HV, if detected a LV, judge it.
+	if(receive_wire == 1)
 		{
 		// count the LV time, if more than 12ms, reset it.
 		if(++receive_LV_count >= 120)

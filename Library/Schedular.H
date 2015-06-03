@@ -1,20 +1,35 @@
-/*-----------------------------------------------------------------*-
+/*------------------------------------------------------------------*-
+  
+   hSCH51.h (v1.00)
 
-	Copyright(c) 2014 Techeart Technology Corp. All rights reserved.
-    Date: 14/Nov/2014
-    E-Mail: DruculaC@gmail.com	
+  ------------------------------------------------------------------
 
--*-----------------------------------------------------------------*/
+   - see hSCH51.C for details
 
-#ifndef _SCHEDULAR_H
-#define _SCHEDULAR_H
 
-#include "Main.H"
+   COPYRIGHT
+   ---------
 
-// ------ Public data type declarations ----------------
+   This code is from the book:
+
+   PATTERNS FOR TIME-TRIGGERED EMBEDDED SYSTEMS by Michael J. Pont 
+   [Pearson Education, 2001; ISBN: 0-201-33138-1].
+
+   This code is copyright (c) 2001 by Michael J. Pont.
+ 
+   See book for copyright details and other information.
+
+-*------------------------------------------------------------------*/
+
+#ifndef _hSCH51_H
+#define _hSCH51_H
+
+#include "Main.h"
+
+// ------ Public data type declarations ----------------------------
 
 // Store in DATA area, if possible, for rapid access  
-// Total memory per task is 7 bytes
+// Total memory per task is 8 bytes
 typedef data struct 
    {
    // Pointer to the task (must be a 'void (void)' function)
@@ -30,16 +45,20 @@ typedef data struct
 
    // Incremented (by scheduler) when task is due to execute
    tByte RunMe;       
-   } sTask; 
+
+   // Set to 1 if task is co-operative
+   // Set to 0 if task is pre-emptive
+   tByte Co_op;     
+   } sTaskH; 
 
 // ------ Public function prototypes -------------------------------
 
 // Core scheduler functions
-void  SCH_Dispatch_Tasks(void);
-tByte SCH_Add_Task(void (code*) (void), const tWord, const tWord);  
-bit   SCH_Delete_Task(const tByte);
-void  SCH_Report_Status(void);
-void SCH_Delete_Program(void (code * pProgram)());
+void  hSCH_Dispatch_Tasks(void);
+tByte hSCH_Add_Task(void (code *)(void), tWord, tWord, bit);  
+bit   hSCH_Delete_Task(tByte);
+void  hSCH_Report_Status(void);
+void  hSCH_Update(void);
 
 // ------ Public constants -----------------------------------------
 
@@ -47,10 +66,11 @@ void SCH_Delete_Program(void (code * pProgram)());
 // during the execution of the program
 //
 // MUST BE ADJUSTED FOR EACH NEW PROJECT
-#define SCH_MAX_TASKS   (10)   
+#define hSCH_MAX_TASKS   (5)   
  
 #endif
                               
 /*------------------------------------------------------------------*-
   ---- END OF FILE -------------------------------------------------
 -*------------------------------------------------------------------*/
+

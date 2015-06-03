@@ -1,0 +1,686 @@
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN main.OBJ
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE main.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE
+                    - INCDIR(..\Library) DEBUG OBJECTEXTEND TABS(3)
+
+line level    source
+
+   1          /*---------------------------------------------------
+   2             main.c (v1.00)
+   3             
+   4             DDC-F program, for electrocar.
+   5          ----------------------------------------------------*/
+   6          
+   7          #include "main.h"             
+   8          #include "port.h"
+   9          
+  10          #include "AD.h"
+  11          #include "Timer.h"
+  12          #include "voice.h"
+  13          #include "pwm.h"
+  14          #include "Delay.h"
+  15          #include "communication.h"
+  16          #include "Other.h"
+  17          #include "battery.h"
+  18          #include "UART.h"
+  19          #include "ISP_DataFlash.h"
+  20          #include "schedular.h"
+  21          
+  22          
+  23          /*------- Public variable declarations --------------------------*/
+  24          extern tByte timer0_8H, timer0_8L, timer1_8H, timer1_8L;
+  25          extern bit enable_sensor_delayEN;
+  26          
+  27          bit stolen_alarm_flag = 0;             // when host been touch 3 times, this flag 1 before alarm voice present, no
+             -t to detect sensor for 1st voice alarm.
+  28          bit position_sensor_EN=0;        //Î»ÖÃ´«¸ÐÆ÷£¬¼´µ¹µØÌ§Æð´«¸ÐÆ÷×Ü¿ª¹Ø£¬1µÄÊ±ºò£¬¼ì²âÕâÁ½¸ö´«¸ÐÆ÷
+  29          bit host_stolen_alarm1_EN = 0;      //ÅÐ¶ÏÎª±»µÁ±¨¾¯ºóµÄµÚÒ»¶ÎÓïÒôÊ¹ÄÜ
+  30          bit host_stolen_alarm2_EN = 0;      //ÅÐ¶ÏÎª±»µÁ±¨¾¯ºóµÄµÚ¶þ¶ÎÓïÒôÊ¹ÄÜ
+  31          tByte host_stolen_alarm1_count = 0;    //ÅÐ¶ÏÎª±»µÁ±¨¾¯ºóµÄµÚÒ»¶ÎÓïÒô´ÎÊý
+  32          tByte host_stolen_alarm2_count = 0;    //ÅÐ¶ÏÎª±»µÁ±¨¾¯ºóµÄµÚ¶þ¶ÎÓïÒô´ÎÊý
+  33          bit fell_flag=0;                 //ÅÐ¶ÏÖ÷»úµ¹ÏÂºó£¬ÖÃ1
+  34          bit raised_flag=0;               //ÅÐ¶ÏÖ÷»ú±»Ì§Æðºó£¬ÖÃ1
+  35          tByte sensor_2ndstage_count = 0;    //´«¸ÐÆ÷½øÈëµÚ¶þ½×¶Î¼ì²âÊ±£¬¼ÆËãµÍµçÆ½µÄÊ±¼ä
+  36          tWord sensor_3rdstage_time = 0;        //´«¸ÐÆ÷½øÈëµÚÈý½×¶ÎµÄÊ±¼ä£¬
+  37          tByte sensor_3rdstage_effcount = 0;    //´«¸ÐÆ÷½øÈëµÚÈý½×¶Îºó£¬ÓÐÐ§´¥Åö´ÎÊýµÄ¼ÆÊý
+  38          tByte sensor_3rdstage_count = 0;       //´«¸ÐÆ÷½øÈëµÚÈý½×¶Îºó£¬µÍµçÆ½µÄ¼ÆÊý
+  39          tWord sensor_3rdstage_interval = 0;    //´«¸ÐÆ÷ÔÚµÚÈý½×¶ÎÖÐ£¬Ã¿´ÎÓÐÐ§µÍµçÆ½¼ÆÊýÖ®¼äµÄÊ±¼ä¼ä¸ô¡£ÔÚÕâÆÚ¼äµÄµÍµ
+             -çÆ½²»ÈÏÎªÓÐÐ§¡£
+  40          bit raised_fell_flag = 0;              //µ¹µØ»òÕßÌ§Æð´¥·¢ºó£¬´Ë±êÖ¾Î»ÖÃ1
+  41          tByte sensor_trigger_count=0;    //´«¸ÐÆ÷´¥·¢¼ÆÊý
+  42          tWord sensor_2ndstage_time=0;    //´«¸ÐÆ÷½øÈëµÚ¶þ½×¶ÎºóÁ÷ÊÅÊ±¼äµÄ¼ÆÊý
+  43          tByte sensor_1ststage_count=0;   //´«¸ÐÆ÷µÚÒ»½×¶ÎÅÐ¶ÏµÍµçÆ½µÄ¼ÆÊý
+  44          tByte nearby_away_interval = 0;     //¸½»úÀë¿ªºÍ¿¿½üÊ±£¬ÓïÒôÌáÊ¾ºÍ¿ª¹ØËøµÄÊ±¼ä¼ä¸ô
+  45          
+  46          tByte raised_alarm_count = 0;    //Ö÷»ú±»Ì§Æðºó£¬Ïò¸½»ú·¢³ö±¨¾¯ÐÅºÅµÄ´ÎÊý
+  47          tByte fell_alarm_count=0;        //Ö÷»úµ¹µØºó£¬Ïò¸½»ú·¢³ö±¨¾¯ÐÅºÅµÄ´ÎÊý
+  48          tWord timer0_count=0;      // counter for timer0, increment every ticket         
+  49          tByte received_data_buffer[7]={0x00,0x00,0x00,0x00,0x00,0x00,0x00};     //½ÓÊÕÊý¾Ý»º´æ
+  50          bit receive_data_finished_flag = 0;    //½ÓÊÕÕâÒ»´®Êý¾ÝÍê³Éºó£¬´Ë±êÖ¾Î»ÖÃ1
+  51          tByte data_count = 0;            //½ÓÊÕÊý¾Ý»º´æµÄÎ»Êý£¬¼´±íÃ÷µÚ¼¸¸ö»º´æÊý¾Ý
+  52          tByte one_receive_byte = 0;      //½ÓÊÕÊý¾ÝµÄÒ»¸ö×Ö½Ú£¬½ÓÊÕÍêºó½«Æä¸³Öµ¸øreceived_data_bufferÏà¶ÔÓ¦µÄ×Ö½Ú
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 2   
+
+  53          tByte one_receive_byte_count = 0;         //one_receive_byteÓÐ8Î»£¬´Ë¼ÆÊý±íÃ÷½ÓÊÕµ½µÚ¼¸Î»£¬Ã¿´Î¼ÆÊýµ½8µÄÊ±ºò±íÃ÷
+             -Ò»¸ö×Ö½Ú½ÓÊÕÍê³É¡£
+  54          bit receive_wire_flag = 1;    //½ÓÊÕÍ¨ÐÅÏßµÄ±êÖ¾Î»£¬1±íÃ÷¸ßµçÆ½£¬0±íÃ÷µÍµçÆ½£¬Ã¿´Îtimer1Òç³öÊ±£¬ÅÐ¶ÏP1.1Ò»´Î
+             -¡£ÒÔ´ËÀ´±íÃ÷ÊÇ·ñÎªÒ»´ÎÕýÈ·µÄÏÂ½µÑØ
+  55          tByte receive_HV_count = 0;      //¶¨Ê±Æ÷T1ÔÚÃ»ÓÐÐÅºÅµ½À´µÄÊ±ºò£¬¶Ô¸ßµçÆ½¼ÆÊý£¬Ò»µ©³¬¹ýÄ³¸öÖµ£¬Ôò½«one_receive
+             -_byte_countÇå0
+  56          tByte receive_LV_count = 0;      //Ã¿´Îtimer1Òç³öÊ±ÅÐ¶Ï½ÓÊÕÏßÈç¹ûÎªLV£¬Ôò¼ÆÊý¼Ó1£¬ÒÔ´ËÀ´±íÃ÷µÍµçÆ½µÄÊ±¼ä
+  57          tByte fell_wire_time=0;          //µ¹µØ¼ì²âÏß£¬¼ì²âµÍµçÆ½µÄÊ±¼ä
+  58          tByte raise_wire_time=0;         //Ì§Æð¼ì²âÏß£¬¼ì²âµÍµçÆ½µÄÊ±¼ä
+  59          tWord raised_fell_number = 0;          //µ¹µØ»òÕßÌ§Æð³ö·¢ºó£¬¼ÆÊý£¬µ½´ïÒ»¶¨ÊýÖµºó£¬½«ÆäÓë±êÖ¾Î»Ò»ÆðÇåÁã¡£
+  60          bit raised_fell_once_flag = 0;         //raised_fell_flagÊÇ·ñÔø¾­±êÖ¾¹ý£¬Èç¹û±êÖ¾¹ýÔòÖÃ1.È»ºóÖ÷»ú±»»Ö¸´µ¹µØ»òÕß»
+             -Ö¸´Ì§ÆðÊ±£¬´Ë±êÖ¾Î»¸´Î»¡£
+  61          tByte key_rotated_on_flag=0;        //µç¶¯³µ¿ªÆô¹Ø±Õ±êÖ¾Î»£¬1±íÊ¾µç¶¯³µ¿ªÆôÁË£¬0±íÊ¾µç¶¯³µ¹Ø±ÕÁË
+  62          tWord ADC_check_result = 0;      //×÷ÎªAD¼ì²âÖµ
+  63          tByte wire_broken_count = 0;     // ×÷Îª¶ÏÏßºóµÄÊ±¼ä¼ì²â
+  64          bit battery_stolen_EN = 0;       // ×÷Îªµç³Ø±»µÁµÄÊ¹ÄÜ¶Ë
+  65          tByte battery_stolen_count = 0;  // ×÷Îªµç³Ø±»µÁµÄ±¨¾¯´ÎÊý
+  66          bit horizontal_vibration = 0;    // ±íÊ¾´¹Ö±´«¸ÐÆ÷ÔÚÕñ¶¯£¬´ËÊ±¾ÍËã¹ØÔ¿³×£¬Ò²²»ÄÜÖ´ÐÐ¹ØÔ¿³×µÄ²Ù×÷¡
+  67          tWord horizontal_vibration_count = 0;  //´¹Ö±´«¸ÐÆ÷´¥·¢ºó£¬¶ÔÊ±¼ä½øÐÐ¼ÆÊý¡£
+  68          bit vibration_flag = 0;
+  69          tWord vibration_count = 0;
+  70          bit wire_broken_flag = 0;        // ¼ô¶ÏËøÏßµÄ±êÖ¾Î»
+  71          bit IDkey_flag = 0;        // µ±ID¿¨¿¿½üÊ±ÈÏÖ¤Í¨¹ýºóÖÃ1£¬
+  72          tByte IDkey_count = 0;     // ID¿¨ÈÏÖ¤Í¨¹ýºó£¬¼ÆÊ±1·ÖÖÓ£¬Ê¹Ô¿³×ÄÜ×ª¶¯¡£
+  73          tByte enable_sensor_delay_count = 0;      // ´«¸ÐÆ÷ÑÓ³ÙµÄÊ±¼ä
+  74          bit sensor_3rdalarm_flag = 0;
+  75          bit wheeled_flag = 0;
+  76          tWord wheeled_count = 0;
+  77          tWord match_button_count = 0;
+  78          
+  79          // ------ Private variable definitions -----------------------------
+  80          tWord stolen_alarm_count = 0;
+  81          bit raised_alarm_flag = 0;
+  82          bit fell_alarm_flag = 0;
+  83          bit Host_battery_high_flag = 0;
+  84          bit wire_broken_EN = 0;
+  85          tWord Mode_detect_count = 0;
+  86          bit Mode_select = 0; // Ä£Ê½Ñ¡Ôñ£¬0±íÊ¾×Ô¶¯Ä£Ê½£¬1±íÊ¾ÊÖ¶¯Ä£Ê½
+  87          
+  88          bit powersave_enable = 0;
+  89          
+  90          bit itrpt_EN = 1;
+  91          tByte itrpt_count = 0;
+  92          bit idle_EN = 0;
+  93          
+  94          bit Auto_transmit = 0;        // 0±íÊ¾·Ç×Ô¶¯·¢ËÍÊý¾Ý£¬1±íÊ¾×Ô¶¯·¢ËÍÊý¾Ý½øÐÐÈÏÖ¤
+  95          bit IDflash_EN = 0;
+  96          tWord match_button_HVcount = 0;
+  97          tWord match_button_LVcount = 0;
+  98          bit match_button_flag1 = 0;
+  99          bit match_button_flag2 = 0;
+ 100          bit match_button_flag3 = 0;
+ 101          bit match_button_flag4 = 0;
+ 102          bit match_button_flag5 = 0;
+ 103          bit match_button_flag6 = 0;
+ 104          tByte match_button_flag6count = 0;
+ 105          
+ 106          tWord receiver_EN_count = 0;
+ 107          tWord receiver_DisEN_count = 0;
+ 108          
+ 109          bit match_moto_EN = 0;
+ 110          
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 3   
+
+ 111          bit match_button_touched = 0;
+ 112          
+ 113          bit battery_LV_flag = 0;
+ 114          tByte battery_LV_flag_count = 0;
+ 115          bit battery_HV_flag = 0;
+ 116          tByte battery_HV_flag_count = 0;
+ 117          tByte battery_HV_speech_count = 0;
+ 118          bit battery_HV_speech_over = 0;
+ 119          
+ 120          code tByte IDkey6 _at_ 0x003000;
+ 121          code tByte IDkey7 _at_ 0x003001;
+ 122          code tByte IDkey8 _at_ 0x003002;
+ 123          code tByte IDkey9 _at_ 0x003003;
+ 124          code tByte IDkey10 _at_ 0x003004;
+ 125          code tByte IDkey11 _at_ 0x003005;
+ 126          
+ 127          /*--------------------------------------------------------------*/
+ 128          
+ 129          void main(void)
+ 130             {
+ 131   1         InitVoice();
+ 132   1         InitUART600();
+ 133   1         TR0 = 1;
+ 134   1      
+ 135   1         // ¼üÅÌÖÐ¶Ï³õÊ¼»¯
+ 136   1         press_open_button = 1;
+ 137   1         press_close_button = 1;
+ 138   1         
+ 139   1         KBLS1 |= 0x03;
+ 140   1         KBLS0 |= 0x03;
+ 141   1         KBIF &= 0xfe;
+ 142   1         KBIE |= 0x02;
+ 143   1         EA = 1;
+ 144   1      
+ 145   1         Moto_EN = 1;      //³õÊ¼»¯£¬¹Ø±ÕÂí´ï
+ 146   1         transmit_wire = 1;
+ 147   1         voice_EN = 0;        //¿ª»úÊ±£¬½«¹¦·Å¹Ø±Õ
+ 148   1         P10=1;
+ 149   1         
+ 150   1         
+ 151   1         stolen_alarm_count = 0;       //Çå±¨¾¯¼ÆÊýÆ÷
+ 152   1         stolen_alarm_flag = 0;        //Çå±¨¾¯±êÖ¾
+ 153   1      
+ 154   1         transmiter_EN = 0;      // turn off the transmitter
+ 155   1         receiver_EN = 0;     // turn on the receiver
+ 156   1      
+ 157   1         transceiver_power_enable = 1;         // ÉÏµçÊ±ÎÞÏßÄ£¿éµçÔ´¹Ø±Õ
+ 158   1         
+ 159   1         while(1)
+ 160   1            {           
+ 161   2            hSCH_Dispatch_Tasks();
+ 162   2      
+ 163   2            if(idle_EN == 1)
+ 164   2               {
+ 165   3               EKB = 1;
+ 166   3               idle_EN = 0;
+ 167   3               PCON |= 0x02;        
+ 168   3               }
+ 169   2            
+ 170   2               // Ö÷»ú±»µÁ±¨¾¯
+ 171   2            if(stolen_alarm_flag == 1)    
+ 172   2               {
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 4   
+
+ 173   3               // ÓïÒôÌáÊ¾£¬Âí´ïÕñ¶¯
+ 174   3               Alarm_stolen_speech();     
+ 175   3               Moto_Vibration();          
+ 176   3               stolen_alarm_flag = 0;
+ 177   3               }  
+ 178   2      
+ 179   2            // Ì§ÆðÐÅºÅ±¨¾¯£¬Ã¿´Î±¨ÍêºóÇå0£¬Èç¹ûÔÙ´Î½Óµ½Ôò¼ÌÐø±¨¡£Ò»°ãÀ´Ëµ£¬Ö÷»úÃ¿´ÎÌ§ÆðÖ»·¢4±é¡£
+ 180   2            if(raised_alarm_flag == 1) 
+ 181   2               {
+ 182   3               Alarm_raised_speech();     
+ 183   3               Moto_Vibration();         
+ 184   3               raised_alarm_flag = 0;
+ 185   3               }
+ 186   2      
+ 187   2            // µ¹µØÐÅºÅ±¨¾¯£¬Ã¿´Î±¨ÍêºóÇå0£¬Èç¹ûÔÙ´Î½Óµ½Ôò¼ÌÐø±¨¡£Ò»°ãÀ´Ëµ£¬Ö÷»úÃ¿´Îµ¹µØÖ»·¢4±é¡£
+ 188   2            if(fell_alarm_flag == 1)
+ 189   2               {
+ 190   3               Alarm_fell_speech();      
+ 191   3               Moto_Vibration();         
+ 192   3               fell_alarm_flag=0;
+ 193   3               }
+ 194   2      
+ 195   2            if(wire_broken_EN == 1)
+ 196   2               {
+ 197   3               wire_broken_speech();
+ 198   3               Moto_Vibration();         
+ 199   3               wire_broken_EN = 0;
+ 200   3               }
+ 201   2            
+ 202   2            if(battery_stolen_EN == 1)
+ 203   2               {
+ 204   3               Host_battery_high_alarm_speech();
+ 205   3               battery_stolen_EN = 0;
+ 206   3               Moto_Vibration();                
+ 207   3               }
+ 208   2            
+ 209   2      //    sEOS_Go_To_Sleep();        
+ 210   2            }  
+ 211   1         }
+ 212          
+ 213          
+ 214          /*------------------------------------------------------------------
+ 215             timerT0()
+ 216             ¶¨Ê±Æ÷0Ã¿´ÎÒç³öºóÖ´ÐÐµÄ²Ù×÷
+ 217          --------------------------------------------------------------------*/
+ 218          
+ 219          void timer0() interrupt interrupt_timer_0_overflow
+ 220             {
+ 221   1         // ÖØ×°ÔÚ¶¨Ê±Æ÷µÄÊ±¼äÉèÖÃ
+ 222   1         TH0 = timer0_8H;
+ 223   1         TL0 = timer0_8L;
+ 224   1      
+ 225   1         // ÉèÖÃÒ»¸öÃ¿3sµÄ²Ù×÷
+ 226   1         if(++timer0_count >= 2000)    
+ 227   1            {
+ 228   2               
+ 229   2            // Ã¿¸ö3s×öÒ»´ÎµçÁ¿¼ì²â£¬²¢½øÐÐÏà¹ØµÄµçÁ¿ÌáÊ¾
+ 230   2            CheckADC();
+ 231   2            
+ 232   2            if(ADC_check_result <= 0x368)                 // 3.11V/3.64V µçÁ¿²»×ã
+ 233   2               {
+ 234   3               battery_LV_flag = 1;
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 5   
+
+ 235   3               battery_HV_flag = 0;
+ 236   3               battery_HV_speech_over = 0;
+ 237   3               }
+ 238   2            else if(ADC_check_result >= 0x37a)            // 3.52V/4.03V µçÁ¿³ä×ã
+ 239   2               {
+ 240   3               battery_HV_flag = 1;
+ 241   3               battery_LV_flag = 0;
+ 242   3               }
+ 243   2            else
+ 244   2               {
+ 245   3               battery_LV_flag = 0;
+ 246   3               battery_HV_flag = 0;
+ 247   3               }
+ 248   2                  
+ 249   2      /*    if((battery_HV_flag == 1)&&(battery_HV_speech_over == 0))
+ 250   2               {
+ 251   2               if(++battery_HV_flag_count > 3)
+ 252   2                  {
+ 253   2                  Battery_high_alarm_speech();
+ 254   2                  battery_HV_flag_count = 0;
+ 255   2                  if(++battery_HV_speech_count >= 3)
+ 256   2                     {
+ 257   2                     battery_HV_speech_over = 1;
+ 258   2                     battery_HV_speech_count = 0;
+ 259   2                     }
+ 260   2                  }
+ 261   2               }
+ 262   2      */    
+ 263   2            if(battery_LV_flag == 1)
+ 264   2               {
+ 265   3               if(++battery_LV_flag_count > 20)
+ 266   3                  {
+ 267   4                  Battery_low_alarm_speech();
+ 268   4                  battery_LV_flag_count = 0;
+ 269   4                  }        
+ 270   3               }
+ 271   2                        
+ 272   2            if(match_button_flag6 == 1)
+ 273   2               {
+ 274   3               if(++match_button_flag6count > 10)
+ 275   3                  {
+ 276   4                  match_button_HVcount = 0;
+ 277   4                  match_button_LVcount = 0;
+ 278   4                  match_button_flag1 = 0;
+ 279   4                  match_button_flag2 = 0;
+ 280   4                  match_button_flag3 = 0;
+ 281   4                  match_button_flag4 = 0;
+ 282   4                  match_button_flag5 = 0;
+ 283   4                  match_button_flag6 = 0;
+ 284   4                  match_moto_EN = 0;
+ 285   4                  match_button_flag6count = 0;           
+ 286   4                  }        
+ 287   3               }     
+ 288   2            // ½«¼ÆÊýÇå0
+ 289   2            timer0_count = 0;
+ 290   2            }
+ 291   1            
+ 292   1         if((toggle_button == 1)&&(idle_EN == 0))
+ 293   1            {
+ 294   2            transceiver_power_enable = 1;
+ 295   2            receiver_EN = 0;
+ 296   2            transmiter_EN = 0;
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 6   
+
+ 297   2            RXD = 0;
+ 298   2            TXD = 0;
+ 299   2            idle_EN = 1;
+ 300   2            }
+ 301   1         
+ 302   1         if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
+ 303   1            {
+ 304   2            if(++receiver_EN_count > 20)
+ 305   2               {
+ 306   3               transceiver_power_enable = 1;
+ 307   3               receiver_EN = 0;
+ 308   3               RXD = 0;
+ 309   3               TXD = 0;
+ 310   3      //       receiver_EN = 1;
+ 311   3               receiver_EN_count = 0;
+ 312   3               }
+ 313   2            }  
+ 314   1         
+ 315   1         if((transceiver_power_enable == 1)&&(match_button_flag6 == 0))
+ 316   1            {     
+ 317   2            if(++receiver_DisEN_count > 1500)
+ 318   2               {
+ 319   3               transceiver_power_enable = 0;
+ 320   3               UART_Send_Data_F(ComMode_1);
+ 321   3               receiver_EN = 0;
+ 322   3               RXD = 1;
+ 323   3      //       receiver_EN = 0;
+ 324   3               receiver_DisEN_count = 0;
+ 325   3               }
+ 326   2      
+ 327   2            }
+ 328   1         
+ 329   1         if(match_button == 0)
+ 330   1            {
+ 331   2            match_button_HVcount = 0;
+ 332   2                     
+ 333   2            if(++match_button_LVcount > 4000)
+ 334   2               {
+ 335   3               match_button_LVcount = 4002;
+ 336   3               match_button_flag1 = 0;
+ 337   3               match_button_flag2 = 0;
+ 338   3               match_button_flag3 = 0;
+ 339   3               match_button_flag4 = 0;
+ 340   3               match_button_flag5 = 0;
+ 341   3               }
+ 342   2            else
+ 343   2               {
+ 344   3               match_button_flag1 = 1;
+ 345   3               if(match_button_flag2 == 1)
+ 346   3                  match_button_flag3 = 1;
+ 347   3               if(match_button_flag4 == 1)
+ 348   3                  match_button_flag5 = 1;
+ 349   3               }
+ 350   2            
+ 351   2            battery_LV_flag = 0;
+ 352   2            battery_HV_flag = 0;
+ 353   2            }
+ 354   1         else
+ 355   1            {
+ 356   2            match_button_LVcount = 0;
+ 357   2            
+ 358   2            if(match_button_flag1 == 1)
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 7   
+
+ 359   2               match_button_flag2 = 1;
+ 360   2               
+ 361   2            if(match_button_flag3 == 1)
+ 362   2               match_button_flag4 = 1;
+ 363   2            
+ 364   2            if(match_button_flag5 == 1)
+ 365   2               {
+ 366   3               match_button_flag6 = 1;
+ 367   3               transceiver_power_enable = 0;
+ 368   3               receiver_EN_count = 0;
+ 369   3               receiver_EN = 0;
+ 370   3               RXD = 1;
+ 371   3               if(match_moto_EN == 0)
+ 372   3                  {
+ 373   4                  Moto_Vibration(); 
+ 374   4                  match_moto_EN = 1;
+ 375   4                  }
+ 376   3               }
+ 377   2               
+ 378   2            if(++match_button_HVcount > 4000)
+ 379   2               {
+ 380   3               match_button_HVcount = 4002;
+ 381   3               match_button_flag1 = 0;
+ 382   3               match_button_flag2 = 0;
+ 383   3               match_button_flag3 = 0;
+ 384   3               match_button_flag4 = 0;
+ 385   3               match_button_flag5 = 0;
+ 386   3               match_moto_EN = 0;
+ 387   3      //       match_button_flag6 = 0;
+ 388   3               }
+ 389   2            }
+ 390   1            
+ 391   1         if(IDflash_EN == 1)
+ 392   1            {
+ 393   2            IDflash_EN = 0;
+ 394   2            match_button_flag1 = 0;
+ 395   2            match_button_flag2 = 0;
+ 396   2            match_button_flag3 = 0;
+ 397   2            match_button_flag4 = 0;
+ 398   2            match_button_flag5 = 0;
+ 399   2            match_button_flag6 = 0;
+ 400   2            match_moto_EN = 0;
+ 401   2      //    SCH_Add_Task(Self_learn_programming_F, 0, 0);
+ 402   2            Self_learn_programming_F();
+ 403   2            Moto_Vibration();
+ 404   2            Delay(10);
+ 405   2            Moto_Vibration();
+ 406   2            match_button_flag6count = 0;
+ 407   2            }
+ 408   1         }
+ 409          
+ 410          /*-----------------------------------------------
+ 411             UART interrupt
+ 412          -----------------------------------------------*/
+ 413          void uart_isr() interrupt 4 
+ 414             {
+ 415   1         if(RI)
+ 416   1            {
+ 417   2            RI=0;
+ 418   2            received_data_buffer[data_count] = SBUF;
+ 419   2            
+ 420   2            if(match_button_flag6 == 0)
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 8   
+
+ 421   2               {
+ 422   3               // judge whether buffer[0] is CmdHead
+ 423   3               if((data_count == 0) && (received_data_buffer[0] == IDkey6))
+ 424   3                  {
+ 425   4                  data_count = 1;
+ 426   4                  }
+ 427   3               else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
+ 428   3                  {
+ 429   4                  data_count = 2;
+ 430   4                  }
+ 431   3               else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
+ 432   3                  {
+ 433   4                  data_count = 3;
+ 434   4                  }
+ 435   3               else if((data_count == 3) && (received_data_buffer[3] == IDkey9))
+ 436   3                  {
+ 437   4                  data_count = 4;
+ 438   4                  }
+ 439   3               else if((data_count == 4) && (received_data_buffer[4] == IDkey10))
+ 440   3                  {
+ 441   4                  data_count = 5;
+ 442   4                  }
+ 443   3               else if(data_count == 5)
+ 444   3                  {
+ 445   4                  receive_data_finished_flag = 1;
+ 446   4                  data_count = 0;
+ 447   4                  }
+ 448   3               else 
+ 449   3                  {
+ 450   4                  data_count = 0;
+ 451   4                  }
+ 452   3      
+ 453   3               if(receive_data_finished_flag==1)   
+ 454   3                  {
+ 455   4                  receive_data_finished_flag=0;       
+ 456   4                  switch(received_data_buffer[5])
+ 457   4                     {
+ 458   5                     case ComMode_2:
+ 459   5                        {
+ 460   6                        battery_stolen_EN = 1;
+ 461   6                        }
+ 462   5                     break;
+ 463   5                     
+ 464   5                     case ComMode_3:
+ 465   5                        {
+ 466   6                        stolen_alarm_flag = 1;
+ 467   6      
+ 468   6                        raised_alarm_count=0;
+ 469   6                        raised_alarm_flag=0;
+ 470   6                        fell_alarm_count=0;
+ 471   6                        fell_alarm_flag=0;
+ 472   6                        }
+ 473   5                     break;
+ 474   5                  
+ 475   5                     case ComMode_4:
+ 476   5                        {
+ 477   6                        raised_alarm_flag=1;
+ 478   6      
+ 479   6                        stolen_alarm_count=0;
+ 480   6                        stolen_alarm_flag=0;
+ 481   6                        fell_alarm_count=0;
+ 482   6                        fell_alarm_flag=0;
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 9   
+
+ 483   6                        }
+ 484   5                     break;
+ 485   5      
+ 486   5                     case ComMode_5:
+ 487   5                        {
+ 488   6                        fell_alarm_flag=1;   
+ 489   6      
+ 490   6                        stolen_alarm_count=0;
+ 491   6                        stolen_alarm_flag=0;
+ 492   6                        raised_alarm_count=0;
+ 493   6                        raised_alarm_flag=0;
+ 494   6                        }
+ 495   5                     break;
+ 496   5      
+ 497   5                     case ComMode_6:
+ 498   5                        {
+ 499   6                        wire_broken_EN = 1;
+ 500   6                        }
+ 501   5                     break;
+ 502   5                     }
+ 503   4                  }
+ 504   3               }
+ 505   2            else
+ 506   2               {
+ 507   3               if((data_count == 0)&&(received_data_buffer[0] == CmdHead))
+ 508   3                  {
+ 509   4                  data_count = 1;
+ 510   4                  }
+ 511   3               else if((data_count == 1)&&(received_data_buffer[1] == ComMode_1))
+ 512   3                  {
+ 513   4                  data_count = 2;
+ 514   4                  }
+ 515   3               else if(data_count == 2)
+ 516   3                  {
+ 517   4                  data_count = 3;
+ 518   4                  }
+ 519   3               else if(data_count == 3)
+ 520   3                  {
+ 521   4                  data_count = 4;
+ 522   4                  }
+ 523   3               else if(data_count == 4)
+ 524   3                  {
+ 525   4                  data_count = 5;
+ 526   4                  }
+ 527   3               else if(data_count == 5)
+ 528   3                  {
+ 529   4                  data_count = 6;
+ 530   4                  }
+ 531   3               else if(data_count == 6)
+ 532   3                  {
+ 533   4                  data_count = 0;
+ 534   4                  IDflash_EN = 1;
+ 535   4                  }
+ 536   3               else 
+ 537   3                  {
+ 538   4                  data_count = 0;
+ 539   4                  }
+ 540   3               }     
+ 541   2            }
+ 542   1         }
+ 543          
+ 544          /*------------------------------------------------------------------
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 10  
+
+ 545             timerT1()
+ 546             ¶¨Ê±Æ÷1Ã¿´ÎÒç³öºóÖ´ÐÐµÄ²Ù×÷
+ 547             
+ 548          void timerT1() interrupt interrupt_timer_1_overflow         
+ 549             {
+ 550             // ÖØ×°ÔÚ¶¨Ê±Æ÷1µÄÉèÖÃ
+ 551             TH1 = timer1_8H;           
+ 552             TL1 = timer1_8L;
+ 553          
+ 554             // receive a tyte
+ 555             receive_byte();
+ 556             
+ 557             // receive a word after every byte
+ 558             receive_word();
+ 559          
+ 560             if(receive_data_finished_flag==1)   //ËµÃ÷½ÓÊÕµ½ÁËÊý¾Ý£¬¿ªÊ¼´¦Àí
+ 561                {
+ 562                receive_data_finished_flag=0; //Çå½ÓÊÕ±êÖ¾
+ 563                switch(received_data_buffer[2])//½âÎöÖ¸Áî
+ 564                   {
+ 565                   case ComMode_2:
+ 566                      {
+ 567                      battery_stolen_EN = 1;
+ 568                      Moto_Vibration();          
+ 569                      }
+ 570                   break;
+ 571                   
+ 572                   case ComMode_3:
+ 573                      {
+ 574                      stolen_alarm_flag = 1;
+ 575                      Moto_Vibration();         
+ 576          
+ 577                      raised_alarm_count=0;
+ 578                      raised_alarm_flag=0;
+ 579                      fell_alarm_count=0;
+ 580                      fell_alarm_flag=0;
+ 581                      }
+ 582                   break;
+ 583                
+ 584                   case ComMode_4:
+ 585                      {
+ 586                      raised_alarm_flag=1;
+ 587                      Moto_Vibration();         
+ 588          
+ 589                      stolen_alarm_count=0;
+ 590                      stolen_alarm_flag=0;
+ 591                      fell_alarm_count=0;
+ 592                      fell_alarm_flag=0;
+ 593                      }
+ 594                   break;
+ 595          
+ 596                   case ComMode_5:
+ 597                      {
+ 598                      fell_alarm_flag=1;   
+ 599                      Moto_Vibration();         
+ 600          
+ 601                      stolen_alarm_count=0;
+ 602                      stolen_alarm_flag=0;
+ 603                      raised_alarm_count=0;
+ 604                      raised_alarm_flag=0;
+ 605                      }
+ 606                   break;
+C51 COMPILER V9.54   MAIN                                                                  05/22/2015 14:12:28 PAGE 11  
+
+ 607          
+ 608                   case ComMode_6:
+ 609                      {
+ 610                      wire_broken_EN = 1;
+ 611                      Moto_Vibration();         
+ 612                      }
+ 613                   break;
+ 614                   }
+ 615                }
+ 616             }
+ 617          --------------------------------------------------------------------*/
+ 618          
+ 619          /*-----------------------------------------------------------
+ 620             KBI_ISR()
+ 621             ¼üÅÌÖÐ¶Ï£¬Ê¹Ð¾Æ¬´ÓÊ¡µçÄ£Ê½ÖÐ»½ÐÑ
+ 622          -----------------------------------------------------------*/
+ 623          void KBI_ISR(void) interrupt 7
+ 624             {
+ 625   1         EKB = 0;
+ 626   1         KBIF &= 0xfc;
+ 627   1         transceiver_power_enable = 0;
+ 628   1         receiver_EN = 0;
+ 629   1         RXD = 1;
+ 630   1         match_button_touched = 1;
+ 631   1      // EKB = 1;
+ 632   1         }
+ 633                
+ 634          /*---------------------------------------------------
+ 635             end of file
+ 636          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    995    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =     66    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     38    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

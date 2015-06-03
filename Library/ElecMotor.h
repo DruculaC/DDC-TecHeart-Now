@@ -10,6 +10,7 @@
 //-----public constants-------------------------------
 
 //-----public function prototype----------------------
+void InitElecmotor(void);
 void ElecMotor_CW(void);
 void ElecMotor_ACW(void);
 void ElecMotor_code(void);	

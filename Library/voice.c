@@ -12,8 +12,12 @@
 
 /*------ private variable --------------------------*/
 tByte key_rotate_on_speech_number = 1;		// 循环报两段开机语音
-
+                                            
 extern bit flashing_flag;
+extern bit IDkey_speech_flash;
+extern tByte key_rotated_on_flag;		
+extern bit slave_nearby_actioned_flag;
+extern bit ID_speeched_flag;
    
 /*--------------------------------------------------
 	SC_Speech()
@@ -38,10 +42,10 @@ void SC_Speech(tByte cnt)
 	}
 
 /*-------------------------------------------------
-	noVoice()
-	在上电的时候调用，屏蔽语音的误报
+	InitVoice()
+	Initialise Voice IC, shielding voice by accident on powerup.
 --------------------------------------------------*/
-void noVoice()
+void InitVoice()
 	{
 	P14=0;
 	SC_DATA = 0;
@@ -50,6 +54,8 @@ void noVoice()
 	SC_RST = 1;
 	delay_us(350);
 	P14 = 1;
+	
+	voice_EN = 0;				// Close speaker.
 	}
 
 /*----------------------------------------------------
@@ -58,30 +64,12 @@ void noVoice()
 -----------------------------------------------------*/
 void key_rotate_on_speech(void)
 	{
-	switch(key_rotate_on_speech_number)
-		{
-		case 1:
-			{
-			voice_EN = 1;
-			SC_Speech(26);  
-			Delay(100);
-			voice_EN = 0;
-			key_rotate_on_speech_number = 1;
-			}
-		break;
-		
-		case 2:
-			{
-			voice_EN = 1;
-			SC_Speech(14);  
-			Delay(40);
-			SC_Speech(12);  
-			Delay(60);
-			voice_EN = 0;
-			key_rotate_on_speech_number = 1;			
-			}
-		break;
-		}
+	#ifdef Taili
+	voice_EN = 1;
+	SC_Speech(26);  
+	Delay(100);
+	voice_EN = 0;
+	#endif
 	}
 	
 /*-----------------------------------------------------
@@ -190,9 +178,18 @@ void stolen_alarm_speech1(void)
 -----------------------------------------------------*/
 void open_lock_speech(void)
 	{
+	#ifdef Tailing
+	voice_EN = 1;
+	SC_Speech(20);  
+	Delay(30);
+	SC_Speech(12);  
+	Delay(40);
+	voice_EN = 0;
+	#endif
+		
 	voice_EN=1;
-	SC_Speech(15); 
-	Delay(60);
+	SC_Speech(25); 
+	Delay(30);
 	voice_EN=0;
 	}
 
@@ -203,8 +200,9 @@ void open_lock_speech(void)
 void close_lock_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(16);  
-	Delay(60);
+//	SC_Speech(16);  
+	SC_Speech(25);  
+	Delay(30);
 	voice_EN = 0;
 	}
 
@@ -311,7 +309,7 @@ void Alarm_fell_speech(void)
 void Host_battery_high_alarm_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(7);  
+	SC_Speech(11);  
 	Delay(80);
 	voice_EN = 0;
 	}
@@ -362,6 +360,30 @@ void lock_rotated_off_speech(void)
 	Delay(80);
 	voice_EN = 0;	
 	}
+
+/*-------------------------------------------------------------
+	IDcerted_speech()
+-------------------------------------------------------------*/
+void IDcerted_speech(void)
+	{
+	if(IDkey_speech_flash == 1)
+		{
+		IDkey_speech_flash = 0;
+		
+		#ifdef ID
+		ID_speech();
+		#endif
+		
+		#ifdef WX
+		if((key_rotated_on_flag == 0)&&(slave_nearby_actioned_flag == 0)&&(ID_speeched_flag == 0))
+			{
+			ID_speech();
+			ID_speeched_flag = 1;
+			}
+		#endif			
+		}	
+	}
+	
 
 /*---------------------------------------------------
 	end of file

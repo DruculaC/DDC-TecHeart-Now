@@ -13,6 +13,7 @@
 #define LOOP_TIMEOUT_INIT_005ms 64995
 #define LOOP_TIMEOUT_INIT_010ms 64455
 #define LOOP_TIMEOUT_INIT_050ms 60135
+#define LOOP_TIMEOUT_INIT_100ms 54735
 #define LOOP_TIMEOUT_INIT_500ms 11535
 
 //-----public constants-------------------------------
@@ -27,6 +28,7 @@ void Delay_1ms(void);
 void Delay_5ms(void);
 void Delay_10ms(void);
 void Delay_50ms(void);
+void Delay_100ms(void);
 void Delay_500ms(void);
 
 #endif

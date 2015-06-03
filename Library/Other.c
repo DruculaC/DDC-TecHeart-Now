@@ -51,7 +51,7 @@ void magnet_CW(tWord x, y, tByte z)
 	Magnet_Delay(x, y);
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
-	motor_lock = 0;
+	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -68,7 +68,7 @@ void magnet_CW_Taili(tWord x, y, tByte z)
 	Magnet_Delay(x, y);
 	MagentControl_1 = 0;
 	MagentControl_2 = 0;
-	motor_lock = 0;
+	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -77,7 +77,7 @@ void magnet_CW_Taili(tWord x, y, tByte z)
 --------------------------------------------------------*/
 void magnet_ACW(tWord x, y)
 	{
-	motor_lock = 1;
+	Externalmotor = 1;
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	Magnet_Delay(x, y);
@@ -91,7 +91,7 @@ void magnet_ACW(tWord x, y)
 --------------------------------------------------------*/
 void magnet_ACW_Taili(tWord x, y)
 	{
-	motor_lock = 1;
+	Externalmotor = 1;
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	Magnet_Delay(x, y);

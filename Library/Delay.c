@@ -46,6 +46,15 @@ void Delay_50ms(void)
    }
 
 /*------------------------------------------------------------------*/
+void Delay_100ms(void)
+   {
+   Timeout_loop = LOOP_TIMEOUT_INIT_100ms;
+
+   // Simple loop timeout...
+   while (++Timeout_loop != 0);
+   }
+
+/*------------------------------------------------------------------*/
 void Delay_500ms(void)
    {
    Timeout_loop = LOOP_TIMEOUT_INIT_500ms;
