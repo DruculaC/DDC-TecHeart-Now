@@ -14,7 +14,7 @@
 void verifybattery(tWord Check2);
 void verifybattery_anytime(tWord Check2);
 
-void CheckADC(void);
+void Check_motor_accumulator(void);
 
 #endif
 											

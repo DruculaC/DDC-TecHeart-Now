@@ -30,6 +30,7 @@
 #define ComMode_8 0xe8  // 发送关锁信号
 #define ComMode_9 0xc9	// 发送自动模式的开锁信号
 #define ComMode_10 0xc10	// 自学习配对密码	
+#define ComMode_11 0xc11	// 静音模式和永久取消布防模式
 
 //---------public function prototype
 void InitTransceiver(void);

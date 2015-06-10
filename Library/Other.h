@@ -16,7 +16,7 @@ void magnet_CW_Taili(tWord x, y, tByte z);
 void magnet_ACW(tWord x, y);
 void magnet_ACW_Taili(tWord x, y);
 void disable_sensor(void);
-void enable_sensor(void);
+void Enable_sensor(void);
 
 void Moto_Vibration(void);
 

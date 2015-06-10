@@ -28,11 +28,15 @@ extern tByte timer0_8H, timer0_8L, timer1_8H, timer1_8L;
 extern bit enable_sensor_delayEN;
 extern bit sensor_EN;
 
+/*------- Public variable definitions --------------------------*/
+bit ID_certificated_flag = 0;			// Flagged once ID card or Slave certificated successfully.
+tByte ID_certificated_numbers = 0;	// Numbers of ID certificated.
+
+bit Host_stolen_alarming = 0;			// Host stolen is alarming, don't detect vibration for 1st stage.
 
 // ------ Private variable definitions -----------------------------
-bit stolen_alarm_flag = 0;					// when host been touch 3 times, this flag 1 before alarm voice present, not to detect sensor for 1st voice alarm.
 bit position_sensor_EN=0;  		//位置传感器，即倒地抬起传感器总开关，1的时候，检测这两个传感器
-bit host_stolen_alarm1_EN = 0;      //判断为被盗报警后的第一段语音使能
+bit EN_host_stolen_alarming = 0;      //判断为被盗报警后的第一段语音使能
 bit host_stolen_alarm2_EN = 0;      //判断为被盗报警后的第二段语音使能
 tByte host_stolen_alarm1_count = 0;		//判断为被盗报警后的第一段语音次数
 tByte host_stolen_alarm2_count = 0;		//判断为被盗报警后的第二段语音次数
@@ -63,7 +67,7 @@ tByte fell_wire_time=0;         //倒地检测线，检测低电平的时间
 tByte raise_wire_time=0;			//抬起检测线，检测低电平的时间
 tWord raised_fell_number = 0;				//倒地或者抬起出发后，计数，到达一定数值后，将其与标志位一起清零。
 bit raised_fell_once_flag = 0;			//raised_fell_flag是否曾经标志过，如果标志过则置1.然后主机被恢复倒地或者恢复抬起时，此标志位复位。
-tByte key_rotated_on_flag = 0;			//电动车开启关闭标志位，1表示电动车开启了，0表示电动车关闭了
+tByte Open_action_flag = 0;			//电动车开启关闭标志位，1表示电动车开启了，0表示电动车关闭了
 tWord ADC_check_result = 0;		//作为AD检测值
 tWord load_battery_result = 0;
 tByte wire_broken_count = 0;		// 作为断线后的时间检测
@@ -74,8 +78,7 @@ tWord horizontal_vibration_count = 0;	//垂直传感器触发后，对时间进行计数。
 bit vibration_flag = 0;
 tWord vibration_count = 0;
 bit wire_broken_flag = 0;			// 剪断锁线的标志位
-bit IDkey_flag = 0;			// 当ID卡靠近时认证通过后置1，
-tByte IDkey_count = 0;		// ID卡认证通过后，计时1分钟，使钥匙能转动。
+tByte After_IDcert_timecount = 0;		// ID卡认证通过后，计时1分钟，使钥匙能转动。
 tByte enable_sensor_delay_count = 0;		// 传感器延迟的时间
 bit sensor_3rdalarm_flag = 0;
 bit wheeled_flag = 0;
@@ -96,11 +99,10 @@ bit IDkey_selflearn_flag2 = 0;
 bit IDkey_selflearn_flag3 = 0;
 bit IDkey_selflearn_flag4 = 0;
 bit IDkey_selflearn_flag5 = 0;
-bit IDkey_selflearn_flag6 = 0;
-tByte IDkey_selflearn_flag6count = 0;
+bit ID_selflearning_flag = 0;
+tByte ID_selflearning_timecount = 0;
 bit IDkey_flash_EN = 0;
 
-tByte IDkey_certificated_times = 0;
 bit Silence_Flag = 0;
 bit flashing_flag = 0;
 
@@ -116,35 +118,35 @@ tByte slave_nearby_count = 0;
 
 bit ID_speeched_flag = 0;
 
-/*------- Private variable declarations --------------------------*/
+tByte Stolen_alarm_reset_count = 0;
+
+bit wire_broken_reset = 0;
+
+bit Just_power_up = 1;
+
+/*------- Private variable declaratuions --------------------------*/
 
 void main()
-	{	
+	{
 	InitVoice();
 	
 	#ifdef ID
-	InitUART9600();
-   #endif
-	
+	InitUART(BAUD9600);
+   #endif	
 	#ifdef WX
-	InitUART600();
+	InitUART(BAUD1200);
 	#endif
 	
 	InitSensor();
 	
 	InitTransceiver();
 	
-	// lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
+	// lock the external motor, prohibit motor moving when power up.
 	InitElecmotor();	
-   
+  
 	Externalmotor = Close;
-	
-	// start Timer 0
-	TR0 = 1;
-
 	while(1)
-		{
-		Host_stolen_action();
+		{		
 		}
 	}
 
@@ -164,199 +166,49 @@ void timer0() interrupt interrupt_timer_0_overflow
 		{
 		// reset timer0 ticket counter every 2s
 		timer0_count=0;
-		
+
+/*----- Accumulator relevantly ------------------------------------*/
+		Check_motor_accumulator();		
+		Accumulator_voice_promot();
+
+/*----- Enable sensor ---------------------------------------------*/
 		#ifdef ID
 		ENsensor_afterIDcert();
 		#endif
-		
-		CheckADC();
-		
-		ENsensor_After_CloseLock();
-		
-		SelfLearn_Reset();
-		      
-		#ifdef Batterycheck
-		if(++Check_Motobattery_count > 3)
-			{
-			Check_Motobattery_count = 10;
-			if(Check_Motobattery_flag == 1)
-				{
-				load_battery_result = ADC_check_result;
-				verifybattery(load_battery_result);
-				Check_Motobattery_flag = 0;
-				}
-			}
-		#endif
-			
+		// if no vibration and wheeled, decrease slave_nearby_count,
+		// if more than 3 times, it means slave is away, then enable sensor.
 		#ifdef WX
-		if((vibration_flag == 0)&&(wheeled_flag == 0))
-			{
-			if(++slave_nearby_count > 3)
-				{
-				slave_nearby_count = 5;
-				slave_nearby_actioned_flag = 0;
-				IDkey_flag = 0;
-				enable_sensor();
-				}
-			}
-
-		#endif
+		Ensensor_after_slave_away();
+		#endif		
 		
+		ENsensor_After_Close();
+
+/*----- Alarm relevantly -----------------------------------------*/		
 		#ifdef Z3
 		Fell_Alarm_to_Slave();
 		Raise_Alarm_to_Slave();
 		Batstolen_Alarm_to_Slave();
 		#endif		
+		Host_stolen_action();
+
+/*----- Reset flag and disabling sensor relevantly --------------*/
+		Disable_sensor_after_IDcert();		
+		//
+		Reset_after_wirebroken();
+		Reset_after_stolen_alarming();
+		SelfLearn_Reset();					
 		}	
-
-	IDcerted_speech();
 	
-	if(never_alarm_speech == 1)
-		{
-		never_alarm_speech = 0;
-		Self_learn_speech();					
-		}
+	// Voice hint for entering no guard mode, 
+	Enter_noguard_voice();
 
-	if(key_rotate == 1)
-		{
-		if(wire_broken == 1)
-			{
-			IDkey_selflearn_LVcount = 0;
-						
-			if(++IDkey_selflearn_HVcount > 4000)
-				{
-				IDkey_selflearn_HVcount = 4002;
-				IDkey_selflearn_flag1 = 0;
-				IDkey_selflearn_flag2 = 0;
-				IDkey_selflearn_flag3 = 0;
-				IDkey_selflearn_flag4 = 0;
-				IDkey_selflearn_flag5 = 0;
-				}
-			else
-				{
-				IDkey_selflearn_flag1 = 1;
-				if(IDkey_selflearn_flag2 == 1)
-					IDkey_selflearn_flag3 = 1;
-				if(IDkey_selflearn_flag4 == 1)
-					IDkey_selflearn_flag5 = 1;
-				}
-			}
-		else
-			{
-			IDkey_selflearn_HVcount = 0;
-			
-			if(IDkey_selflearn_flag1 == 1)
-				IDkey_selflearn_flag2 = 1;
-				
-			if(IDkey_selflearn_flag3 == 1)
-				IDkey_selflearn_flag4 = 1;
-			
-			if(IDkey_selflearn_flag5 == 1)
-				{
-				IDkey_selflearn_flag6 = 1;
-				#ifdef WX
-				IDkey_flash_EN = 1;
-				#endif
-				}
-				
-			if(++IDkey_selflearn_LVcount > 4000)
-				{
-				IDkey_selflearn_LVcount = 4002;
-				IDkey_selflearn_flag1 = 0;
-				IDkey_selflearn_flag2 = 0;
-				IDkey_selflearn_flag3 = 0;
-				IDkey_selflearn_flag4 = 0;
-				IDkey_selflearn_flag5 = 0;
-				IDkey_selflearn_flag6 = 0;
-				}
-			}		
-		}
+/*----- Detectiong relevantly -----------------------------------*/
+	Detect_selflearn_action();
+	Detect_vibration();
+	Detect_wheel_moving();
 
-	if(IDkey_flash_EN == 1)
-		{
-		IDkey_flash_EN = 0;
-		flashing_flag = 1;
-		IDkey_selflearn_flag1 = 0;
-		IDkey_selflearn_flag2 = 0;
-		IDkey_selflearn_flag3 = 0;
-		IDkey_selflearn_flag4 = 0;
-		IDkey_selflearn_flag5 = 0;
-		IDkey_selflearn_flag6 = 0;
-		#ifdef ID
-		Self_learn_programming();
-		#endif
-		Self_learn_speech();
-		#ifdef WX
-		UART_Send_Data_match();
-		#endif
-		}
-	
-	// detect whether key is rotated on,  
-	if((key_rotate == 1)&&(key_rotated_on_flag == 0)&&(IDkey_flag == 1)&&(never_alarm == 0))		
-		{
-		disable_sensor();
-		key_rotated_on_flag = 1;
-		ID_speeched_flag = 0;
-		
-		IDkey_count = 0;
-		IDkey_flag = 0;
-		IDkey_certificated_times = 0;
-		slave_nearby_actioned_flag = 1;
-		ElecMotor_CW();
-		slave_nearby_operation();
-		} 		
-				
-	// detect whether key is rotated off
-	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0))&&(key_rotated_on_flag == 1))
-		{
-		if((vibration_flag == 0)&&(wheeled_flag == 0))
-			{
-			Delay_1ms();
-			if((key_rotate == 0)||(slave_nearby_actioned_flag == 0))
-				{
-				ElecMotor_ACW();
-
-				key_rotated_on_flag = 0;
-				slave_away_operation();		
-				IDkey_speech_flash = 0;
-				ID_speeched_flag = 0;
-				}				
-			}
-		}
-		
-	if((sensor_detect == 0)||(horizontal_sensor == 0))
-		{
-		vibration_flag = 1;
-		vibration_count = 0;
-		}
-    if(vibration_flag == 1)
-		{
-		if(++vibration_count >= 2000)
-			{
-			vibration_flag = 0;
-			vibration_count = 0;
-			}
-		}
-
-	if(wheeled_rotate == 1)
-		{
-		wheeled_flag = 1;
-		wheeled_count = 0;
-		}
-	if(wheeled_flag == 1)
-		{
-		if(++wheeled_count >= 2000)
-			{
-			wheeled_flag = 0;
-			wheeled_count = 0;
-         }
-		}
-			
-	if((sensor_detect == 0)||(horizontal_sensor == 0))
-		{
-		vibration_flag = 1;
-		vibration_count = 0;			
-		}		
+	Detect_open_action();
+	Detect_close_action();		
 
 // judge host is fell or raised every 1ms?
 //	if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
@@ -371,8 +223,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 				case 0:
 					{					
 					// judge host been touched and also not in vibration alarm
-//					if((sensor_detect == 0)&&(stolen_alarm_flag == 0)&&(transmiter_EN == 1))		
-					if(((sensor_detect == 0)||(horizontal_sensor == 0))&&(stolen_alarm_flag == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+//					if((sensor_detect == 0)&&(Host_stolen_alarming == 0)&&(transmiter_EN == 1))		
+					if(((sensor_detect == 0)||(horizontal_sensor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
 						{
 						// judge LV is more than 2ms, if yes, it means a effective touch
 						if(++sensor_1ststage_count >= 1)			
@@ -439,9 +291,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 							{
 							sensor_3rdstage_count = 0;
 							// stolen alarm speech enable
-							host_stolen_alarm1_EN = 1;
+							EN_host_stolen_alarming = 1;
 							host_stolen_alarm2_EN = 1;	
-							sensor_3rdalarm_flag = 1;							
+							sensor_3rdalarm_flag = 1;	
+							Stolen_alarm_reset_count = 0;
 							}
 						}
 					else
@@ -457,31 +310,27 @@ void timer0() interrupt interrupt_timer_0_overflow
 						sensor_2ndstage_count = 0;
 						sensor_2ndstage_time = 0;
 						sensor_3rdstage_time = 0;
-						sensor_3rdstage_interval = 800;
 						sensor_3rdstage_count = 0;
-						sensor_3rdstage_effcount = 0;					
 						}
 					}
 				break;
 				}
 			
 			// judge the wire broken, if yes, it means someone has cut the wire of magnet lock
-			if((wire_broken == 0) && (wire_broken_count < 51))  
+			if(wire_broken == 0)
 				{
-				if(++wire_broken_count > 50)
-					{
-					host_stolen_alarm1_EN = 1;
-					host_stolen_alarm2_EN = 1;	
-					wire_broken_count = 51;
-					wire_broken_flag = 1;
-					}	
+				EN_host_stolen_alarming = 1;
+				host_stolen_alarm2_EN = 1;
+				Stolen_alarm_reset_count = 0;		
+				wire_broken_flag = 1;
 				}
-			else if((wire_broken == 1)&&(sensor_3rdalarm_flag == 0))
+			else if((wire_broken == 1)&&(wire_broken_flag == 1))
 				{
-				wire_broken_count = 0;
-				host_stolen_alarm1_EN = 0;
-				host_stolen_alarm2_EN = 0;
+				wire_broken_reset = 1;
+				wire_broken_flag = 0;				
+				ID_speech();
 				}
+			
 			
 			if(ADC_check_result < 0x100)
 				{
@@ -563,22 +412,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 			sensor_3rdstage_effcount = 0;					
 			}
 		}
-	
-	// detect the horizontal sensor
-	if(((horizontal_sensor == 0)||(sensor_detect == 0))&&(horizontal_vibration_count > 5000))
-		{
-		Delay(3);
-		if((horizontal_sensor == 0)||(sensor_detect == 0))
-			{
-			horizontal_vibration = 1;
-			horizontal_vibration_count = 0;
-			}
-		}
-	if(++horizontal_vibration_count >= 5000)
-		{
-		horizontal_vibration_count = 5001;
-		horizontal_vibration = 0;
-		}
  	}
 
 /*-----------------------------------------------
@@ -593,48 +426,49 @@ void uart_isr() interrupt 4
 
 		// assign one byte to buffer[i] 
 		
-		if(IDkey_selflearn_flag6 == 0)
+		if(ID_selflearning_flag == 0)
 			{
 			// judge whether buffer[0] is CmdHead
-			if((data_count == 0) && (received_data_buffer[0] == 0x01))
+			if((data_count == 0) && (received_data_buffer[0] == IDkey6))
 				{
 				data_count = 1;
 				}
-			else if((data_count == 1) && (received_data_buffer[1] == 0x00))
+			else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
 				{
 				data_count = 2;
 				}
-			else if((data_count == 2) && (received_data_buffer[2] == 0x1a))
+			else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
 				{
 				data_count = 3;
 				}
-			else if((data_count == 3) && (received_data_buffer[3] == 0x9b))
+			else if((data_count == 3) && (received_data_buffer[3] == IDkey9))
 				{
 				data_count = 4;
 				}
-			else if((data_count == 4) && (received_data_buffer[4] == 0x15))
+			else if((data_count == 4) && (received_data_buffer[4] == IDkey10))
 				{
 				data_count = 5;
 				}
 			#ifdef ID
-			else if((data_count == 5) && (received_data_buffer[5] == 0x95))
+			else if((data_count == 5) && (received_data_buffer[5] == IDkey11))
 				{
 				data_count = 0;	
-				IDkey_flag = 1;
-				IDkey_count = 0;
-				disable_sensor();
+				ID_certificated_flag = 1;
+				After_IDcert_timecount = 0;
 				IDkey_speech_flash = 1;
 				
-				if(IDkey_certificated_times++ >= 1)
+				IDcerted_speech();
+						
+				if(ID_certificated_numbers++ >= 1)
 					{
 					Silence_Flag = 1;
 					}
-				if(++IDkey_certificated_times >= 11)
+				if(++ID_certificated_numbers >= 11)
 					{
 					never_alarm = 1;
 					never_alarm_speech = 1;
 					Silence_Flag = 0;
-					IDkey_certificated_times = 0;
+					ID_certificated_numbers = 0;
 					}
 				}
 			#endif
@@ -658,12 +492,21 @@ void uart_isr() interrupt 4
 					{
 					case ComMode_1:
 						{
-						IDkey_flag = 1;
-						IDkey_count = 0;
-						disable_sensor();
+						ID_certificated_flag = 1;
+						After_IDcert_timecount = 0;
 						IDkey_speech_flash = 1;
+						IDcerted_speech();
 						slave_nearby_count = 0;
 						}
+					break;
+					
+					case ComMode_11:
+						{
+						Silence_Flag = 1;
+						Self_learn_speech();
+//						never_alarm = ~never_alarm;
+						}
+					break;
 					}
 				}
 			#endif
@@ -675,6 +518,43 @@ void uart_isr() interrupt 4
 				{
 				data_count = 0;
 				IDkey_flash_EN = 1;
+				}
+			#endif
+			
+			#ifdef WX
+			if((data_count == 0)&&(received_data_buffer[0] == CmdHead))
+				{
+				data_count = 1;
+				}
+			else if((data_count == 1)&&(received_data_buffer[1] == ComMode_1))
+				{
+				data_count = 2;
+				}
+			else if(data_count == 2)
+				{
+				data_count = 3;
+				}
+			else if(data_count == 3)
+				{
+				data_count = 4;
+				}
+			else if(data_count == 4)
+				{
+				data_count = 5;
+				}
+			else if(data_count == 5)
+				{
+				data_count = 6;
+				}
+			else if(data_count == 6)
+				{
+				data_count = 0;
+				IDkey_flash_EN = 1;
+				ID_speech();
+				}
+			else 
+				{
+				data_count = 0;
 				}
 			#endif
 			}

@@ -51,7 +51,7 @@ void InitTimer(const tByte Tick_ms_T0, Tick_us_T1)
 	TL1 = timer1_8L;
 
 	ET0 = 1;
-	TR0 = 0;
+	TR0 = 1;
 	ET1 = 1;
 	TR1 = 1;
 	PT1 = 1;			
@@ -62,7 +62,7 @@ void InitTimer(const tByte Tick_ms_T0, Tick_us_T1)
 	初始化T0，在初始化了串口之后
 -----------------------------------------------------------------*/
 void InitT0(const tByte Tick_ms_T0)
-{
+	{
 	tLong Inc_T0;
 	tWord timer0_16;
 	
@@ -72,8 +72,7 @@ void InitT0(const tByte Tick_ms_T0)
 	timer0_8H = (tByte) (timer0_16 / 256);
 	timer0_8L = (tByte) (timer0_16 % 256);
 	TMOD = 0x21;
-	TR0 = 0;
-}
+	}
 
 /*---------------------------------------------------------------------
 	sEos_Go_To_Sleep()

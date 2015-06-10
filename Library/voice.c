@@ -9,16 +9,26 @@
 #include "voice.h"
 #include "Delay.h"
 #include "communication.h"
+#include "Other.h"
+#include "battery.h"
 
 /*------ private variable --------------------------*/
 tByte key_rotate_on_speech_number = 1;		// 循环报两段开机语音
                                             
 extern bit flashing_flag;
-extern bit IDkey_speech_flash;
-extern tByte key_rotated_on_flag;		
+extern tByte Open_action_flag;		
 extern bit slave_nearby_actioned_flag;
 extern bit ID_speeched_flag;
-   
+extern tByte Check_Motobattery_count;
+extern bit Check_Motobattery_flag;
+extern bit EN_host_stolen_alarming;
+extern tWord load_battery_result;
+extern bit fell_flag;						
+extern bit raised_flag;				
+extern tWord ADC_check_result;		
+extern bit battery_stolen_EN;			
+extern bit never_alarm_speech;
+ 
 /*--------------------------------------------------
 	SC_Speech()
 	按段数发送脉冲，即可报第几段语音。
@@ -53,8 +63,7 @@ void InitVoice()
 	delay_us(350); 
 	SC_RST = 1;
 	delay_us(350);
-	P14 = 1;
-	
+	P14 = 1;	
 	voice_EN = 0;				// Close speaker.
 	}
 
@@ -155,7 +164,7 @@ void stolen_alarm_speech1(void)
 	{
 	voice_EN = 1;
 	SC_Speech(14); 
-	Delay(80);
+	Delay(40);
 	voice_EN = 0; 
 	}
 
@@ -186,10 +195,11 @@ void open_lock_speech(void)
 	Delay(40);
 	voice_EN = 0;
 	#endif
-		
+
+	// 车锁已打开
 	voice_EN=1;
-	SC_Speech(25); 
-	Delay(30);
+	SC_Speech(15); 
+	Delay(60);
 	voice_EN=0;
 	}
 
@@ -200,9 +210,8 @@ void open_lock_speech(void)
 void close_lock_speech(void)
 	{
 	voice_EN = 1;
-//	SC_Speech(16);  
-	SC_Speech(25);  
-	Delay(30);
+	SC_Speech(16);  
+	Delay(60);
 	voice_EN = 0;
 	}
 
@@ -366,25 +375,48 @@ void lock_rotated_off_speech(void)
 -------------------------------------------------------------*/
 void IDcerted_speech(void)
 	{
-	if(IDkey_speech_flash == 1)
-		{
-		IDkey_speech_flash = 0;
-		
-		#ifdef ID
+	#ifdef ID
+	ID_speech();
+	#endif
+	
+	#ifdef WX
+	if((Open_action_flag == 0)&&(slave_nearby_actioned_flag == 0)&&(ID_speeched_flag == 0))
+		{		
 		ID_speech();
-		#endif
 		
-		#ifdef WX
-		if((key_rotated_on_flag == 0)&&(slave_nearby_actioned_flag == 0)&&(ID_speeched_flag == 0))
+		ID_speeched_flag = 1;
+		}
+	#endif
+	}
+/*-------------------------------------------------------------
+	Accumulator_voice_promot()
+-------------------------------------------------------------*/	
+void Accumulator_voice_promot(void)
+	{
+	if(++Check_Motobattery_count > 3)
+		{
+		Check_Motobattery_count = 5;
+		if((Check_Motobattery_flag == 1)&&(EN_host_stolen_alarming == 0)&&(fell_flag == 0)&&(raised_flag == 0)&&(battery_stolen_EN == 0))
 			{
-			ID_speech();
-			ID_speeched_flag = 1;
+			load_battery_result = ADC_check_result;
+			verifybattery(load_battery_result);
+			Check_Motobattery_flag = 0;
 			}
-		#endif			
+		}
+	}
+
+/*--------------------------------------------------------
+	Enter_noguard_voice()
+--------------------------------------------------------*/
+void Enter_noguard_voice()
+	{
+	if(never_alarm_speech == 1)
+		{
+		never_alarm_speech = 0;
+		Self_learn_speech();					
 		}	
 	}
 	
-
 /*---------------------------------------------------
 	end of file
 ----------------------------------------------------*/

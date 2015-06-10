@@ -51,7 +51,7 @@ bit receive_data_finished_flag = 0;		//接收这一串数据完成后，此标志位置1
 tByte data_count = 0;				//接收数据缓存的位数，即表明第几个缓存数据
 tByte one_receive_byte = 0;		//接收数据的一个字节，接收完后将其赋值给received_data_buffer相对应的字节
 tByte one_receive_byte_count = 0;			//one_receive_byte有8位，此计数表明接收到第几位，每次计数到8的时候表明一个字节接收完成。
-bit receive_wire_flag = 1;		//接收通信线的标志位，1表明高电平，0表明低电平，每次timer1溢出时，判断P1.1一次。以此来表明是否为一次正确的下降沿
+bit receive_wire_flag = 1;			//接收通信线的标志位，1表明高电平，0表明低电平，每次timer1溢出时，判断P1.1一次。以此来表明是否为一次正确的下降沿
 tByte receive_HV_count = 0;		//定时器T1在没有信号到来的时候，对高电平计数，一旦超过某个值，则将one_receive_byte_count清0
 tByte receive_LV_count = 0;		//每次timer1溢出时判断接收线如果为LV，则计数加1，以此来表明低电平的时间
 tByte fell_wire_time=0;          //倒地检测线，检测低电平的时间
@@ -75,6 +75,7 @@ bit sensor_3rdalarm_flag = 0;
 bit wheeled_flag = 0;
 tWord wheeled_count = 0;
 tWord match_button_count = 0;
+tWord Press_open_button_count = 0;
 
 // ------ Private variable definitions -----------------------------
 tWord stolen_alarm_count = 0;
@@ -108,8 +109,6 @@ tWord receiver_DisEN_count = 0;
 
 bit match_moto_EN = 0;
 
-bit match_button_touched = 0;
-
 bit battery_LV_flag = 0;
 tByte battery_LV_flag_count = 0;
 bit battery_HV_flag = 0;
@@ -117,20 +116,28 @@ tByte battery_HV_flag_count = 0;
 tByte battery_HV_speech_count = 0;
 bit battery_HV_speech_over = 0;
 
+#ifdef WX
+code tByte IDkey6 _at_ 0x001ff8;
+code tByte IDkey7 _at_ 0x001ff9;
+code tByte IDkey8 _at_ 0x001ffa;
+code tByte IDkey9 _at_ 0x001ffb;
+code tByte IDkey10 _at_ 0x001ffc;
+code tByte IDkey11 _at_ 0x001ffd;
+#endif
+#ifdef ID
 code tByte IDkey6 _at_ 0x003000;
 code tByte IDkey7 _at_ 0x003001;
 code tByte IDkey8 _at_ 0x003002;
 code tByte IDkey9 _at_ 0x003003;
 code tByte IDkey10 _at_ 0x003004;
 code tByte IDkey11 _at_ 0x003005;
-
+#endif
 /*--------------------------------------------------------------*/
 
 void main(void)
 	{
 	InitVoice();
-	InitUART600();
-   TR0 = 1;
+	InitUART(BAUD1200);
 
 	// 键盘中断初始化
 	press_open_button = 1;
@@ -138,36 +145,33 @@ void main(void)
 	
 	KBLS1 |= 0x03;
 	KBLS0 |= 0x03;
-	KBIF &= 0xfe;
-	KBIE |= 0x02;
+	KBIF &= 0xfc;
+	KBIE |= 0x03;
+	EKB = 1;
 	EA = 1;
 
-	Moto_EN = 1;		//初始化，关闭马达
-	transmit_wire = 1;
+//	Moto_EN = 1;		//初始化，关闭马达
 	voice_EN = 0;		  	//开机时，将功放关闭
 	P10=1;
-	
-	
+		
 	stolen_alarm_count = 0;			//清报警计数器
 	stolen_alarm_flag = 0;			//清报警标志
 
+	transmit_wire = 0;
 	transmiter_EN = 0;		// turn off the transmitter
-	receiver_EN = 0;		// turn on the receiver
-
+	receiver_EN = 0;			// turn on the receiver
 	transceiver_power_enable = 1;         // 上电时无线模块电源关闭
 	
 	while(1)
-		{				
-      hSCH_Dispatch_Tasks();
-
+		{
 		if(idle_EN == 1)
 			{
-			EKB = 1;
 			idle_EN = 0;
+			EKB = 1;
 			PCON |= 0x02;			
 			}
-		
-			// 主机被盗报警
+			
+		// 主机被盗报警
 		if(stolen_alarm_flag == 1)		
 			{
 			// 语音提示，马达振动
@@ -206,7 +210,7 @@ void main(void)
 			Moto_Vibration();         			
 			}
 		
-//		sEOS_Go_To_Sleep();			
+		sEOS_Go_To_Sleep();			
 		}  
 	}
 
@@ -225,9 +229,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 	// 设置一个每3s的操作
 	if(++timer0_count >= 2000)		
 		{
-			
+		MagentControl_2 = ~MagentControl_2;		
+		
 		// 每个3s做一次电量检测，并进行相关的电量提示
-		CheckADC();
+		Check_motor_accumulator();
 		
 		if(ADC_check_result <= 0x368)                 // 3.11V/3.64V 电量不足
 			{
@@ -246,20 +251,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 			battery_HV_flag = 0;
 			}
 				
-/*		if((battery_HV_flag == 1)&&(battery_HV_speech_over == 0))
-			{
-			if(++battery_HV_flag_count > 3)
-				{
-				Battery_high_alarm_speech();
-				battery_HV_flag_count = 0;
-				if(++battery_HV_speech_count >= 3)
-					{
-					battery_HV_speech_over = 1;
-					battery_HV_speech_count = 0;
-					}
-				}
-			}
-*/		
 		if(battery_LV_flag == 1)
 			{
 			if(++battery_LV_flag_count > 20)
@@ -268,10 +259,15 @@ void timer0() interrupt interrupt_timer_0_overflow
 				battery_LV_flag_count = 0;
 				}			
 			}
-						
+		
 		if(match_button_flag6 == 1)
 			{
+			#ifdef ID
 			if(++match_button_flag6count > 10)
+			#endif
+			#ifdef WX
+			if(++match_button_flag6count > 1)
+			#endif
 				{
 				match_button_HVcount = 0;
 				match_button_LVcount = 0;
@@ -285,45 +281,61 @@ void timer0() interrupt interrupt_timer_0_overflow
 				match_button_flag6count = 0;				
 				}			
 			}		
-		// 将计数清0
+		
 		timer0_count = 0;
 		}
 		
 	if((toggle_button == 1)&&(idle_EN == 0))
 		{
 		transceiver_power_enable = 1;
-		receiver_EN = 0;
-		transmiter_EN = 0;
-		RXD = 0;
+//		receiver_EN = 0;
+//		transmiter_EN = 0;
+//		RXD = 0;
 		TXD = 0;
 		idle_EN = 1;
 		}
 	
 	if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
 		{
-		if(++receiver_EN_count > 20)
+		if(++receiver_EN_count > 300)
 			{
+			UART_Send_Data_F(ComMode_1);
+			TXD = 0;
+			
 			transceiver_power_enable = 1;
 			receiver_EN = 0;
-			RXD = 0;
-			TXD = 0;
-//			receiver_EN = 1;
 			receiver_EN_count = 0;
 			}
 		}	
-	
+
 	if((transceiver_power_enable == 1)&&(match_button_flag6 == 0))
 		{		
 		if(++receiver_DisEN_count > 1500)
 			{
 			transceiver_power_enable = 0;
-			UART_Send_Data_F(ComMode_1);
+			
+			receiver_DisEN_count = 0;
+
+			#ifdef F3
 			receiver_EN = 0;
 			RXD = 1;
-//			receiver_EN = 0;
-			receiver_DisEN_count = 0;
+			#endif
 			}
-
+		}
+	
+	if(press_open_button == 0)
+		{
+		if(++Press_open_button_count > 3000)
+			{
+			transceiver_power_enable = 0;
+			UART_Send_Data_F(ComMode_11);
+			TXD = 0;		
+			transceiver_power_enable = 1;		
+			}
+		}
+	else
+		{
+		Press_open_button_count = 0;
 		}
 	
 	if(match_button == 0)
@@ -356,18 +368,25 @@ void timer0() interrupt interrupt_timer_0_overflow
 		match_button_LVcount = 0;
 		
 		if(match_button_flag1 == 1)
-			match_button_flag2 = 1;
-			
+			match_button_flag2 = 1;			
 		if(match_button_flag3 == 1)
-			match_button_flag4 = 1;
-		
+			match_button_flag4 = 1;	
 		if(match_button_flag5 == 1)
 			{
 			match_button_flag6 = 1;
+			match_button_flag5 = 0;
+			
 			transceiver_power_enable = 0;
+			
+			#ifdef ID
 			receiver_EN_count = 0;
 			receiver_EN = 0;
 			RXD = 1;
+			#endif
+			#ifdef WX
+			UART_Send_Data_match();
+			#endif
+
 			if(match_moto_EN == 0)
 				{
 				Moto_Vibration(); 
@@ -384,10 +403,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 			match_button_flag4 = 0;
 			match_button_flag5 = 0;
 			match_moto_EN = 0;
-//			match_button_flag6 = 0;
 			}
 		}
-		
+
+	#ifdef ID
 	if(IDflash_EN == 1)
 		{
 		IDflash_EN = 0;
@@ -398,13 +417,13 @@ void timer0() interrupt interrupt_timer_0_overflow
 		match_button_flag5 = 0;
 		match_button_flag6 = 0;
 		match_moto_EN = 0;
-//		SCH_Add_Task(Self_learn_programming_F, 0, 0);
       Self_learn_programming_F();
 		Moto_Vibration();
 		Delay(10);
 		Moto_Vibration();
 		match_button_flag6count = 0;
 		}
+	#endif
 	}
 
 /*-----------------------------------------------
@@ -541,81 +560,6 @@ void uart_isr() interrupt 4
 		}
 	}
 
-/*------------------------------------------------------------------
-	timerT1()
-	定时器1每次溢出后执行的操作
-	
-void timerT1() interrupt interrupt_timer_1_overflow 			
-	{
-	// 重装在定时器1的设置
-	TH1 = timer1_8H;				
-	TL1 = timer1_8L;
-
-	// receive a tyte
-	receive_byte();
-	
-	// receive a word after every byte
-	receive_word();
-
-	if(receive_data_finished_flag==1)	//说明接收到了数据，开始处理
-		{
-		receive_data_finished_flag=0;	//清接收标志
-		switch(received_data_buffer[2])//解析指令
-			{
-			case ComMode_2:
-				{
-				battery_stolen_EN = 1;
-				Moto_Vibration();          
-				}
-		   break;
-			
-			case ComMode_3:
-				{
-				stolen_alarm_flag = 1;
-				Moto_Vibration();         
-
-				raised_alarm_count=0;
-				raised_alarm_flag=0;
-				fell_alarm_count=0;
-				fell_alarm_flag=0;
-				}
-			break;
-		
-			case ComMode_4:
-				{
-				raised_alarm_flag=1;
-				Moto_Vibration();         
-
-				stolen_alarm_count=0;
-				stolen_alarm_flag=0;
-				fell_alarm_count=0;
-				fell_alarm_flag=0;
-				}
-			break;
-
-			case ComMode_5:
-				{
-				fell_alarm_flag=1;	
-				Moto_Vibration();         
-
-				stolen_alarm_count=0;
-				stolen_alarm_flag=0;
-				raised_alarm_count=0;
-				raised_alarm_flag=0;
-				}
-			break;
-
-			case ComMode_6:
-				{
-				wire_broken_EN = 1;
-				Moto_Vibration();         
-				}
-			break;
-			}
-		}
-	}
---------------------------------------------------------------------*/
-
 /*-----------------------------------------------------------
 	KBI_ISR()
 	键盘中断，使芯片从省电模式中唤醒
@@ -627,7 +571,6 @@ void KBI_ISR(void) interrupt 7
 	transceiver_power_enable = 0;
 	receiver_EN = 0;
 	RXD = 1;
-	match_button_touched = 1;
 //	EKB = 1;
 	}
 		

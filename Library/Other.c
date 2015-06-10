@@ -23,8 +23,8 @@ extern tByte sensor_3rdstage_count;
 extern tWord sensor_3rdstage_interval;		
 extern tWord sensor_2ndstage_time;		
 extern tByte sensor_2ndstage_count;		
-extern bit stolen_alarm_flag;					
-extern bit host_stolen_alarm1_EN;      
+extern bit Host_stolen_alarming;					
+extern bit EN_host_stolen_alarming;      
 extern bit host_stolen_alarm2_EN;     
 extern tByte host_stolen_alarm1_count;		
 extern tByte host_stolen_alarm2_count;	
@@ -36,7 +36,7 @@ extern tByte battery_stolen_count;
 extern bit sensor_EN;
 extern tByte enable_sensor_delay_count;		
 extern bit enable_sensor_delayEN;
-
+extern bit sensor_3rdalarm_flag;
 /*-------------------------------------------------------
 	magnet_CW()
 	电磁铁正转，顺时针，将锁打开，
@@ -119,8 +119,9 @@ void disable_sensor(void)
 	sensor_3rdstage_interval = 0;
 	sensor_3rdstage_count = 0;
 	sensor_3rdstage_effcount = 0;
-	stolen_alarm_flag = 0;
-	host_stolen_alarm1_EN = 0;
+	Host_stolen_alarming = 0;
+	sensor_3rdalarm_flag = 0;
+	EN_host_stolen_alarming = 0;
 	host_stolen_alarm1_count = 0;
 	host_stolen_alarm2_EN = 0;
 	host_stolen_alarm2_count = 0;
@@ -139,19 +140,18 @@ void disable_sensor(void)
 	}
 	
 /*--------------------------------------------------------
-	enable_sensor()
+	Enable_sensor()
 	打开传感器，使其检测振动
 ---------------------------------------------------------*/
-void enable_sensor(void)
+void Enable_sensor(void)
 	{
 	// enable position sensor(vertical and horizontal) and vibration sensor
 	position_sensor_EN = 1;	
 	sensor_EN = 1;
+	
 	// reset relatively sensor count
 	sensor_trigger_count = 0;
 	sensor_1ststage_count = 0;	
-	enable_sensor_delayEN = 0;
-	enable_sensor_delay_count = 0;	
 	}
 
 /*----------------------------------------------------------------

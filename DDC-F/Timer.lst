@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   TIMER                                                                 05/22/2015 14:12:27 PAGE 1   
+C51 COMPILER V9.54   TIMER                                                                 06/10/2015 16:54:23 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE TIMER
@@ -62,9 +62,9 @@ line level    source
   51   1         TL1 = timer1_8L;
   52   1      
   53   1         ET0 = 1;
-C51 COMPILER V9.54   TIMER                                                                 05/22/2015 14:12:27 PAGE 2   
+C51 COMPILER V9.54   TIMER                                                                 06/10/2015 16:54:23 PAGE 2   
 
-  54   1         TR0 = 0;
+  54   1         TR0 = 1;
   55   1         ET1 = 1;
   56   1         TR1 = 1;
   57   1         PT1 = 1;       
@@ -75,7 +75,7 @@ line level    source
   62             初始化T0，在初始化了串口之后
   63          -----------------------------------------------------------------*/
   64          void InitT0(const tByte Tick_ms_T0)
-  65          {
+  65             {
   66   1         tLong Inc_T0;
   67   1         tWord timer0_16;
   68   1         
@@ -85,25 +85,24 @@ line level    source
   72   1         timer0_8H = (tByte) (timer0_16 / 256);
   73   1         timer0_8L = (tByte) (timer0_16 % 256);
   74   1         TMOD = 0x21;
-  75   1         TR0 = 0;
-  76   1      }
-  77          
-  78          /*---------------------------------------------------------------------
-  79             sEos_Go_To_Sleep()
-  80             将MCU进入休眠状态
-  81          ----------------------------------------------------------------------*/
-  82          void sEOS_Go_To_Sleep(void)
-  83             {
-  84   1         PCON |= 0x01;    // Enter idle mode (generic 8051 version)
-  85   1         }
-  86             
-  87          /*---------------------------------------------------
-  88             end of file
-  89          ----------------------------------------------------*/
+  75   1         }
+  76          
+  77          /*---------------------------------------------------------------------
+  78             sEos_Go_To_Sleep()
+  79             将MCU进入休眠状态
+  80          ----------------------------------------------------------------------*/
+  81          void sEOS_Go_To_Sleep(void)
+  82             {
+  83   1         PCON |= 0x01;    // Enter idle mode (generic 8051 version)
+  84   1         }
+  85             
+  86          /*---------------------------------------------------
+  87             end of file
+  88          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    158    ----
+   CODE SIZE        =    156    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      4       2

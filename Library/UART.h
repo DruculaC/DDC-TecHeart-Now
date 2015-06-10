@@ -6,7 +6,8 @@
 ∑µªÿ÷µ£∫  Œﬁ
 */
 void InitUART9600();
-void InitUART600();
+void InitUART1200();
+void InitUART(tWord Baudrate);
 
 
 

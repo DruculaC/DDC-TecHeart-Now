@@ -19,9 +19,6 @@ extern tByte myTxRxData[7];
 --------------------------------------------------------*/
 void InitElecmotor(void)
 	{
-	MagentControl_1 = 1;
-	MagentControl_2 = 1;
-	
 	#ifdef Guxingzha
 	ElecMotor_ACW();
 	#endif
@@ -40,7 +37,7 @@ void ElecMotor_CW(void)
 
 	MagentControl_1 = 1;
 	MagentControl_2 = 0;
-	ElecMotor_Delay();
+	ElecMotor_Delay_CW();
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
 	Externalmotor = 0;
@@ -93,21 +90,26 @@ void ElecMotor_code(void)
 	}
 
 /*----------------------------------------------------
-	ElecMotor_Delay()
+	ElecMotor_Delay_CW()
 	Delay program for Electric Motor.
 -----------------------------------------------------*/
-void ElecMotor_Delay(void)
+void ElecMotor_Delay_CW(void)
 	{
 	Delay_500ms();
 	Delay_500ms();
+	Delay_500ms();
+	#ifdef Suidongzha
+	Delay_500ms();
+	Delay_500ms();
+	#endif
+	
+	#if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
+	Delay_500ms();
+	#endif
+
 	if(ElecMotor_overcurrent == 0)
 		{
 		Delay_500ms();
-		Delay_500ms();
-		#ifdef Suidongzha
-		Delay_500ms();
-		Delay_500ms();
-		#endif
 		}
 	}
 /*----------------------------------------------------
@@ -118,14 +120,20 @@ void ElecMotor_Delay_ACW(void)
 	{
 	Delay_500ms();
 	Delay_500ms();
+	#ifdef Guxingzha
+	Delay_500ms();
+	Delay_500ms();
+	#endif
+	
+	#if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
+	Delay_500ms();
+	Delay_500ms();	
+	#endif
+
 	if(ElecMotor_overcurrent == 0)
 		{
 		Delay_500ms();
 		Delay_500ms();
-		#ifdef Guxingzha
-		Delay_500ms();
-		Delay_500ms();
-		#endif
 		}
 	}
 

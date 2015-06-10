@@ -10,30 +10,28 @@
 //--------header file--------------------------------
 
 // Program version
-//#define Taili, Generan, Tailing			
-// Define customer, such as TaiLi, Shengbaolong, Wangpai.
+//#define Taili, General, Tailing			
+// Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General
 #define General
 
-// Define PCB board, such as Z2, Z3 etc.
+// Define PCB board, such as Z2, Z3.
 #define Z2
 
-// #define F2
+// Define salve model, F2, F3.
+#define F2
 
 // Define model.
 // ID, WX, 
-#define ID         
+#define WX         
 
 // Define the Lock model.
 //#define Suidongzha, Guxingzha  
-#define Suidongzha
-
-// Define whether check the battery
-//#define Batterycheck   
+#define Guxingzha
 
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A
-// Withoutbattery_48V10A
-//#define Withbattery_48V20A
+// Withoutbattery_48V10A, Withoutbattery_60V10A
+#define Withoutbattery_48V10A
 
 // Must include the appropriate microcontroller header file here
 #include "N79E81x.h"
@@ -51,7 +49,7 @@
 
 // baud rate defined
 #define BAUD9600 9600
-#define BAUD600 1200
+#define BAUD1200 1200
 
 //---------------------------------------------------
 // should not need to edit the sections below

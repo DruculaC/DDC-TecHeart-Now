@@ -1,0 +1,181 @@
+C51 COMPILER V9.54   DELAY                                                                 06/04/2015 16:04:19 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE DELAY
+OBJECT MODULE PLACED IN .\Delay.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\Delay.c COMPACT OPTIMIZE(8,SPEED) BROWSE 
+                    -INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Delay.lst) TABS(3) OBJECT(.\Delay.obj)
+
+line level    source
+
+   1          /*---------------------------------------------------
+   2             Delay.c (v1.00)
+   3             
+   4             Delay functions
+   5          ---------------------------------------------------*/ 
+   6          
+   7          #include "main.h"
+   8          #include "port.h"
+   9          
+  10          #include "Delay.h"
+  11          
+  12          tWord Timeout_loop = 0;
+  13          
+  14          /*------------------------------------------------------------------*/
+  15          void Delay_1ms(void)
+  16             {
+  17   1         Timeout_loop = LOOP_TIMEOUT_INIT_001ms;
+  18   1      
+  19   1         // Simple loop timeout...
+  20   1         while (++Timeout_loop != 0);
+  21   1         }
+  22          /*------------------------------------------------------------------*/
+  23          void Delay_5ms(void)
+  24             {
+  25   1         Timeout_loop = LOOP_TIMEOUT_INIT_005ms;
+  26   1      
+  27   1         // Simple loop timeout...
+  28   1         while (++Timeout_loop != 0);
+  29   1         }
+  30          /*------------------------------------------------------------------*/
+  31          void Delay_10ms(void)
+  32             {
+  33   1         Timeout_loop = LOOP_TIMEOUT_INIT_010ms;
+  34   1      
+  35   1         // Simple loop timeout...
+  36   1         while (++Timeout_loop != 0);
+  37   1         }
+  38          
+  39          /*------------------------------------------------------------------*/
+  40          void Delay_50ms(void)
+  41             {
+  42   1         Timeout_loop = LOOP_TIMEOUT_INIT_050ms;
+  43   1      
+  44   1         // Simple loop timeout...
+  45   1         while (++Timeout_loop != 0);
+  46   1         }
+  47          
+  48          /*------------------------------------------------------------------*/
+  49          void Delay_100ms(void)
+  50             {
+  51   1         Timeout_loop = LOOP_TIMEOUT_INIT_100ms;
+  52   1      
+  53   1         // Simple loop timeout...
+  54   1         while (++Timeout_loop != 0);
+C51 COMPILER V9.54   DELAY                                                                 06/04/2015 16:04:19 PAGE 2   
+
+  55   1         }
+  56          
+  57          /*------------------------------------------------------------------*/
+  58          void Delay_500ms(void)
+  59             {
+  60   1         Timeout_loop = LOOP_TIMEOUT_INIT_500ms;
+  61   1      
+  62   1         // Simple loop timeout...
+  63   1         while (++Timeout_loop != 0);
+  64   1         }
+  65          
+  66          /*---------------------------------------------------
+  67             Delay()
+  68             延迟程序
+  69          --------------------------------------------------*/
+  70          
+  71          void Delay(tByte n)
+  72             {
+  73   1         tWord x;
+  74   1         while(n--)
+  75   1            {
+  76   2            x=5000;
+  77   2            while(x--);
+  78   2            }
+  79   1         }
+  80          
+  81          /*---------------------------------------------------
+  82             Custom_Delay()
+  83             延迟程序
+  84          --------------------------------------------------*/
+  85          void Custom_Delay(tByte t, m)
+  86             {
+  87   1         tWord i;
+  88   1         tByte j;
+  89   1         for(i = 0; i < t; i++)     
+  90   1         for(j = 0; j < m; j++);
+  91   1         }
+  92             
+  93          /*--------------------------------------------------
+  94             delay_ms()
+  95             
+  96             延迟约为1ms的子程序
+  97          ----------------------------------------------------*/
+  98          void delay_ms(tWord count)
+  99             {
+ 100   1         tWord i, j;
+ 101   1         for(i=0;i<count;i++)
+ 102   1            {  
+ 103   2            for(j=0;j<100;j++);
+ 104   2            }
+ 105   1         }
+ 106          
+ 107          /*--------------------------------------------------
+ 108             delay_us()
+ 109             
+ 110             延迟约为1us的子程序
+ 111          ----------------------------------------------------*/
+ 112          
+ 113          void delay_us(tWord count1)
+ 114             {
+ 115   1         tWord i;
+ 116   1         tByte j;
+C51 COMPILER V9.54   DELAY                                                                 06/04/2015 16:04:19 PAGE 3   
+
+ 117   1         for(i=0;i<count1;i++)
+ 118   1            {
+ 119   2            for(j=0;j<4;j++);
+ 120   2            }
+ 121   1         }
+ 122          
+ 123          /*----------------------------------------------------
+ 124             Magnet_Delay()
+ 125             电磁铁的延迟程序，要在里面加入对过流的判断
+ 126          -----------------------------------------------------*/
+ 127          void Magnet_Delay(tWord x, y)
+ 128             {
+ 129   1         tByte i;
+ 130   1         tWord j;                                                                                                 
+             -       
+ 131   1         for(i = 0; i < 50; i++)
+ 132   1            {
+ 133   2            for(j = 0; j< x; j++);
+ 134   2            }
+ 135   1         for(i = 0; i < 50; i++)
+ 136   1            {
+ 137   2            // 检测过流保护是否跳转，如果为1，则表明电流过大
+ 138   2            if(magnet_overcurrent == 0)
+ 139   2               {
+ 140   3               for(j = 0; j< y; j++);
+ 141   3               }
+ 142   2            else
+ 143   2               {
+ 144   3               return;
+ 145   3               }
+ 146   2            }
+ 147   1         }
+ 148          
+ 149          
+ 150          /*---------------------------------------------------
+ 151             end of file
+ 152          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    361    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =      2       6
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

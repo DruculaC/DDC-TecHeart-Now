@@ -14,7 +14,7 @@ void InitElecmotor(void);
 void ElecMotor_CW(void);
 void ElecMotor_ACW(void);
 void ElecMotor_code(void);	
-void ElecMotor_Delay(void);
+void ElecMotor_Delay_CW(void);
 void ElecMotor_Delay_ACW(void);
 
 #endif

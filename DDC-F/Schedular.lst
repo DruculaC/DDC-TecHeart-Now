@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 1   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE SCHEDULAR
@@ -44,7 +44,7 @@ line level    source
   34          #include "Main.h"
   35          #include "Port.h"
   36          
-  37          #include "Schedular.h"
+  37          #include "schedular.h"
   38          
   39          // ------ Public variable definitions ------------------------------
   40          
@@ -62,7 +62,7 @@ line level    source
   52          
   53          // ------ Private variables ----------------------------------------
   54          
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 2   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 2   
 
   55          // Keeps track of time since last error was recorded (see below)
   56          static tWord Error_tick_count_G;
@@ -92,7 +92,7 @@ line level    source
   80   2               {
   81   3               (*hSCH_tasks_G[Index].pTask)();  // Run the task
   82   3      
-  83   3               hSCH_tasks_G[Index].RunMe -= 1;  // Reset / reduce RunMe flag
+  83   3               hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
   84   3      
   85   3               // Periodic tasks will automatically run again
   86   3               // - if this is a 'one shot' task, remove it from the array
@@ -126,7 +126,7 @@ line level    source
  114            Del   - The interval (TICKS) before the task is first executed
  115          
  116            Rep   - If 'Rep' is 0, the function is only called once,
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 3   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 3   
 
  117                    at the time determined by 'Del'.  If Rep is non-zero,
  118                    then the function is called repeatedly at an interval
@@ -164,113 +164,110 @@ line level    source
  150          tByte hSCH_Add_Task(void (code* Fn_p)(), // Task function pointer
  151                             tWord   Del,    // Num ticks 'til task first runs 
  152                             tWord   Per,    // Num ticks between repeat runs
- 153                             bit     Co_op,  // Co_op / pre_emp
- 154                             tByte   Times)  // process running times
- 155             {
- 156   1         tByte Index = 0;
- 157   1         
- 158   1         // First find a gap in the array (if there is one)
- 159   1         while ((hSCH_tasks_G[Index].pTask != 0) && (Index < hSCH_MAX_TASKS))
- 160   1            {
- 161   2            Index++;
- 162   2            } 
- 163   1         
- 164   1         // Have we reached the end of the list?   
- 165   1         if (Index == hSCH_MAX_TASKS)
- 166   1            {
- 167   2            // Task list is full
- 168   2            //
- 169   2            // Set the global error variable
- 170   2            Error_code_G = ERROR_SCH_TOO_MANY_TASKS;
- 171   2      
- 172   2            // Also return an error code
- 173   2            return hSCH_MAX_TASKS;  
- 174   2            }
- 175   1            
- 176   1         // If we're here, there is a space in the task array
- 177   1         hSCH_tasks_G[Index].pTask = Fn_p;
- 178   1           
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 4   
+ 153                             bit     Co_op)  // Co_op / pre_emp
+ 154             {
+ 155   1         tByte Index = 0;
+ 156   1         
+ 157   1         // First find a gap in the array (if there is one)
+ 158   1         while ((hSCH_tasks_G[Index].pTask != 0) && (Index < hSCH_MAX_TASKS))
+ 159   1            {
+ 160   2            Index++;
+ 161   2            } 
+ 162   1         
+ 163   1         // Have we reached the end of the list?   
+ 164   1         if (Index == hSCH_MAX_TASKS)
+ 165   1            {
+ 166   2            // Task list is full
+ 167   2            //
+ 168   2            // Set the global error variable
+ 169   2            Error_code_G = ERROR_SCH_TOO_MANY_TASKS;
+ 170   2      
+ 171   2            // Also return an error code
+ 172   2            return hSCH_MAX_TASKS;  
+ 173   2            }
+ 174   1            
+ 175   1         // If we're here, there is a space in the task array
+ 176   1         hSCH_tasks_G[Index].pTask = Fn_p;
+ 177   1           
+ 178   1         hSCH_tasks_G[Index].Delay  = Del;
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 4   
 
- 179   1         hSCH_tasks_G[Index].Delay = Del;
- 180   1         hSCH_tasks_G[Index].Period = Per;
- 181   1      
- 182   1         hSCH_tasks_G[Index].Co_op = Co_op;
- 183   1         hSCH_tasks_G[Index].Times = Times;
+ 179   1         hSCH_tasks_G[Index].Period = Per;
+ 180   1      
+ 181   1         hSCH_tasks_G[Index].Co_op = Co_op;
+ 182   1      
+ 183   1         hSCH_tasks_G[Index].RunMe  = 0;
  184   1      
- 185   1         hSCH_tasks_G[Index].RunMe  = 0;
- 186   1      
- 187   1         return Index; // return position of task (to allow later deletion)
- 188   1         }
+ 185   1         return Index; // return position of task (to allow later deletion)
+ 186   1         }
+ 187          
+ 188          /*------------------------------------------------------------------*-
  189          
- 190          /*------------------------------------------------------------------*-
+ 190            hSCH_Delete_Task()
  191          
- 192            hSCH_Delete_Task()
- 193          
- 194            Removes a task from the scheduler.  Note that this does
- 195            *not* delete the associated function from memory: 
- 196            it simply means that it is no longer called by the scheduler. 
+ 192            Removes a task from the scheduler.  Note that this does
+ 193            *not* delete the associated function from memory: 
+ 194            it simply means that it is no longer called by the scheduler. 
+ 195          
+ 196            PARAMS:   Task_index - The task index.  Provided by hSCH_Add_Task(). 
  197          
- 198            PARAMS:   Task_index - The task index.  Provided by hSCH_Add_Task(). 
+ 198            RETURNS:  RETURN_ERROR or RETURN_NORMAL
  199          
- 200            RETURNS:  RETURN_ERROR or RETURN_NORMAL
- 201          
- 202          -*------------------------------------------------------------------*/
- 203          bit hSCH_Delete_Task(tByte Task_index) 
- 204             {
- 205   1         bit Return_code;
- 206   1      
- 207   1         if (hSCH_tasks_G[Task_index].pTask == 0)
- 208   1            {
- 209   2            // No task at this location...
- 210   2            //
- 211   2            // Set the global error variable
- 212   2            Error_code_G = ERROR_SCH_CANNOT_DELETE_TASK;
- 213   2      
- 214   2            // ...also return an error code
- 215   2            Return_code = RETURN_ERROR;
- 216   2            }
- 217   1         else
- 218   1            {
- 219   2            Return_code = RETURN_NORMAL;
- 220   2            }      
- 221   1         
- 222   1         hSCH_tasks_G[Task_index].pTask   = 0;
- 223   1         hSCH_tasks_G[Task_index].Delay   = 0;
- 224   1         hSCH_tasks_G[Task_index].Period  = 0;
- 225   1         hSCH_tasks_G[Task_index].Times  = 0;
- 226   1      
- 227   1         hSCH_tasks_G[Task_index].RunMe   = 0;
- 228   1      
- 229   1         return Return_code;       // return status
- 230   1         }
+ 200          -*------------------------------------------------------------------*/
+ 201          bit hSCH_Delete_Task(tByte Task_index) 
+ 202             {
+ 203   1         bit Return_code;
+ 204   1      
+ 205   1         if (hSCH_tasks_G[Task_index].pTask == 0)
+ 206   1            {
+ 207   2            // No task at this location...
+ 208   2            //
+ 209   2            // Set the global error variable
+ 210   2            Error_code_G = ERROR_SCH_CANNOT_DELETE_TASK;
+ 211   2      
+ 212   2            // ...also return an error code
+ 213   2            Return_code = RETURN_ERROR;
+ 214   2            }
+ 215   1         else
+ 216   1            {
+ 217   2            Return_code = RETURN_NORMAL;
+ 218   2            }      
+ 219   1         
+ 220   1         hSCH_tasks_G[Task_index].pTask   = 0;
+ 221   1         hSCH_tasks_G[Task_index].Delay   = 0;
+ 222   1         hSCH_tasks_G[Task_index].Period  = 0;
+ 223   1      
+ 224   1         hSCH_tasks_G[Task_index].RunMe   = 0;
+ 225   1      
+ 226   1         return Return_code;       // return status
+ 227   1         }
+ 228          
+ 229          
+ 230          /*------------------------------------------------------------------*-
  231          
- 232          
- 233          /*------------------------------------------------------------------*-
- 234          
- 235            hSCH_Report_Status()
- 236          
- 237            Simple function to display error codes.
+ 232            hSCH_Report_Status()
+ 233          
+ 234            Simple function to display error codes.
+ 235          
+ 236            This version displays code on a port with attached LEDs:
+ 237            adapt, if required, to report errors over serial link, etc.
  238          
- 239            This version displays code on a port with attached LEDs:
- 240            adapt, if required, to report errors over serial link, etc.
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 5   
+ 239            Errors are only displayed for a limited period 
+ 240            (60000 ticks = 1 minute at 1ms tick interval).
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 5   
 
- 241          
- 242            Errors are only displayed for a limited period 
- 243            (60000 ticks = 1 minute at 1ms tick interval).
- 244            After this the the error code is reset to 0. 
- 245          
- 246            This code may be easily adapted to display the last
- 247            error 'for ever': this may be appropriate in your
- 248            application.
- 249          
- 250            See Chapter 14 for further information.
- 251           
- 252          -*------------------------------------------------------------------*/
- 253          void hSCH_Report_Status(void)
- 254             {
- 255   1      #ifdef SCH_REPORT_ERRORS
+ 241            After this the the error code is reset to 0. 
+ 242          
+ 243            This code may be easily adapted to display the last
+ 244            error 'for ever': this may be appropriate in your
+ 245            application.
+ 246          
+ 247            See Chapter 14 for further information.
+ 248           
+ 249          -*------------------------------------------------------------------*/
+ 250          void hSCH_Report_Status(void)
+ 251             {
+ 252   1      #ifdef SCH_REPORT_ERRORS
                  // ONLY APPLIES IF WE ARE REPORTING ERRORS
                  // Check for a new error code
                  if (Error_code_G != Last_error_code_G)
@@ -300,130 +297,115 @@ line level    source
                        }
                     }
               #endif
- 285   1         }
+ 282   1         }
+ 283          
+ 284          
+ 285          /*------------------------------------------------------------------*-
  286          
- 287          /*-------------------------------------------------------------
- 288             hSCH_Update()
- 289             This is the scheduler ISR.  It is called at a rate 
- 290             determined by the timer settings in hSCH_Init().
- 291             This version is triggered by Timer 0 interrupts:
- 292             timer is manually reloaded.
- 293          --------------------------------------------------------------*/
- 294          void hSCH_Update(void)
- 295             {
- 296   1         tByte Index;
- 297   1         for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
- 298   1            {
- 299   2            // Check if there is a task at this location
- 300   2            if (hSCH_tasks_G[Index].pTask)
- 301   2               {
- 302   3               if(hSCH_tasks_G[Index].Times)
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 6   
+ 287            hSCH_Go_To_Sleep()
+ 288          
+ 289            This scheduler enters 'idle mode' between clock ticks
+ 290            to save power.  The next clock tick will return the processor
+ 291            to the normal operating state.
+ 292          
+ 293            Note: a slight performance improvement is possible if this
+ 294            function is implemented as a macro, or if the code here is simply 
+ 295            pasted into the 'dispatch' function.  
+ 296          
+ 297            However, by making this a function call, it becomes easier 
+ 298            - during development - to assess the performance of the 
+ 299            scheduler, using the 'performance analyser' in the Keil 
+ 300            hardware simulator. See Chapter 14 for examples for this. 
+ 301          
+ 302            *** May wish to disable this if using a watchdog ***
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 6   
 
- 303   3                  {
- 304   4                  if (hSCH_tasks_G[Index].Delay == 0)
- 305   4                     {
- 306   5                     // The task is due to run
- 307   5                     if (hSCH_tasks_G[Index].Co_op)
- 308   5                        {
- 309   6                        // If it is a co-operative task, increment the RunMe flag
- 310   6                        hSCH_tasks_G[Index].RunMe += 1;  
- 311   6                        hSCH_tasks_G[Index].Times--;     // Decrease the excuting times
- 312   6                        }
- 313   5                     else
- 314   5                        {
- 315   6                        // If it is a pre-emptive task, run it IMMEDIATELY
- 316   6                        (*hSCH_tasks_G[Index].pTask)();  // Run the task
- 317   6                        hSCH_tasks_G[Index].Times--;     // Decrease the excuting times 
- 318   6      
- 319   6                        hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
- 320   6      
- 321   6                        // Periodic tasks will be scheduled again (see below)
- 322   6                        // - if this is a 'one shot' task, remove it from the array
- 323   6                        if (hSCH_tasks_G[Index].Period == 0)
- 324   6                           {
- 325   7                           hSCH_tasks_G[Index].pTask  = 0;
- 326   7                           }
- 327   6                        }
- 328   5      
- 329   5                     if (hSCH_tasks_G[Index].Period)
- 330   5                        {
- 331   6                        // Schedule this periodic task to run again
- 332   6                        hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
- 333   6                        }
- 334   5                     }
- 335   4                  else
- 336   4                     {
- 337   5                     // Not yet ready to run: just decrement the delay 
- 338   5                     hSCH_tasks_G[Index].Delay -= 1;
- 339   5                     }              
- 340   4                  }
- 341   3               else
- 342   3                  hSCH_Delete_Task(Index);
- 343   3               }         
- 344   2            }  
- 345   1         }
- 346          
- 347          /*-------------------------------------------------------------------
- 348             Delete_all_task()
- 349          --------------------------------------------------------------------*/
- 350          void Delete_all_task(void)
- 351             {
- 352   1         tByte i;
- 353   1         for(i = 0; i <= hSCH_MAX_TASKS; i++)
- 354   1            {
- 355   2            hSCH_Delete_Task(i);
- 356   2            }
- 357   1         }
- 358             
- 359          /*------------------------------------------------------------------*-
- 360          
- 361            hSCH_Go_To_Sleep()
- 362          
- 363            This scheduler enters 'idle mode' between clock ticks
- 364            to save power.  The next clock tick will return the processor
-C51 COMPILER V9.54   SCHEDULAR                                                             05/22/2015 14:12:27 PAGE 7   
+ 303          
+ 304            *** ADAPT AS REQUIRED FOR YOUR HARDWARE ***
+ 305          
+ 306          -*------------------------------------------------------------------*/
+ 307          void hSCH_Go_To_Sleep()
+ 308             {
+ 309   1         PCON |= 0x01;    // Enter idle mode (generic 8051 version)
+ 310   1      
+ 311   1         // Entering idle mode requires TWO consecutive instructions 
+ 312   1         // on 80c515 / 80c505 - to avoid accidental triggering
+ 313   1         //PCON |= 0x01;    // Enter idle mode (#1)
+ 314   1         //PCON |= 0x20;    // Enter idle mode (#2)
+ 315   1         }
+ 316          
+ 317          
+ 318          
+ 319          /*-------------------------------------------------------------
+ 320             hSCH_Update()
+ 321             This is the scheduler ISR.  It is called at a rate 
+ 322             determined by the timer settings in hSCH_Init().
+ 323             This version is triggered by Timer 0 interrupts:
+ 324             timer is manually reloaded.
+ 325          --------------------------------------------------------------*/
+ 326          void hSCH_Update(void)
+ 327             {
+ 328   1         tByte Index;
+ 329   1         // NOTE: calculations are in *TICKS* (not milliseconds)
+ 330   1         for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
+ 331   1            {
+ 332   2            // Check if there is a task at this location
+ 333   2            if (hSCH_tasks_G[Index].pTask)
+ 334   2               {
+ 335   3                  if (hSCH_tasks_G[Index].Delay == 0)
+ 336   3                  {
+ 337   4                  // The task is due to run
+ 338   4                  // 
+ 339   4                  if (hSCH_tasks_G[Index].Co_op)
+ 340   4                     {
+ 341   5                     // If it is a co-operative task, increment the RunMe flag
+ 342   5                     hSCH_tasks_G[Index].RunMe += 1;  
+ 343   5                     }
+ 344   4                  else
+ 345   4                     {
+ 346   5                     // If it is a pre-emptive task, run it IMMEDIATELY
+ 347   5                     (*hSCH_tasks_G[Index].pTask)();  // Run the task
+ 348   5      
+ 349   5                     hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
+ 350   5      
+ 351   5                     // Periodic tasks will be scheduled again (see below)
+ 352   5                     // - if this is a 'one shot' task, remove it from the array
+ 353   5                     if (hSCH_tasks_G[Index].Period == 0)
+ 354   5                       {
+ 355   6                       hSCH_tasks_G[Index].pTask  = 0;
+ 356   6                       }
+ 357   5                     }
+ 358   4      
+ 359   4                  if (hSCH_tasks_G[Index].Period)
+ 360   4                     {
+ 361   5                     // Schedule this periodic task to run again
+ 362   5                     hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
+ 363   5                     }
+ 364   4                  }
+C51 COMPILER V9.54   SCHEDULAR                                                             06/10/2015 16:54:24 PAGE 7   
 
- 365            to the normal operating state.
- 366          
- 367            Note: a slight performance improvement is possible if this
- 368            function is implemented as a macro, or if the code here is simply 
- 369            pasted into the 'dispatch' function.  
- 370          
- 371            However, by making this a function call, it becomes easier 
- 372            - during development - to assess the performance of the 
- 373            scheduler, using the 'performance analyser' in the Keil 
- 374            hardware simulator. See Chapter 14 for examples for this. 
- 375          
- 376            *** May wish to disable this if using a watchdog ***
+ 365   3                  else
+ 366   3                  {
+ 367   4                  // Not yet ready to run: just decrement the delay 
+ 368   4                  hSCH_tasks_G[Index].Delay -= 1;
+ 369   4                  }
+ 370   3               }         
+ 371   2            }  
+ 372   1         }
+ 373          
+ 374          /*------------------------------------------------------------------*-
+ 375            ---- END OF FILE -------------------------------------------------
+ 376          -*------------------------------------------------------------------*/
  377          
- 378            *** ADAPT AS REQUIRED FOR YOUR HARDWARE ***
- 379          
- 380          -*------------------------------------------------------------------*/
- 381          void hSCH_Go_To_Sleep()
- 382             {
- 383   1         PCON |= 0x01;    // Enter idle mode (generic 8051 version)
- 384   1      
- 385   1         // Entering idle mode requires TWO consecutive instructions 
- 386   1         // on 80c515 / 80c505 - to avoid accidental triggering
- 387   1         //PCON |= 0x01;    // Enter idle mode (#1)
- 388   1         //PCON |= 0x20;    // Enter idle mode (#2)
- 389   1         }
- 390          
- 391          
- 392          /*------------------------------------------------------------------*-
- 393            ---- END OF FILE -------------------------------------------------
- 394          -*------------------------------------------------------------------*/
- 395          
- 396          
+ 378          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    593    ----
+   CODE SIZE        =    512    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =      4       9
-   DATA SIZE        =     45    ----
+   PDATA SIZE       =      4       4
+   DATA SIZE        =     40    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----       2
 END OF MODULE INFORMATION.

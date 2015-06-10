@@ -54,7 +54,7 @@ void initsignal()
 	{
 	tByte k,k1;
 	tByte mystartbuffer = 0xaa;
-	for(k1 = 0; k1 < 2; k1++)
+	for(k1 = 0; k1 < 3; k1++)
 		{
 		for(k=0;k<8;k++)
 			{
@@ -210,7 +210,6 @@ void UART_Send_Data(tByte command)
 		}
 
 	close_tranceiver();
-	
 	}
 
 /*------------------------------------------------------------------
@@ -241,12 +240,10 @@ void UART_Send_Data_F(tByte command)
 void open_tranceiver(void)
 	{
 	#ifdef ID
-	InitUART600();
-	TR0 = 1;
+	InitUART(BAUD1200);
 	#endif
 	
 	receiver_EN = 1;
-//	Delay(5);
 	transmiter_EN = 0;	
 	}
 
@@ -256,13 +253,14 @@ void open_tranceiver(void)
 -------------------------------------------------------------------*/
 void close_tranceiver(void)
 	{
+	#ifdef F3
 	transmiter_EN = 1;
+	#endif
+	
 	receiver_EN = 0;
-	TXD = 0;
 	
 	#ifdef ID
-	InitUART9600();
-	TR0 = 1;
+	InitUART(BAUD9600);
 	#endif
 	}
 

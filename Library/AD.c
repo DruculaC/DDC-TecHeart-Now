@@ -14,7 +14,6 @@
 	GetADCResult(tByte ch)
 	assign the channel, to get the voltage
 ----------------------------------------------------*/
-
 tWord GetADCResult(tByte ch)
 	{
 	tByte DataL = 0;
