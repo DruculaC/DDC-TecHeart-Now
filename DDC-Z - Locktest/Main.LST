@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  06/04/2015 16:04:20 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   50          
   51          tByte raised_alarm_count = 0;    //主机被抬起后，向附机发出报警信号的次数
   52          tByte fell_alarm_count = 0;        //主机倒地后，向附机发出报警信号的次数
-C51 COMPILER V9.54   MAIN                                                                  06/04/2015 16:04:20 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 2   
 
   53          tWord timer0_count=0;      // counter for timer0, increment every ticket         
   54          tByte received_data_buffer[7]={0x00,0x00,0x00,0x00,0x00,0x00,0x00};     //接收数据缓存
@@ -126,7 +126,7 @@ line level    source
  108          bit Check_Motobattery_flag = 0;
  109          bit CheckADC_flag = 0;
  110          
-C51 COMPILER V9.54   MAIN                                                                  06/04/2015 16:04:20 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 3   
 
  111          bit never_alarm = 0;
  112          bit never_alarm_speech = 0;
@@ -143,12 +143,12 @@ line level    source
  123   1         InitVoice();
  124   1         
  125   1         #ifdef ID
- 126   1         InitUART9600();
- 127   1         #endif
+                 InitUART(BAUD9600);
+                 #endif
  128   1         
  129   1         #ifdef WX
-                 InitUART600();
-                 #endif
+ 130   1         InitUART(BAUD1200);
+ 131   1         #endif
  132   1         
  133   1         InitSensor();
  134   1         
@@ -190,7 +190,7 @@ line level    source
  170   1         }
  171          
  172          /*-----------------------------------------------
-C51 COMPILER V9.54   MAIN                                                                  06/04/2015 16:04:20 PAGE 4   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 4   
 
  173             UART interrupt
  174          -----------------------------------------------*/
@@ -227,68 +227,68 @@ line level    source
  205   4                  data_count = 5;
  206   4                  }
  207   3               #ifdef ID
- 208   3               else if((data_count == 5) && (received_data_buffer[5] == 0x95))
- 209   3                  {
- 210   4                  data_count = 0;   
- 211   4                  IDkey_flag = 1;
- 212   4                  IDkey_count = 0;
- 213   4                  disable_sensor();
- 214   4                  IDkey_speech_flash = 1;
- 215   4                  
- 216   4                  if(IDkey_certificated_times++ >= 1)
- 217   4                     {
- 218   5                     Silence_Flag = 1;
- 219   5                     }
- 220   4                  if(++IDkey_certificated_times >= 11)
- 221   4                     {
- 222   5                     never_alarm = 1;
- 223   5                     never_alarm_speech = 1;
- 224   5                     Silence_Flag = 0;
- 225   5                     IDkey_certificated_times = 0;
- 226   5                     }
- 227   4                  }
- 228   3               #endif
- 229   3               #ifdef WX
-                       else if(data_count == 5)
+                       else if((data_count == 5) && (received_data_buffer[5] == 0x95))
                           {
-                          receive_data_finished_flag = 1;
-                          data_count = 0;
-                          }        
-C51 COMPILER V9.54   MAIN                                                                  06/04/2015 16:04:20 PAGE 5   
-
+                          data_count = 0;   
+                          IDkey_flag = 1;
+                          IDkey_count = 0;
+                          disable_sensor();
+                          IDkey_speech_flash = 1;
+                          
+                          if(IDkey_certificated_times++ >= 1)
+                             {
+                             Silence_Flag = 1;
+                             }
+                          if(++IDkey_certificated_times >= 11)
+                             {
+                             never_alarm = 1;
+                             never_alarm_speech = 1;
+                             Silence_Flag = 0;
+                             IDkey_certificated_times = 0;
+                             }
+                          }
                        #endif
+ 229   3               #ifdef WX
+ 230   3               else if(data_count == 5)
+ 231   3                  {
+ 232   4                  receive_data_finished_flag = 1;
+ 233   4                  data_count = 0;
+ 234   4                  }        
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 5   
+
+ 235   3               #endif
  236   3               else 
  237   3                  {
  238   4                  data_count = 0;
  239   4                  }  
  240   3      
  241   3               #ifdef WX
-                       if(receive_data_finished_flag == 1)
-                          {
-                          receive_data_finished_flag  = 0;
-                          switch(received_data_buffer[5])
-                             {
-                             case ComMode_1:
-                                {
-                                IDkey_flag = 1;
-                                IDkey_count = 0;
-                                disable_sensor();
-                                IDkey_speech_flash = 1;
-                                slave_nearby_count = 0;
-                                }
-                             }
-                          }
-                       #endif
+ 242   3               if(receive_data_finished_flag == 1)
+ 243   3                  {
+ 244   4                  receive_data_finished_flag  = 0;
+ 245   4                  switch(received_data_buffer[5])
+ 246   4                     {
+ 247   5                     case ComMode_1:
+ 248   5                        {
+ 249   6                        IDkey_flag = 1;
+ 250   6                        IDkey_count = 0;
+ 251   6                        disable_sensor();
+ 252   6                        IDkey_speech_flash = 1;
+ 253   6                        slave_nearby_count = 0;
+ 254   6                        }
+ 255   5                     }
+ 256   4                  }
+ 257   3               #endif
  258   3               }
  259   2            else
  260   2               {        
  261   3               #ifdef ID
- 262   3               if(++data_count >= 6)
- 263   3                  {
- 264   4                  data_count = 0;
- 265   4                  IDkey_flash_EN = 1;
- 266   4                  }
- 267   3               #endif
+                       if(++data_count >= 6)
+                          {
+                          data_count = 0;
+                          IDkey_flash_EN = 1;
+                          }
+                       #endif
  268   3               }
  269   2            }
  270   1         }
@@ -300,7 +300,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    380    ----
+   CODE SIZE        =    344    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     56    ----

@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 1   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE OPERATION
@@ -62,7 +62,7 @@ line level    source
   52          extern tByte ID_certificated_numbers;
   53          extern bit ID_certificated_flag;       
   54          extern tByte After_IDcert_timecount;      
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 2   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 2   
 
   55          extern bit never_alarm;
   56          extern bit IDkey_selflearn_flag1;
@@ -126,7 +126,7 @@ line level    source
  114             {
  115   1         slave_nearby_actioned_flag = 1;
  116   1         
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 3   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 3   
 
  117   1         ID_speeched_flag = 0;      
  118   1         After_IDcert_timecount = 0;
@@ -168,15 +168,15 @@ line level    source
  154   2            
  155   2            stolen_alarm_speech1();
  156   2            #ifdef Z3
-                    if(wire_broken_flag == 0)
-                       {
-                       UART_Send_Data(ComMode_3);                                                       
-                       }
-                    else
-                       {                                                                     
-                       UART_Send_Data(ComMode_6);                                                       
-                       }
-                    #endif
+ 157   2            if(wire_broken_flag == 0)
+ 158   2               {
+ 159   3               UART_Send_Data(ComMode_3);                                                       
+ 160   3               }
+ 161   2            else
+ 162   2               {                                                                     
+ 163   3               UART_Send_Data(ComMode_6);                                                       
+ 164   3               }
+ 165   2            #endif
  166   2            stolen_alarm_speech2();
  167   2            }
  168   1         }
@@ -190,7 +190,7 @@ line level    source
  176             {
  177   1         if(ID_certificated_flag == 1)
  178   1            {
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 4   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 4   
 
  179   2            // 3 tickets after ID certificated.
  180   2            if(++After_IDcert_timecount >= 4)
@@ -254,7 +254,7 @@ line level    source
  238          /*---------------------------------------------------
  239             Fell_Alarm_to_Slave()
  240             Send fell alarm signal to remote slave.
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 5   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 5   
 
  241          ----------------------------------------------------*/
  242          void Fell_Alarm_to_Slave(void)
@@ -318,7 +318,7 @@ line level    source
  300   2            Host_stolen_alarming = 0;
  301   2            sensor_3rdalarm_flag = 0;
  302   2            }
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 6   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 6   
 
  303   1         }
  304          
@@ -330,7 +330,7 @@ line level    source
  310             {
  311   1         if(EN_host_stolen_alarming == 1)
  312   1            {
- 313   2            if(++Stolen_alarm_reset_count > 15)
+ 313   2            if(++Stolen_alarm_reset_count > 5)
  314   2               {
  315   3               host_stolen_alarm1_count = 0;
  316   3               EN_host_stolen_alarming = 0;
@@ -382,7 +382,7 @@ line level    source
  362   4                  }
  363   3               else
  364   3                  {
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 7   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 7   
 
  365   4                  IDkey_selflearn_flag1 = 1;
  366   4                  if(IDkey_selflearn_flag2 == 1)
@@ -446,7 +446,7 @@ line level    source
  424             Detect_open_action()
  425          ---------------------------------------------------*/
  426          void Detect_open_action(void)
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 8   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 8   
 
  427             {
  428   1      // if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))    
@@ -510,7 +510,7 @@ line level    source
  486   2            }  
  487   1         }
  488          
-C51 COMPILER V9.54   OPERATION                                                             06/10/2015 16:56:23 PAGE 9   
+C51 COMPILER V9.54   OPERATION                                                             06/12/2015 15:49:40 PAGE 9   
 
  489          /*----------------------------------------------------
  490             Detect_wheel_moving()
@@ -538,7 +538,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    685    ----
+   CODE SIZE        =    697    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

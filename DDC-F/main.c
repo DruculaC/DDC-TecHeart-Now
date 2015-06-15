@@ -116,6 +116,11 @@ tByte battery_HV_flag_count = 0;
 tByte battery_HV_speech_count = 0;
 bit battery_HV_speech_over = 0;
 
+tWord Toggle_button_HV_count = 0;
+bit Toggle_button_HV_flag = 0;
+
+
+
 #ifdef WX
 code tByte IDkey6 _at_ 0x001ff8;
 code tByte IDkey7 _at_ 0x001ff9;
@@ -211,11 +216,10 @@ void main(void)
 			}
 		
 		sEOS_Go_To_Sleep();			
-		}  
+		}
 	}
 
-
-/*------------------------------------------------------------------
+/*--------------------------------------------------------------------
 	timerT0()
 	定时器0每次溢出后执行的操作
 --------------------------------------------------------------------*/
@@ -229,7 +233,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 	// 设置一个每3s的操作
 	if(++timer0_count >= 2000)		
 		{
-		MagentControl_2 = ~MagentControl_2;		
 		
 		// 每个3s做一次电量检测，并进行相关的电量提示
 		Check_motor_accumulator();
@@ -282,9 +285,29 @@ void timer0() interrupt interrupt_timer_0_overflow
 				}			
 			}		
 		
+		#ifdef WX
+		if((toggle_button == 1)&&(idle_EN == 0))
+			{
+			if(++Toggle_button_HV_count > 450)
+				{
+				transceiver_power_enable = 1;
+				TXD = 0;
+				MagentControl_2 = 1;
+				idle_EN = 1;				
+				}
+			}
+		#endif
 		timer0_count = 0;
 		}
-		
+	
+	if(toggle_button == 0)
+		{
+		Toggle_button_HV_flag = 0;
+		Toggle_button_HV_count = 0;
+		MagentControl_2 = 0;
+		}
+
+	#ifdef ID
 	if((toggle_button == 1)&&(idle_EN == 0))
 		{
 		transceiver_power_enable = 1;
@@ -294,7 +317,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 		TXD = 0;
 		idle_EN = 1;
 		}
-	
+	#endif
+		
 	if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
 		{
 		if(++receiver_EN_count > 300)
@@ -571,6 +595,7 @@ void KBI_ISR(void) interrupt 7
 	transceiver_power_enable = 0;
 	receiver_EN = 0;
 	RXD = 1;
+	Toggle_button_HV_count = 0;
 //	EKB = 1;
 	}
 		

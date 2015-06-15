@@ -193,7 +193,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 
 /*----- Reset flag and disabling sensor relevantly --------------*/
 		Disable_sensor_after_IDcert();		
-		//
+
 		Reset_after_wirebroken();
 		Reset_after_stolen_alarming();
 		SelfLearn_Reset();					
@@ -208,8 +208,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 	Detect_wheel_moving();
 
 	Detect_open_action();
-	Detect_close_action();		
-
+	Detect_close_action();
+	
 // judge host is fell or raised every 1ms?
 //	if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
 //		{

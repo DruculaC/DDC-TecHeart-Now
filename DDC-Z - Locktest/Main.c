@@ -123,11 +123,11 @@ void main()
 	InitVoice();
 	
 	#ifdef ID
-	InitUART9600();
+	InitUART(BAUD9600);
    #endif
 	
 	#ifdef WX
-	InitUART600();
+	InitUART(BAUD1200);
 	#endif
 	
 	InitSensor();

@@ -310,7 +310,7 @@ void Reset_after_stolen_alarming(void)
 	{
 	if(EN_host_stolen_alarming == 1)
 		{
-		if(++Stolen_alarm_reset_count > 15)
+		if(++Stolen_alarm_reset_count > 5)
 			{
 			host_stolen_alarm1_count = 0;
 			EN_host_stolen_alarming = 0;

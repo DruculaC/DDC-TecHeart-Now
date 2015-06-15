@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 1   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE SCHEDULAR
@@ -62,7 +62,7 @@ line level    source
   52          
   53          // ------ Private variables ----------------------------------------
   54          
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 2   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 2   
 
   55          // Keeps track of time since last error was recorded (see below)
   56          static tWord Error_tick_count_G;
@@ -126,7 +126,7 @@ line level    source
  114            Del   - The interval (TICKS) before the task is first executed
  115          
  116            Rep   - If 'Rep' is 0, the function is only called once,
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 3   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 3   
 
  117                    at the time determined by 'Del'.  If Rep is non-zero,
  118                    then the function is called repeatedly at an interval
@@ -190,7 +190,7 @@ line level    source
  176   1         hSCH_tasks_G[Index].pTask = Fn_p;
  177   1           
  178   1         hSCH_tasks_G[Index].Delay  = Del;
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 4   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 4   
 
  179   1         hSCH_tasks_G[Index].Period = Per;
  180   1      
@@ -254,7 +254,7 @@ line level    source
  238          
  239            Errors are only displayed for a limited period 
  240            (60000 ticks = 1 minute at 1ms tick interval).
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 5   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 5   
 
  241            After this the the error code is reset to 0. 
  242          
@@ -318,7 +318,7 @@ line level    source
  300            hardware simulator. See Chapter 14 for examples for this. 
  301          
  302            *** May wish to disable this if using a watchdog ***
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 6   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 6   
 
  303          
  304            *** ADAPT AS REQUIRED FOR YOUR HARDWARE ***
@@ -382,7 +382,7 @@ line level    source
  362   5                     hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
  363   5                     }
  364   4                  }
-C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2015 16:04:20 PAGE 7   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/12/2015 14:51:40 PAGE 7   
 
  365   3                  else
  366   3                  {

@@ -31,7 +31,7 @@
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A
 // Withoutbattery_48V10A, Withoutbattery_60V10A
-#define Withoutbattery_48V10A
+#define Withbattery_60V10A
 
 // Must include the appropriate microcontroller header file here
 #include "N79E81x.h"

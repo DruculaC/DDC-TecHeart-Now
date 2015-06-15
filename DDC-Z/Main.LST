@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   51          tByte sensor_trigger_count=0;    //传感器触发计数
   52          tWord sensor_2ndstage_time=0;    //传感器进入第二阶段后流逝时间的计数
   53          tByte sensor_1ststage_count=0;   //传感器第一阶段判断低电平的计数
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 2   
 
   54          
   55          tByte raised_alarm_count = 0;    //主机被抬起后，向附机发出报警信号的次数
@@ -126,7 +126,7 @@ line level    source
  109          tByte Check_Motobattery_count = 0;
  110          bit Check_Motobattery_flag = 0;
  111          bit CheckADC_flag = 0;
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 3   
 
  112          
  113          bit never_alarm = 0;
@@ -190,7 +190,7 @@ line level    source
  171   2            Check_motor_accumulator();    
  172   2            Accumulator_voice_promot();
  173   2      
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 4   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 4   
 
  174   2      /*----- Enable sensor ---------------------------------------------*/
  175   2            #ifdef ID
@@ -206,15 +206,15 @@ line level    source
  185   2      
  186   2      /*----- Alarm relevantly -----------------------------------------*/    
  187   2            #ifdef Z3
-                    Fell_Alarm_to_Slave();
-                    Raise_Alarm_to_Slave();
-                    Batstolen_Alarm_to_Slave();
-                    #endif      
+ 188   2            Fell_Alarm_to_Slave();
+ 189   2            Raise_Alarm_to_Slave();
+ 190   2            Batstolen_Alarm_to_Slave();
+ 191   2            #endif      
  192   2            Host_stolen_action();
  193   2      
  194   2      /*----- Reset flag and disabling sensor relevantly --------------*/
  195   2            Disable_sensor_after_IDcert();      
- 196   2            //
+ 196   2      
  197   2            Reset_after_wirebroken();
  198   2            Reset_after_stolen_alarming();
  199   2            SelfLearn_Reset();               
@@ -229,8 +229,8 @@ line level    source
  208   1         Detect_wheel_moving();
  209   1      
  210   1         Detect_open_action();
- 211   1         Detect_close_action();     
- 212   1      
+ 211   1         Detect_close_action();
+ 212   1         
  213   1      // judge host is fell or raised every 1ms?
  214   1      // if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
  215   1      //    {
@@ -254,7 +254,7 @@ line level    source
  232   6                           sensor_1ststage_count=0;
  233   6                           
  234   6                           // sensor trigge status progress to case 1.
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 5   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 5   
 
  235   6                           sensor_trigger_count = 1;
  236   6                           // alarm speech for first touch
@@ -318,7 +318,7 @@ line level    source
  294   6                           EN_host_stolen_alarming = 1;
  295   6                           host_stolen_alarm2_EN = 1; 
  296   6                           sensor_3rdalarm_flag = 1;  
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 6   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 6   
 
  297   6                           Stolen_alarm_reset_count = 0;
  298   6                           }
@@ -382,7 +382,7 @@ line level    source
  356   4                  // judge whether there once been a raised or fell.
  357   4                  if(raised_fell_once_flag == 0)
  358   4                     {
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 7   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 7   
 
  359   5                     // if no, flag raised and fell flag
  360   5                     raised_fell_flag = 1;               
@@ -446,7 +446,7 @@ line level    source
  418             UART interrupt
  419          -----------------------------------------------*/
  420          void uart_isr() interrupt 4 
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 8   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 8   
 
  421             {
  422   1         if(RI)
@@ -510,7 +510,7 @@ line level    source
  480   4                  }        
  481   3               #endif
  482   3               else 
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 9   
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 9   
 
  483   3                  {
  484   4                  data_count = 0;
@@ -574,7 +574,7 @@ line level    source
  542   3                  {
  543   4                  data_count = 5;
  544   4                  }
-C51 COMPILER V9.54   MAIN                                                                  06/10/2015 16:56:24 PAGE 10  
+C51 COMPILER V9.54   MAIN                                                                  06/12/2015 15:49:41 PAGE 10  
 
  545   3               else if(data_count == 5)
  546   3                  {
@@ -602,7 +602,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    932    ----
+   CODE SIZE        =    941    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     57    ----

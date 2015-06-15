@@ -206,7 +206,7 @@ void UART_Send_Data(tByte command)
 	for(ii = 0; ii < 30; ii++)
 		{
 		SendNByte(myTxRxData, 6);
-		Delay_5ms();		
+		Delay_10ms();		
 		}
 
 	close_tranceiver();

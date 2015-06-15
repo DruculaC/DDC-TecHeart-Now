@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 1   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE COMMUNICATION
@@ -62,7 +62,7 @@ line level    source
   52          ----------------------------------------------------*/
   53          void initsignal()
   54             {
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 2   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 2   
 
   55   1         tByte k,k1;
   56   1         tByte mystartbuffer = 0xaa;
@@ -126,7 +126,7 @@ line level    source
  114   1         P10=1;
  115   1         }
  116          
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 3   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 3   
 
  117          /*--------------------------------------------------
  118             Send_Data()
@@ -190,7 +190,7 @@ line level    source
  176   1         Delay(20);
  177   1         transmiter_EN = 0;
  178   1         myTxRxData[0] = CmdHead;
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 4   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 4   
 
  179   1         myTxRxData[1] = MyAddress;
  180   1         myTxRxData[2] = ComMode;
@@ -222,7 +222,7 @@ line level    source
  206   1         for(ii = 0; ii < 30; ii++)
  207   1            {
  208   2            SendNByte(myTxRxData, 6);
- 209   2            Delay_5ms();      
+ 209   2            Delay_10ms();     
  210   2            }
  211   1      
  212   1         close_tranceiver();
@@ -254,7 +254,7 @@ line level    source
  238             ¿ª·¢Éä»ú
  239          -------------------------------------------------------------------*/
  240          void open_tranceiver(void)
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 5   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 5   
 
  241             {
  242   1         #ifdef ID
@@ -272,8 +272,8 @@ line level    source
  254          void close_tranceiver(void)
  255             {
  256   1         #ifdef F3
-                 transmiter_EN = 1;
-                 #endif
+ 257   1         transmiter_EN = 1;
+ 258   1         #endif
  259   1         
  260   1         receiver_EN = 0;
  261   1         
@@ -318,7 +318,7 @@ line level    source
  300   2            if(++receive_LV_count >= 120)
  301   2               {
  302   3               receive_LV_count = 0;
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 6   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 6   
 
  303   3               }
  304   2            receive_wire_flag = 0;
@@ -382,7 +382,7 @@ line level    source
  362   1            {
  363   2            // count the LV time, if more than 12ms, reset it.
  364   2            if(++receive_LV_count >= 120)
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 7   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 7   
 
  365   2               {
  366   3               receive_LV_count = 0;
@@ -446,7 +446,7 @@ line level    source
  424   1         // one byte have 8 bit, once receive a bit, the count increase, once it is 8, it means a byte received.
  425   1         if(one_receive_byte_count == 8)
  426   1            {
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 8   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 8   
 
  427   2            one_receive_byte_count = 0;
  428   2            // assign one byte to buffer[i] 
@@ -510,7 +510,7 @@ line level    source
  486   3            }
  487   2         }
  488   1      }
-C51 COMPILER V9.54   COMMUNICATION                                                         06/10/2015 16:56:23 PAGE 9   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/12/2015 15:49:40 PAGE 9   
 
  489          
  490          /*--------------------------------------------------
@@ -556,7 +556,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1089    ----
+   CODE SIZE        =   1091    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      7      27
