@@ -91,9 +91,11 @@ void slave_away_operation(void)
 	if(Silence_Flag == 0)
 		{
 		close_lock_speech();	
-		
-		Check_Motobattery_flag = 1;
-		Check_Motobattery_count = 0;
+		load_battery_result = ADC_check_result;
+		verifybattery(load_battery_result);
+
+//		Check_Motobattery_flag = 1;
+//		Check_Motobattery_count = 0;
 	   }
 	// Enable_sensor();	
 	enable_sensor_delayEN = 1;
@@ -177,7 +179,7 @@ void ENsensor_afterIDcert(void)
 	if(ID_certificated_flag == 1)
 		{
 		// 3 tickets after ID certificated.
-		if(++After_IDcert_timecount >= 4)
+		if(++After_IDcert_timecount >= 5)
 			{
 			ID_certificated_flag = 0;
 			After_IDcert_timecount = 0;			
@@ -310,7 +312,7 @@ void Reset_after_stolen_alarming(void)
 	{
 	if(EN_host_stolen_alarming == 1)
 		{
-		if(++Stolen_alarm_reset_count > 5)
+		if(++Stolen_alarm_reset_count > 3)
 			{
 			host_stolen_alarm1_count = 0;
 			EN_host_stolen_alarming = 0;
@@ -329,7 +331,7 @@ void Ensensor_after_slave_away(void)
 	{
 	if((vibration_flag == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
 		{
-		if(++slave_nearby_count > 3)
+		if(++slave_nearby_count > 4)
 			{
 			slave_nearby_count = 5;
 			slave_nearby_actioned_flag = 0;

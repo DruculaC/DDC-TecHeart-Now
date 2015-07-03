@@ -14,6 +14,9 @@
 /*------- Public variable declarations -----------------*/
 extern tByte myTxRxData[7];
 
+bit CW_flag = 0;
+tByte Elecmotor_duration_G;
+
 /*-------------------------------------------------------
 	InitElecmotor()
 --------------------------------------------------------*/
@@ -75,7 +78,7 @@ void ElecMotor_code(void)
 			if((myTxRxData[i]&0x80) == 0x80)
 				{
 				MagentControl_2 = 0;
-				Delay_10ms();
+				Delay_12ms();
 				}
 			else
 				{
@@ -95,6 +98,9 @@ void ElecMotor_code(void)
 -----------------------------------------------------*/
 void ElecMotor_Delay_CW(void)
 	{
+	Delay_100ms();
+	Delay_100ms();
+	Delay_100ms();
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
@@ -118,7 +124,8 @@ void ElecMotor_Delay_CW(void)
 -----------------------------------------------------*/
 void ElecMotor_Delay_ACW(void)
 	{
-	Delay_500ms();
+	Delay_100ms();
+	Delay_100ms();
 	Delay_500ms();
 	#ifdef Guxingzha
 	Delay_500ms();
@@ -134,6 +141,34 @@ void ElecMotor_Delay_ACW(void)
 		{
 		Delay_500ms();
 		Delay_500ms();
+		}
+	}
+
+/*----------------------------------------------------
+	ElecMotor_test()
+	Delay program for Electric Motor.
+-----------------------------------------------------*/
+void ElecMotor_test(void)
+	{
+	if(CW_flag == 1)
+		{
+		Elecmotor_duration_G += 1;
+		if(Elecmotor_duration_G >= 10)
+			{
+			Elecmotor_duration_G = 0;
+			ElecMotor_CW();
+			CW_flag = 0;
+			}
+		}
+	else
+		{
+		Elecmotor_duration_G += 1;
+		if(Elecmotor_duration_G >= 10)
+			{
+			Elecmotor_duration_G = 0;
+			ElecMotor_ACW();
+			CW_flag = 1;
+			}		
 		}
 	}
 

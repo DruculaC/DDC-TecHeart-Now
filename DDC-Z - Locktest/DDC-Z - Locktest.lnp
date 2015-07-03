@@ -10,7 +10,7 @@
 ".\voice.obj",
 ".\ISP_DataFlash.obj",
 ".\ElecMotor.obj",
-".\Schedular.obj",
+".\hSch51.obj",
 "Main.obj" 
 TO "DDC-Z - Locktest" 
 RAMSIZE(256) 

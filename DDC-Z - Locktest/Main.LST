@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  07/02/2015 11:58:41 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -29,8 +29,8 @@ line level    source
   19          #include "operation.h"
   20          #include "UART.h"
   21          #include "ISP_DataFlash.h"
-  22          #include "schedular.h"
-  23          #include "ElecMotor.h"
+  22          #include "ElecMotor.h"
+  23          #include "hSch51.h"
   24          
   25                                                  
   26          /*------- Public variable declarations --------------------------*/
@@ -62,7 +62,7 @@ line level    source
   50          
   51          tByte raised_alarm_count = 0;    //主机被抬起后，向附机发出报警信号的次数
   52          tByte fell_alarm_count = 0;        //主机倒地后，向附机发出报警信号的次数
-C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  07/02/2015 11:58:41 PAGE 2   
 
   53          tWord timer0_count=0;      // counter for timer0, increment every ticket         
   54          tByte received_data_buffer[7]={0x00,0x00,0x00,0x00,0x00,0x00,0x00};     //接收数据缓存
@@ -126,7 +126,7 @@ line level    source
  108          bit Check_Motobattery_flag = 0;
  109          bit CheckADC_flag = 0;
  110          
-C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  07/02/2015 11:58:41 PAGE 3   
 
  111          bit never_alarm = 0;
  112          bit never_alarm_speech = 0;
@@ -136,171 +136,34 @@ line level    source
  116          
  117          bit ID_speeched_flag = 0;
  118          
- 119          /*------- Private variable declarations --------------------------*/
- 120          
- 121          void main()
- 122             {  
- 123   1         InitVoice();
- 124   1         
- 125   1         #ifdef ID
-                 InitUART(BAUD9600);
-                 #endif
+ 119          
+ 120          /*------- Private variable declarations --------------------------*/
+ 121          
+ 122          void main()
+ 123             {  
+ 124   1         InitT0(10);
+ 125   1         
+ 126   1         // lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
+ 127   1         InitElecmotor();  
  128   1         
- 129   1         #ifdef WX
- 130   1         InitUART(BAUD1200);
- 131   1         #endif
- 132   1         
- 133   1         InitSensor();
- 134   1         
- 135   1         InitTransceiver();
- 136   1         
- 137   1         // lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
- 138   1         InitElecmotor();  
- 139   1         
- 140   1         Externalmotor = Close;
- 141   1      
- 142   1         while(1)
- 143   1            {
- 144   2            Host_stolen_action();
- 145   2            }
- 146   1         }
- 147          
- 148          /*------------------------------------------------------------------
- 149             timerT0()
- 150             operation every ticket.
- 151          --------------------------------------------------------------------*/
- 152          
- 153          void timer0() interrupt interrupt_timer_0_overflow
- 154             {
- 155   1         // manually reload timer0 configuration
- 156   1         TH0 = timer0_8H;
- 157   1         TL0 = timer0_8L;
- 158   1      
- 159   1         // timer0 is 1ms ticket, count the time flow of timer0, then operate every 2s.
- 160   1         if(++timer0_count >= 1000)
- 161   1            {
- 162   2            // reset timer0 ticket counter every 2s
- 163   2            timer0_count=0;
- 164   2            
- 165   2            ElecMotor_CW();
- 166   2            Delay_500ms();
- 167   2            Delay_500ms();
- 168   2            ElecMotor_ACW();
- 169   2            }  
- 170   1         }
- 171          
- 172          /*-----------------------------------------------
-C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 4   
-
- 173             UART interrupt
- 174          -----------------------------------------------*/
- 175          void uart_isr() interrupt 4 
- 176             {
- 177   1         if(RI)
- 178   1            {
- 179   2            RI=0;
- 180   2            received_data_buffer[data_count] = SBUF;
- 181   2      
- 182   2            // assign one byte to buffer[i] 
- 183   2            
- 184   2            if(IDkey_selflearn_flag6 == 0)
- 185   2               {
- 186   3               // judge whether buffer[0] is CmdHead
- 187   3               if((data_count == 0) && (received_data_buffer[0] == 0x01))
- 188   3                  {
- 189   4                  data_count = 1;
- 190   4                  }
- 191   3               else if((data_count == 1) && (received_data_buffer[1] == 0x00))
- 192   3                  {
- 193   4                  data_count = 2;
- 194   4                  }
- 195   3               else if((data_count == 2) && (received_data_buffer[2] == 0x1a))
- 196   3                  {
- 197   4                  data_count = 3;
- 198   4                  }
- 199   3               else if((data_count == 3) && (received_data_buffer[3] == 0x9b))
- 200   3                  {
- 201   4                  data_count = 4;
- 202   4                  }
- 203   3               else if((data_count == 4) && (received_data_buffer[4] == 0x15))
- 204   3                  {
- 205   4                  data_count = 5;
- 206   4                  }
- 207   3               #ifdef ID
-                       else if((data_count == 5) && (received_data_buffer[5] == 0x95))
-                          {
-                          data_count = 0;   
-                          IDkey_flag = 1;
-                          IDkey_count = 0;
-                          disable_sensor();
-                          IDkey_speech_flash = 1;
-                          
-                          if(IDkey_certificated_times++ >= 1)
-                             {
-                             Silence_Flag = 1;
-                             }
-                          if(++IDkey_certificated_times >= 11)
-                             {
-                             never_alarm = 1;
-                             never_alarm_speech = 1;
-                             Silence_Flag = 0;
-                             IDkey_certificated_times = 0;
-                             }
-                          }
-                       #endif
- 229   3               #ifdef WX
- 230   3               else if(data_count == 5)
- 231   3                  {
- 232   4                  receive_data_finished_flag = 1;
- 233   4                  data_count = 0;
- 234   4                  }        
-C51 COMPILER V9.54   MAIN                                                                  06/12/2015 14:51:41 PAGE 5   
-
- 235   3               #endif
- 236   3               else 
- 237   3                  {
- 238   4                  data_count = 0;
- 239   4                  }  
- 240   3      
- 241   3               #ifdef WX
- 242   3               if(receive_data_finished_flag == 1)
- 243   3                  {
- 244   4                  receive_data_finished_flag  = 0;
- 245   4                  switch(received_data_buffer[5])
- 246   4                     {
- 247   5                     case ComMode_1:
- 248   5                        {
- 249   6                        IDkey_flag = 1;
- 250   6                        IDkey_count = 0;
- 251   6                        disable_sensor();
- 252   6                        IDkey_speech_flash = 1;
- 253   6                        slave_nearby_count = 0;
- 254   6                        }
- 255   5                     }
- 256   4                  }
- 257   3               #endif
- 258   3               }
- 259   2            else
- 260   2               {        
- 261   3               #ifdef ID
-                       if(++data_count >= 6)
-                          {
-                          data_count = 0;
-                          IDkey_flash_EN = 1;
-                          }
-                       #endif
- 268   3               }
- 269   2            }
- 270   1         }
- 271          
- 272          
- 273          /*---------------------------------------------------
- 274             end of file
- 275          ----------------------------------------------------*/
+ 129   1      // hSCH_Add_Task(ElecMotor_CW, 20, 100, 1);
+ 130   1        
+ 131   1         hSCH_Start();
+ 132   1      
+ 133   1         while(1)
+ 134   1            {
+ 135   2            hSCH_Dispatch_Tasks();     
+ 136   2            }
+ 137   1         }
+ 138          
+ 139          
+ 140          /*---------------------------------------------------
+ 141             end of file
+ 142          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    344    ----
+   CODE SIZE        =     16    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     56    ----

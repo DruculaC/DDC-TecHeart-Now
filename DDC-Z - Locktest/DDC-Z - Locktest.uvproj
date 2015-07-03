@@ -424,9 +424,9 @@
               <FilePath>..\Library\ElecMotor.c</FilePath>
             </File>
             <File>
-              <FileName>Schedular.c</FileName>
+              <FileName>hSch51.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\Library\Schedular.c</FilePath>
+              <FilePath>..\Library\hSch51.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -19,8 +19,8 @@
 #include "operation.h"
 #include "UART.h"
 #include "ISP_DataFlash.h"
-#include "schedular.h"
 #include "ElecMotor.h"
+#include "hSch51.h"
 
                                         
 /*------- Public variable declarations --------------------------*/
@@ -116,156 +116,23 @@ tByte slave_nearby_count = 0;
 
 bit ID_speeched_flag = 0;
 
+
 /*------- Private variable declarations --------------------------*/
 
 void main()
 	{	
-	InitVoice();
-	
-	#ifdef ID
-	InitUART(BAUD9600);
-   #endif
-	
-	#ifdef WX
-	InitUART(BAUD1200);
-	#endif
-	
-	InitSensor();
-	
-	InitTransceiver();
+	InitT0(10);
 	
 	// lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
 	InitElecmotor();	
-   
-	Externalmotor = Close;
+ 	
+//	hSCH_Add_Task(ElecMotor_CW, 20, 100, 1);
+  
+	hSCH_Start();
 
 	while(1)
 		{
-		Host_stolen_action();
-		}
-	}
-
-/*------------------------------------------------------------------
-	timerT0()
-	operation every ticket.
---------------------------------------------------------------------*/
-
-void timer0() interrupt interrupt_timer_0_overflow
-	{
-	// manually reload timer0 configuration
-	TH0 = timer0_8H;
-	TL0 = timer0_8L;
-
-	// timer0 is 1ms ticket, count the time flow of timer0, then operate every 2s.
-	if(++timer0_count >= 1000)
-		{
-		// reset timer0 ticket counter every 2s
-		timer0_count=0;
-		
-		ElecMotor_CW();
-		Delay_500ms();
-		Delay_500ms();
-		ElecMotor_ACW();
-		}	
- 	}
-
-/*-----------------------------------------------
-	UART interrupt
------------------------------------------------*/
-void uart_isr() interrupt 4 
-	{
-	if(RI)
-		{
-		RI=0;
-		received_data_buffer[data_count] = SBUF;
-
-		// assign one byte to buffer[i] 
-		
-		if(IDkey_selflearn_flag6 == 0)
-			{
-			// judge whether buffer[0] is CmdHead
-			if((data_count == 0) && (received_data_buffer[0] == 0x01))
-				{
-				data_count = 1;
-				}
-			else if((data_count == 1) && (received_data_buffer[1] == 0x00))
-				{
-				data_count = 2;
-				}
-			else if((data_count == 2) && (received_data_buffer[2] == 0x1a))
-				{
-				data_count = 3;
-				}
-			else if((data_count == 3) && (received_data_buffer[3] == 0x9b))
-				{
-				data_count = 4;
-				}
-			else if((data_count == 4) && (received_data_buffer[4] == 0x15))
-				{
-				data_count = 5;
-				}
-			#ifdef ID
-			else if((data_count == 5) && (received_data_buffer[5] == 0x95))
-				{
-				data_count = 0;	
-				IDkey_flag = 1;
-				IDkey_count = 0;
-				disable_sensor();
-				IDkey_speech_flash = 1;
-				
-				if(IDkey_certificated_times++ >= 1)
-					{
-					Silence_Flag = 1;
-					}
-				if(++IDkey_certificated_times >= 11)
-					{
-					never_alarm = 1;
-					never_alarm_speech = 1;
-					Silence_Flag = 0;
-					IDkey_certificated_times = 0;
-					}
-				}
-			#endif
-			#ifdef WX
-			else if(data_count == 5)
-				{
-				receive_data_finished_flag = 1;
-				data_count = 0;
-				}			
-			#endif
-			else 
-				{
-				data_count = 0;
-				}	
-
-			#ifdef WX
-			if(receive_data_finished_flag == 1)
-				{
-				receive_data_finished_flag  = 0;
-				switch(received_data_buffer[5])
-					{
-					case ComMode_1:
-						{
-						IDkey_flag = 1;
-						IDkey_count = 0;
-						disable_sensor();
-						IDkey_speech_flash = 1;
-						slave_nearby_count = 0;
-						}
-					}
-				}
-			#endif
-			}
-		else
-			{			
-			#ifdef ID
-			if(++data_count >= 6)
-				{
-				data_count = 0;
-				IDkey_flash_EN = 1;
-				}
-			#endif
-			}
+      hSCH_Dispatch_Tasks();		
 		}
 	}
 

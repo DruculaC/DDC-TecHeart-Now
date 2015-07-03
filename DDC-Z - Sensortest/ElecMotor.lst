@@ -1,0 +1,170 @@
+C51 COMPILER V9.54   ELECMOTOR                                                             06/17/2015 06:05:50 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE ELECMOTOR
+OBJECT MODULE PLACED IN .\ElecMotor.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\ElecMotor.c COMPACT OPTIMIZE(8,SPEED) BRO
+                    -WSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\ElecMotor.lst) TABS(3) OBJECT(.\ElecMotor.obj)
+
+line level    source
+
+   1          /*---------------------------------------------------
+   2             ElecMotor.c (v1.00)
+   3             
+   4             All programs related to Electric Motor in Main board
+   5          ---------------------------------------------------*/ 
+   6          
+   7          #include "main.h"
+   8          #include "port.h"
+   9          
+  10          #include "ElecMotor.h"
+  11          #include "Delay.h"
+  12          #include "communication.h"
+  13          
+  14          /*------- Public variable declarations -----------------*/
+  15          extern tByte myTxRxData[7];
+  16          
+  17          /*-------------------------------------------------------
+  18             InitElecmotor()
+  19          --------------------------------------------------------*/
+  20          void InitElecmotor(void)
+  21             {
+  22   1         #ifdef Guxingzha
+                 ElecMotor_ACW();
+                 #endif
+  25   1         
+  26   1         #ifdef Suidongzha
+  27   1         ElecMotor_CW();
+  28   1         #endif
+  29   1         }
+  30          /*-------------------------------------------------------
+  31             ElecMotor_CW()
+  32             Electric Motor rotates clockwise.
+  33          --------------------------------------------------------*/
+  34          void ElecMotor_CW(void)
+  35             {
+  36   1         ElecMotor_code();
+  37   1      
+  38   1         MagentControl_1 = 1;
+  39   1         MagentControl_2 = 0;
+  40   1         ElecMotor_Delay_CW();
+  41   1         MagentControl_1 = 1;
+  42   1         MagentControl_2 = 1;
+  43   1         Externalmotor = 0;
+  44   1         }
+  45          
+  46          /*-------------------------------------------------------
+  47             ElecMotor_ACW()
+  48             Electric Motor rotates anticlockwise.
+  49          --------------------------------------------------------*/
+  50          void ElecMotor_ACW(void)
+  51             {
+  52   1         Externalmotor = 1;
+  53   1         MagentControl_1 = 0;
+  54   1         MagentControl_2 = 1;
+C51 COMPILER V9.54   ELECMOTOR                                                             06/17/2015 06:05:50 PAGE 2   
+
+  55   1         ElecMotor_Delay_ACW();
+  56   1         MagentControl_1 = 1;
+  57   1         MagentControl_2 = 1;
+  58   1         }
+  59          
+  60          /*--------------------------------------------------
+  61             ElecMotor_code()
+  62             send the code to Electric Motor.
+  63          ---------------------------------------------------*/
+  64          void ElecMotor_code(void)  
+  65             {  
+  66   1         tByte i,n;
+  67   1         myTxRxData[0]=CmdHead;
+  68   1         myTxRxData[1]=MyAddress;
+  69   1         myTxRxData[2]=ComMode_1;
+  70   1         
+  71   1         for(i=0;i<3;i++)
+  72   1            {
+  73   2            for(n=0;n<8;n++)
+  74   2               {
+  75   3               if((myTxRxData[i]&0x80) == 0x80)
+  76   3                  {
+  77   4                  MagentControl_2 = 0;
+  78   4                  Delay_12ms();
+  79   4                  }
+  80   3               else
+  81   3                  {
+  82   4                  MagentControl_2 = 0;
+  83   4                  Delay_5ms();
+  84   4                  }
+  85   3               MagentControl_2 = 1; 
+  86   3               myTxRxData[i] <<= 1;
+  87   3               Delay_5ms();
+  88   3               }
+  89   2            }
+  90   1         }
+  91          
+  92          /*----------------------------------------------------
+  93             ElecMotor_Delay_CW()
+  94             Delay program for Electric Motor.
+  95          -----------------------------------------------------*/
+  96          void ElecMotor_Delay_CW(void)
+  97             {
+  98   1         Delay_100ms();
+  99   1         Delay_500ms();
+ 100   1         Delay_500ms();
+ 101   1         #ifdef Suidongzha
+ 102   1         Delay_500ms();
+ 103   1         Delay_500ms();
+ 104   1         #endif
+ 105   1         
+ 106   1         #if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
+                 Delay_500ms();
+                 #endif
+ 109   1      
+ 110   1         if(ElecMotor_overcurrent == 0)
+ 111   1            {
+ 112   2            Delay_500ms();
+ 113   2            }
+ 114   1         }
+ 115          /*----------------------------------------------------
+ 116             ElecMotor_Delay_ACW()
+C51 COMPILER V9.54   ELECMOTOR                                                             06/17/2015 06:05:50 PAGE 3   
+
+ 117             Delay program for Electric Motor.
+ 118          -----------------------------------------------------*/
+ 119          void ElecMotor_Delay_ACW(void)
+ 120             {
+ 121   1         Delay_500ms();
+ 122   1         Delay_500ms();
+ 123   1         #ifdef Guxingzha
+                 Delay_500ms();
+                 Delay_500ms();
+                 #endif
+ 127   1         
+ 128   1         #if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
+                 Delay_500ms();
+                 Delay_500ms(); 
+                 #endif
+ 132   1      
+ 133   1         if(ElecMotor_overcurrent == 0)
+ 134   1            {
+ 135   2            Delay_500ms();
+ 136   2            Delay_500ms();
+ 137   2            }
+ 138   1         }
+ 139          
+ 140          /*---------------------------------------------------
+ 141             end of file
+ 142          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    158    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----       2
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

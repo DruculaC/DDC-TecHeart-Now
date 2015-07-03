@@ -119,8 +119,6 @@ bit battery_HV_speech_over = 0;
 tWord Toggle_button_HV_count = 0;
 bit Toggle_button_HV_flag = 0;
 
-
-
 #ifdef WX
 code tByte IDkey6 _at_ 0x001ff8;
 code tByte IDkey7 _at_ 0x001ff9;
@@ -286,9 +284,9 @@ void timer0() interrupt interrupt_timer_0_overflow
 			}		
 		
 		#ifdef WX
-		if((toggle_button == 1)&&(idle_EN == 0))
+		if((press_close_button == 1)&&(idle_EN == 0))
 			{
-			if(++Toggle_button_HV_count > 450)
+			if(++Toggle_button_HV_count > 150)
 				{
 				transceiver_power_enable = 1;
 				TXD = 0;
@@ -300,7 +298,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 		timer0_count = 0;
 		}
 	
-	if(toggle_button == 0)
+	if(press_close_button == 0)
 		{
 		Toggle_button_HV_flag = 0;
 		Toggle_button_HV_count = 0;

@@ -166,6 +166,15 @@ void timer0() interrupt interrupt_timer_0_overflow
 		{
 		// reset timer0 ticket counter every 2s
 		timer0_count=0;
+		
+		if(Lock_EN == 1)
+			{
+			ID_certificated_flag = 1;
+			After_IDcert_timecount = 0;
+			IDkey_speech_flash = 1;
+			IDcerted_speech();
+			slave_nearby_count = 0;
+			}
 
 /*----- Accumulator relevantly ------------------------------------*/
 		Check_motor_accumulator();		
@@ -504,7 +513,6 @@ void uart_isr() interrupt 4
 						{
 						Silence_Flag = 1;
 						Self_learn_speech();
-//						never_alarm = ~never_alarm;
 						}
 					break;
 					}
