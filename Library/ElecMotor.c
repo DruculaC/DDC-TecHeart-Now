@@ -98,23 +98,19 @@ void ElecMotor_code(void)
 -----------------------------------------------------*/
 void ElecMotor_Delay_CW(void)
 	{
-	Delay_100ms();
-	Delay_100ms();
-	Delay_100ms();
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
-	#ifdef Suidongzha
 	Delay_500ms();
-	Delay_500ms();
-	#endif
-	
-	#if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
-	Delay_500ms();
-	#endif
 
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	
 	if(ElecMotor_overcurrent == 0)
 		{
+		Delay_500ms();
 		Delay_500ms();
 		}
 	}
@@ -124,18 +120,15 @@ void ElecMotor_Delay_CW(void)
 -----------------------------------------------------*/
 void ElecMotor_Delay_ACW(void)
 	{
-	Delay_100ms();
-	Delay_100ms();
-	Delay_500ms();
-	#ifdef Guxingzha
 	Delay_500ms();
 	Delay_500ms();
-	#endif
-	
-	#if (defined Withbattery_60V10A) || (defined Withbattery_48V10A)
+
 	Delay_500ms();
-	Delay_500ms();	
-	#endif
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
 
 	if(ElecMotor_overcurrent == 0)
 		{

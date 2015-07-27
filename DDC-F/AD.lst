@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   AD                                                                    07/03/2015 10:06:20 PAGE 1   
+C51 COMPILER V9.54   AD                                                                    07/27/2015 10:24:02 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE AD
@@ -62,7 +62,7 @@ line level    source
   52   2            AADR1 = 0;
   53   2            AADR2 = 1;
   54   2                                                                           
-C51 COMPILER V9.54   AD                                                                    07/03/2015 10:06:20 PAGE 2   
+C51 COMPILER V9.54   AD                                                                    07/27/2015 10:24:02 PAGE 2   
 
   55   2            ADCCON1 |= 0x80;                                      
   56   2            
@@ -77,8 +77,8 @@ line level    source
   65   2      
   66   2            return DataH;
   67   2            }
-  68   1            else
-  69   1               return 0;
+  68   1         else
+  69   1            return 0;
   70   1         }
   71          
   72          /*---------------------------------------------------

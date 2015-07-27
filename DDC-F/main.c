@@ -119,13 +119,18 @@ bit battery_HV_speech_over = 0;
 tWord Toggle_button_HV_count = 0;
 bit Toggle_button_HV_flag = 0;
 
+bit battery_ULV_flag = 0;
+tByte battery_ULV_count = 0;
+bit battery_hint_action = 0;
+bit vibration_send_EN = 0;
+
 #ifdef WX
-code tByte IDkey6 _at_ 0x001ff8;
-code tByte IDkey7 _at_ 0x001ff9;
-code tByte IDkey8 _at_ 0x001ffa;
-code tByte IDkey9 _at_ 0x001ffb;
-code tByte IDkey10 _at_ 0x001ffc;
-code tByte IDkey11 _at_ 0x001ffd;
+code tByte IDkey6 _at_ 0x001ffb;
+code tByte IDkey7 _at_ 0x001ffc;
+code tByte IDkey8 _at_ 0x001ffd;
+code tByte IDkey9 _at_ 0x001ffe;
+code tByte IDkey10 _at_ 0x001fff;
+code tByte IDkey11 _at_ 0x001fff;
 #endif
 #ifdef ID
 code tByte IDkey6 _at_ 0x003000;
@@ -135,6 +140,7 @@ code tByte IDkey9 _at_ 0x003003;
 code tByte IDkey10 _at_ 0x003004;
 code tByte IDkey11 _at_ 0x003005;
 #endif
+
 /*--------------------------------------------------------------*/
 
 void main(void)
@@ -156,7 +162,9 @@ void main(void)
 //	Moto_EN = 1;		//初始化，关闭马达
 	voice_EN = 0;		  	//开机时，将功放关闭
 	P10=1;
-		
+	
+//	ADC_check_result = 0x3ff;
+	
 	stolen_alarm_count = 0;			//清报警计数器
 	stolen_alarm_flag = 0;			//清报警标志
 
@@ -167,12 +175,13 @@ void main(void)
 	
 	while(1)
 		{
+		#ifdef Z2
 		if(idle_EN == 1)
 			{
 			idle_EN = 0;
-			EKB = 1;
 			PCON |= 0x02;			
 			}
+		#endif
 			
 		// 主机被盗报警
 		if(stolen_alarm_flag == 1)		
@@ -234,8 +243,48 @@ void timer0() interrupt interrupt_timer_0_overflow
 		
 		// 每个3s做一次电量检测，并进行相关的电量提示
 		Check_motor_accumulator();
+		MagentControl_2 = ~MagentControl_2;
+
+		#ifdef Z2
+		if(ADC_check_result <= 0x36a)		// 2.96V/3.47V 电量非常不足
+			{
+			battery_ULV_flag = 1;
+			battery_LV_flag = 0;
+			}
+		else if((ADC_check_result > 0x36a)&&(ADC_check_result <= 0x375)) 	// 3.27V/3.78V 电量不足
+			{
+			battery_ULV_flag = 0;
+			battery_LV_flag = 1;
+			}
+		else if(ADC_check_result > 0x375)
+			{
+			battery_ULV_flag = 0;
+			battery_LV_flag = 0;
+			}
+			
+		if(battery_ULV_flag == 1)
+			{
+			if(++battery_ULV_count >= 1)
+				{
+				SC_RST = ~SC_RST;
+				battery_ULV_count = 0;
+				battery_hint_action = 1;
+				}
+			}
+			
+		if(battery_LV_flag == 1)
+			{
+			if(++battery_LV_flag_count > 6)
+				{
+				SC_RST = ~SC_RST;
+				battery_LV_flag_count = 0;
+				battery_hint_action = 1;
+				}
+			}
+		#endif
 		
-		if(ADC_check_result <= 0x368)                 // 3.11V/3.64V 电量不足
+		#ifdef Z3
+		if(ADC_check_result <= 0x36a)                 // 3.11V/3.64V 电量不足
 			{
 			battery_LV_flag = 1;
 			battery_HV_flag = 0;
@@ -260,6 +309,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				battery_LV_flag_count = 0;
 				}			
 			}
+		#endif
 		
 		if(match_button_flag6 == 1)
 			{
@@ -284,14 +334,17 @@ void timer0() interrupt interrupt_timer_0_overflow
 			}		
 		
 		#ifdef WX
-		if((press_close_button == 1)&&(idle_EN == 0))
+		if((press_close_button == 1)&&(EKB == 0))
 			{
-			if(++Toggle_button_HV_count > 150)
+			if(++Toggle_button_HV_count > 30)
 				{
 				transceiver_power_enable = 1;
 				TXD = 0;
 				MagentControl_2 = 1;
-				idle_EN = 1;				
+				vibration_send_EN = 0;
+				
+				EKB = 1;
+				idle_EN = 1;
 				}
 			}
 		#endif
@@ -305,7 +358,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 		MagentControl_2 = 0;
 		}
 
-	#ifdef ID
+/*	#ifdef ID
 	if((toggle_button == 1)&&(idle_EN == 0))
 		{
 		transceiver_power_enable = 1;
@@ -316,29 +369,53 @@ void timer0() interrupt interrupt_timer_0_overflow
 		idle_EN = 1;
 		}
 	#endif
-		
+*/		
 	if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
 		{
+		#ifdef Z2
+		if(++receiver_EN_count > 80)
+		#endif
+		#ifdef Z3
 		if(++receiver_EN_count > 300)
+		#endif
 			{
-			UART_Send_Data_F(ComMode_1);
-			TXD = 0;
+			receiver_EN_count = 0;
+			
+			if(battery_hint_action == 1)
+				{
+				UART_Send_Data_F(ComMode_12);			
+				battery_hint_action = 0;
+				SC_RST = ~SC_RST;
+				}
+			
+			if(vibration_send_EN == 1)
+				{
+				UART_Send_Data_F(ComMode_1);
+				}
 			
 			transceiver_power_enable = 1;
+			RXD = 0;
+			TXD = 0;			
 			receiver_EN = 0;
-			receiver_EN_count = 0;
+			transmiter_EN = 0;
 			}
 		}	
 
 	if((transceiver_power_enable == 1)&&(match_button_flag6 == 0))
 		{		
+		#ifdef Z2
+		if(++receiver_DisEN_count > 2500)
+		#endif
+		#ifdef Z3
 		if(++receiver_DisEN_count > 1500)
+		#endif
 			{
 			transceiver_power_enable = 0;
 			
 			receiver_DisEN_count = 0;
 
 			#ifdef F3
+			transmiter_EN = 1;
 			receiver_EN = 0;
 			RXD = 1;
 			#endif
@@ -405,6 +482,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			receiver_EN = 0;
 			RXD = 1;
 			#endif
+			
 			#ifdef WX
 			UART_Send_Data_match();
 			#endif
@@ -590,7 +668,8 @@ void KBI_ISR(void) interrupt 7
 	{
 	EKB = 0;
 	KBIF &= 0xfc;
-	transceiver_power_enable = 0;
+	transceiver_power_enable = 1;
+	vibration_send_EN = 1;
 	receiver_EN = 0;
 	RXD = 1;
 	Toggle_button_HV_count = 0;

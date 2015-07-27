@@ -15,23 +15,23 @@
 #define General
 
 // Define PCB board, such as Z2, Z3.
-#define Z2
+#define Z3
 
 // Define salve model, F2, F3.
-#define F2
+#define F3
 
 // Define model.
 // ID, WX, 
-#define WX         
+#define WX
 
 // Define the Lock model.
-//#define Suidongzha, Guxingzha  
+//#define Suidongzha, Guxingzha
 #define Guxingzha
 
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A
 // Withoutbattery_48V10A, Withoutbattery_60V10A
-#define Withoutbattery_60V10A
+#define Withbattery_60V10A
 
 // Must include the appropriate microcontroller header file here
 #include "N79E81x.h"

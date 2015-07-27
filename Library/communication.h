@@ -31,6 +31,8 @@
 #define ComMode_9 0xc9	// 发送自动模式的开锁信号
 #define ComMode_10 0xc10	// 自学习配对密码	
 #define ComMode_11 0xc11	// 静音模式和永久取消布防模式
+#define ComMode_12 0xc12   // 附机3.75V以内电量提示给主机
+#define ComMode_13 0xc13   // 附机3.45V以内电量提示给主机
 
 //---------public function prototype
 void InitTransceiver(void);

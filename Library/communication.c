@@ -86,9 +86,14 @@ void initsignal_F(void)
 	{
 	tByte k,k1;
 	tByte mystartbuffer = 0xaa;
-	for(k1 = 0; k1 < 2; k1++)
+	for(k1 = 0; k1 < 1; k1++)
 		{
-		for(k=0;k<6;k++)
+		#ifdef Z2
+		for(k=0;k<4;k++)
+		#endif
+		#ifdef Z3
+		for(k=0;k<7;k++)
+		#endif		
 			{
 			if((mystartbuffer&0x80) == 0x80)//Ϊ1
 				{
@@ -227,7 +232,6 @@ void UART_Send_Data_F(tByte command)
 	myTxRxData[5] = command;
 	
 	initsignal_F();
-	
 	SendNByte(myTxRxData, 6);
 
 	close_tranceiver();	

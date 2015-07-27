@@ -27,6 +27,7 @@ void battery_stolen_speech(void);
 void IDcerted_speech(void);
 void Accumulator_voice_promot(void);
 void Enter_noguard_voice();
+void Battery_hint(void);
 
 // ≤‚ ‘”√µƒ”Ô“Ù≤•±®
 void Product_Test_Voice(void);

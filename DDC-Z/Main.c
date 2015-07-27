@@ -124,6 +124,8 @@ bit wire_broken_reset = 0;
 
 bit Just_power_up = 1;
 
+bit Battery_hint_flag = 0;
+
 /*------- Private variable declaratuions --------------------------*/
 
 void main()
@@ -145,6 +147,7 @@ void main()
 	InitElecmotor();	
   
 	Externalmotor = Close;
+	
 	while(1)
 		{		
 		}
@@ -167,6 +170,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 		// reset timer0 ticket counter every 2s
 		timer0_count=0;
 		
+		#ifdef Z2
 		if(Lock_EN == 1)
 			{
 			ID_certificated_flag = 1;
@@ -175,6 +179,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			IDcerted_speech();
 			slave_nearby_count = 0;
 			}
+		#endif
 
 /*----- Accumulator relevantly ------------------------------------*/
 		Check_motor_accumulator();		
@@ -218,6 +223,12 @@ void timer0() interrupt interrupt_timer_0_overflow
 
 	Detect_open_action();
 	Detect_close_action();
+	
+	if(Battery_hint_flag == 1)
+		{
+		Battery_hint_flag = 0;
+		Battery_hint();
+		}
 	
 // judge host is fell or raised every 1ms?
 //	if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
@@ -513,6 +524,12 @@ void uart_isr() interrupt 4
 						{
 						Silence_Flag = 1;
 						Self_learn_speech();
+						}
+					break;
+					
+					case ComMode_12:
+						{
+						Battery_hint_flag = 1;
 						}
 					break;
 					}

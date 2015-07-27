@@ -65,8 +65,8 @@ tWord GetADCResult(tByte ch)
 
 		return DataH;
 		}
-		else
-			return 0;
+	else
+		return 0;
 	}
 
 /*---------------------------------------------------

@@ -331,9 +331,9 @@ void Ensensor_after_slave_away(void)
 	{
 	if((vibration_flag == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
 		{
-		if(++slave_nearby_count > 4)
+		if(++slave_nearby_count > 1)
 			{
-			slave_nearby_count = 5;
+			slave_nearby_count = 3;
 			slave_nearby_actioned_flag = 0;
 			ID_certificated_flag = 0;
 			if(never_alarm == 0)
