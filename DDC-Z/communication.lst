@@ -1,10 +1,11 @@
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 1   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE COMMUNICATION
 OBJECT MODULE PLACED IN .\communication.obj
-COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\communication.c COMPACT OPTIMIZE(8,SPEED)
-                    - BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\communication.lst) TABS(3) OBJECT(.\communication.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\communication.c COMPACT ROM(COMPACT) OPTI
+                    -MIZE(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\communication.lst) TABS(3) OBJECT(.\communication.obj
+                    -)
 
 line level    source
 
@@ -61,9 +62,9 @@ line level    source
   51             出来，而是相当于废代码，只占用通信时间。
   52          ----------------------------------------------------*/
   53          void initsignal()
-  54             {
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 2   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 2   
 
+  54             {
   55   1         tByte k,k1;
   56   1         tByte mystartbuffer = 0xaa;
   57   1         for(k1 = 0; k1 < 3; k1++)
@@ -101,11 +102,11 @@ line level    source
   89   1         for(k1 = 0; k1 < 1; k1++)
   90   1            {
   91   2            #ifdef Z2
-                    for(k=0;k<4;k++)
-                    #endif
+  92   2            for(k=0;k<4;k++)
+  93   2            #endif
   94   2            #ifdef Z3
-  95   2            for(k=0;k<7;k++)
-  96   2            #endif      
+                    for(k=0;k<7;k++)
+                    #endif      
   97   2               {
   98   3               if((mystartbuffer&0x80) == 0x80)//为1
   99   3                  {
@@ -125,9 +126,9 @@ line level    source
  113   3      //       Delay_5ms();
  114   3               }
  115   2            mystartbuffer=0xaa;
- 116   2      //    Delay_5ms();
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 3   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 3   
 
+ 116   2      //    Delay_5ms();
  117   2      //    Custom_Delay(23, 28);
  118   2            }
  119   1         P10=1;
@@ -189,9 +190,9 @@ line level    source
  175             主机接收到编码1信号后，会反馈一个编码1信号给附机
  176             以表示主机在附机附近。
  177          ---------------------------------------------------*/
- 178          void ComMode_Data_WX(tByte ComMode, x) 
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 4   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 4   
 
+ 178          void ComMode_Data_WX(tByte ComMode, x) 
  179             {
  180   1         receiver_EN = 1;
  181   1         Delay(20);
@@ -253,9 +254,9 @@ line level    source
  237   1         close_tranceiver();  
  238   1         }
  239          
- 240          /*------------------------------------------------------------------
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 5   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 5   
 
+ 240          /*------------------------------------------------------------------
  241             open_tranceiver()
  242             开发射机
  243          -------------------------------------------------------------------*/
@@ -276,8 +277,8 @@ line level    source
  258          void close_tranceiver(void)
  259             {
  260   1         #ifdef F3
- 261   1         transmiter_EN = 1;
- 262   1         #endif
+                 transmiter_EN = 1;
+                 #endif
  263   1         
  264   1         receiver_EN = 0;
  265   1         
@@ -317,9 +318,9 @@ line level    source
  299             {
  300   1         // P11 constantly HV, if detected a LV, judge it.
  301   1         if(P11 == 0)
- 302   1            {
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 6   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 6   
 
+ 302   1            {
  303   2            // count the LV time, if more than 12ms, reset it.
  304   2            if(++receive_LV_count >= 120)
  305   2               {
@@ -381,9 +382,9 @@ line level    source
  361          -----------------------------------------------------------------------------*/
  362          void receive_byte_Lock(void)
  363             {
- 364   1         // P11 constantly HV, if detected a LV, judge it.
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 7   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 7   
 
+ 364   1         // P11 constantly HV, if detected a LV, judge it.
  365   1         if(receive_wire == 1)
  366   1            {
  367   2            // count the LV time, if more than 12ms, reset it.
@@ -445,9 +446,9 @@ line level    source
  423             receive_word()
  424             receive a word program
  425          -----------------------------------------------------------------------------*/
- 426          void receive_word(void)
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 8   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 8   
 
+ 426          void receive_word(void)
  427             {
  428   1         // one byte have 8 bit, once receive a bit, the count increase, once it is 8, it means a byte received.
  429   1         if(one_receive_byte_count == 8)
@@ -509,9 +510,9 @@ line level    source
  485   4                  Custom_Delay(23, y);
  486   4               }
  487   3               MagentControl_2 = 1;    //常态为高电平
- 488   3               myTxRxData[i] <<= 1;
-C51 COMPILER V9.54   COMMUNICATION                                                         07/27/2015 10:11:46 PAGE 9   
+C51 COMPILER V9.54   COMMUNICATION                                                         08/01/2015 14:06:59 PAGE 9   
 
+ 488   3               myTxRxData[i] <<= 1;
  489   3               Custom_Delay(15, y);
  490   3            }
  491   2         }
@@ -560,7 +561,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1091    ----
+   CODE SIZE        =   1089    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      7      27

@@ -132,12 +132,10 @@ void main()
 	{
 	InitVoice();
 	
-	#ifdef ID
 	InitUART(BAUD9600);
-   #endif	
-	#ifdef WX
-	InitUART(BAUD1200);
-	#endif
+//	#ifdef WX
+//	InitUART(BAUD1200);
+//	#endif
 	
 	InitSensor();
 	

@@ -21,6 +21,10 @@ bit enable_sensor_delayEN = 0;		// ÑÓ³ÙÊ¹ÄÜ´«¸ÐÆ÷µÄÊ¹ÄÜ£¬²»ÄÜ¼´Ê±Ê¹ÄÜ´«¸ÐÆ÷£¬ÐèÒ
 
 bit sensor_EN = 0;
 
+tWord key_rotate_off_time = 0;
+tWord wire_broken_time = 0;
+tByte wire_broken_level = 0;
+
 /*------- Public variable declarations --------------------------*/
 extern bit position_sensor_EN;  	
 extern bit fell_flag;						
@@ -331,7 +335,7 @@ void Ensensor_after_slave_away(void)
 	{
 	if((vibration_flag == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
 		{
-		if(++slave_nearby_count > 1)
+		if(++slave_nearby_count > 5)
 			{
 			slave_nearby_count = 3;
 			slave_nearby_actioned_flag = 0;
@@ -351,65 +355,35 @@ void Detect_selflearn_action(void)
 		{
 		if(wire_broken == 1)
 			{
-			IDkey_selflearn_LVcount = 0;
-						
-			if(++IDkey_selflearn_HVcount > 4000)
+			wire_broken_time += 1;
+			if(wire_broken_time >= 6000)
 				{
-				IDkey_selflearn_HVcount = 4002;
-				IDkey_selflearn_flag1 = 0;
-				IDkey_selflearn_flag2 = 0;
-				IDkey_selflearn_flag3 = 0;
-				IDkey_selflearn_flag4 = 0;
-				IDkey_selflearn_flag5 = 0;
-				}
-			else
-				{
-				IDkey_selflearn_flag1 = 1;
-				if(IDkey_selflearn_flag2 == 1)
-					IDkey_selflearn_flag3 = 1;
-				if(IDkey_selflearn_flag4 == 1)
-					IDkey_selflearn_flag5 = 1;
+				wire_broken_time = 6001;
+				wire_broken_level = 0;
+				ID_selflearning_flag = 0;
 				}
 			}
 		else
 			{
-			IDkey_selflearn_HVcount = 0;
-			
-			if(IDkey_selflearn_flag1 == 1)
-				IDkey_selflearn_flag2 = 1;
-				
-			if(IDkey_selflearn_flag3 == 1)
-				IDkey_selflearn_flag4 = 1;			
-			
-			if(IDkey_selflearn_flag5 == 1)
+			if(wire_broken_time > 50)
 				{
-				ID_selflearning_flag = 1;
-				IDkey_selflearn_flag5 = 0;
-				Self_learn_speech();
+				wire_broken_time = 0;
+				wire_broken_level += 1;
 				}
-				
-			if(++IDkey_selflearn_LVcount > 4000)
-				{
-				IDkey_selflearn_LVcount = 4002;
-				IDkey_selflearn_flag1 = 0;
-				IDkey_selflearn_flag2 = 0;
-				IDkey_selflearn_flag3 = 0;
-				IDkey_selflearn_flag4 = 0;
-				IDkey_selflearn_flag5 = 0;
-				ID_selflearning_flag = 0;
-				}
-			}		
+			}
+		
+		if(wire_broken_level > 6)
+			{
+			wire_broken_level = 0;
+			ID_selflearning_flag = 1;
+			Self_learn_speech();
+			}
 		}
-
+		
 	if(IDkey_flash_EN == 1)
 		{
 		IDkey_flash_EN = 0;
 		flashing_flag = 1;
-		IDkey_selflearn_flag1 = 0;
-		IDkey_selflearn_flag2 = 0;
-		IDkey_selflearn_flag3 = 0;
-		IDkey_selflearn_flag4 = 0;
-		IDkey_selflearn_flag5 = 0;
 		ID_selflearning_flag = 0;
 		
 		Self_learn_programming();
@@ -454,18 +428,23 @@ void Detect_close_action(void)
 		{
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{
-			Delay_1ms();
-			if((key_rotate == 0)||(slave_nearby_actioned_flag == 0))
+			key_rotate_off_time += 1;
+			if(key_rotate_off_time >= 1500)
 				{
-				ElecMotor_ACW();
+				if((key_rotate == 0)||(slave_nearby_actioned_flag == 0))
+					{
+					ElecMotor_ACW();
 
-				Open_action_flag = 0;
-				slave_away_operation();		
-				IDkey_speech_flash = 0;
-				ID_speeched_flag = 0;
-				}				
+					Open_action_flag = 0;
+					slave_away_operation();
+					IDkey_speech_flash = 0;
+					ID_speeched_flag = 0;
+					}								
+				}
 			}
-		}	
+		}
+	else if(key_rotate == 1)
+		key_rotate_off_time = 0;
 	}
 
 /*------------------------------------------------------

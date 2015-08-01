@@ -15,10 +15,10 @@
 #define General
 
 // Define PCB board, such as Z2, Z3.
-#define Z3
+#define Z2
 
 // Define salve model, F2, F3.
-#define F3
+#define F2
 
 // Define model.
 // ID, WX, 
@@ -31,7 +31,7 @@
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A
 // Withoutbattery_48V10A, Withoutbattery_60V10A
-#define Withbattery_60V10A
+// #define Withoutbattery
 
 // Must include the appropriate microcontroller header file here
 #include "N79E81x.h"

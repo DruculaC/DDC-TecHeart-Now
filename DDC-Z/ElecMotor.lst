@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   ELECMOTOR                                                             07/27/2015 10:11:47 PAGE 1   
+C51 COMPILER V9.54   ELECMOTOR                                                             08/01/2015 14:07:00 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE ELECMOTOR
 OBJECT MODULE PLACED IN .\ElecMotor.obj
-COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\ElecMotor.c COMPACT OPTIMIZE(8,SPEED) BRO
-                    -WSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\ElecMotor.lst) TABS(3) OBJECT(.\ElecMotor.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\ElecMotor.c COMPACT ROM(COMPACT) OPTIMIZE
+                    -(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\ElecMotor.lst) TABS(3) OBJECT(.\ElecMotor.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52          --------------------------------------------------------*/
   53          void ElecMotor_ACW(void)
   54             {
-C51 COMPILER V9.54   ELECMOTOR                                                             07/27/2015 10:11:47 PAGE 2   
+C51 COMPILER V9.54   ELECMOTOR                                                             08/01/2015 14:07:00 PAGE 2   
 
   55   1         Externalmotor = 1;
   56   1         MagentControl_1 = 0;
@@ -126,7 +126,7 @@ line level    source
  114   2            Delay_500ms();
  115   2            }
  116   1         }
-C51 COMPILER V9.54   ELECMOTOR                                                             07/27/2015 10:11:47 PAGE 3   
+C51 COMPILER V9.54   ELECMOTOR                                                             08/01/2015 14:07:00 PAGE 3   
 
  117          /*----------------------------------------------------
  118             ElecMotor_Delay_ACW()
@@ -190,7 +190,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      1       2
    DATA SIZE        =   ----    ----
-C51 COMPILER V9.54   ELECMOTOR                                                             07/27/2015 10:11:47 PAGE 4   
+C51 COMPILER V9.54   ELECMOTOR                                                             08/01/2015 14:07:00 PAGE 4   
 
    IDATA SIZE       =   ----    ----
    BIT SIZE         =      1    ----

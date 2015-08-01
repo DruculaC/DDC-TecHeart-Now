@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 1   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE VOICE
 OBJECT MODULE PLACED IN .\voice.obj
-COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\voice.c COMPACT OPTIMIZE(8,SPEED) BROWSE 
-                    -INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\voice.lst) TABS(3) OBJECT(.\voice.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\voice.c COMPACT ROM(COMPACT) OPTIMIZE(8,S
+                    -PEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\voice.lst) TABS(3) OBJECT(.\voice.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   1         }
   53          
   54          /*-------------------------------------------------
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 2   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 2   
 
   55             InitVoice()
   56             Initialise Voice IC, shielding voice by accident on powerup.
@@ -126,7 +126,7 @@ line level    source
  114   1         voice_EN = 1;
  115   1         SC_Speech(24); 
  116   1         Delay(1);
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 3   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 3   
 
  117   1         voice_EN = 0;
  118   1         }
@@ -190,7 +190,7 @@ line level    source
  176             {
  177   1         voice_EN = 1;
  178   1         SC_Speech(14); 
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 4   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 4   
 
  179   1         Delay(40);
  180   1         voice_EN = 0; 
@@ -254,7 +254,7 @@ line level    source
  238   1         Delay(100);
  239   1         voice_EN = 0;
  240   1         }
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 5   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 5   
 
  241          
  242          /*----------------------------------------------------
@@ -318,7 +318,7 @@ line level    source
  300   1         }
  301             
  302          /*--------------------------------------------------------------
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 6   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 6   
 
  303             Alarm_raised_speech()
  304             用于附机，主机被抬起报警
@@ -382,7 +382,7 @@ line level    source
  362          /*---------------------------------------------------------------
  363             lock_rotated_on_speech(void)
  364             用于附机，主机锁线被剪断报警
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 7   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 7   
 
  365          ----------------------------------------------------------------*/
  366          void lock_rotated_on_speech(void)
@@ -446,7 +446,7 @@ line level    source
  423          void Enter_noguard_voice()
  424             {
  425   1         if(never_alarm_speech == 1)
-C51 COMPILER V9.54   VOICE                                                                 07/27/2015 10:11:47 PAGE 8   
+C51 COMPILER V9.54   VOICE                                                                 08/01/2015 14:07:00 PAGE 8   
 
  426   1            {
  427   2            never_alarm_speech = 0;

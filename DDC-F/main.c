@@ -336,7 +336,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 		#ifdef WX
 		if((press_close_button == 1)&&(EKB == 0))
 			{
-			if(++Toggle_button_HV_count > 30)
+			if(++Toggle_button_HV_count > 150)
 				{
 				transceiver_power_enable = 1;
 				TXD = 0;
