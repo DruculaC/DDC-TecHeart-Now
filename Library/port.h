@@ -45,6 +45,8 @@ sbit SC_DATA=P2^1;
 
 // P0.7，PIN19，传感器的检测结果，通过此PIN传给MCU，然后MCU判断
 sbit horizontal_sensor = P0^7; 
+// 
+sbit the3rd_sendor = P2^6;
 
 // P1.3, PIN11, receiver enable，0是打开，1是关闭
 sbit receiver_EN = P1^3;
@@ -84,6 +86,9 @@ sbit transmit_wire = P1^0;
 // P0.6, PIN20, 电量输入
 sbit battery_input = P0^6;
 
+// P1.6, PIN5, 电机锁死输出
+sbit Generator_lock = P1^6;
+
 /*----------------------------------------------------
 	附机端口定义
 -----------------------------------------------------*/
@@ -97,14 +102,8 @@ sbit press_close_button = P0^1;
 sbit press_open_button = P0^0;
 sbit match_button = P0^0;
 
-#ifdef F3
 // P0.2, PIN25, 无线模块电源控制
 sbit transceiver_power_enable = P0^2;
-#endif
-#ifdef F2
-// P2.4, PIN15, 无线模块电源控制
-sbit transceiver_power_enable = P2^4;
-#endif
 
 #endif
 											

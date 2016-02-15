@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 1   
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE VOICE
@@ -62,7 +62,7 @@ line level    source
   52   1         }
   53          
   54          /*-------------------------------------------------
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 2   
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 2   
 
   55             InitVoice()
   56             Initialise Voice IC, shielding voice by accident on powerup.
@@ -118,337 +118,349 @@ line level    source
  106   1         }
  107          
  108          /*----------------------------------------------------
- 109             ID_speech()
+ 109             Battery_hint()
  110             第一次碰主机，会有一句提示语音
  111          --------------------------------------------------------*/
- 112          void ID_speech(void)
+ 112          void Battery_hint(void)
  113             {
  114   1         voice_EN = 1;
  115   1         SC_Speech(24); 
- 116   1         Delay(30);
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 3   
+ 116   1         Delay(1);
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 3   
 
  117   1         voice_EN = 0;
  118   1         }
  119          
  120          /*----------------------------------------------------
- 121             Self_learn_speech()
+ 121             ID_speech()
  122             第一次碰主机，会有一句提示语音
  123          --------------------------------------------------------*/
- 124          void Self_learn_speech(void)
+ 124          void ID_speech(void)
  125             {
  126   1         voice_EN = 1;
- 127   1         SC_Speech(25); 
+ 127   1         SC_Speech(24); 
  128   1         Delay(30);
  129   1         voice_EN = 0;
- 130   1         flashing_flag = 0;
- 131   1         }
- 132          
- 133          /*----------------------------------------------------
- 134             host_touch_speech()
- 135             第一次碰主机，会有一句提示语音
- 136          --------------------------------------------------------*/
- 137          void host_touch_speech(void)
- 138             {
- 139   1         voice_EN = 1;
- 140   1         SC_Speech(2);  
- 141   1         Delay(90);
- 142   1         voice_EN = 0;
- 143   1         Delay(30);
- 144   1         }
- 145          
- 146          /*-----------------------------------------------------
- 147             host_2ndtouch_speech()
- 148             第二次触碰主机，再报一个提示语音
- 149          -------------------------------------------------------*/
- 150          void host_2ndtouch_speech(void)
- 151             {
- 152   1         voice_EN = 1;
- 153   1         SC_Speech(17);  
- 154   1         Delay(140);
- 155   1         voice_EN = 0;
- 156   1      // Delay(10);
- 157   1         }
- 158             
- 159          /*----------------------------------------------------
- 160             stolen_alarm_speech()
- 161             判断为被盗的时候，发出报警语音第一段
- 162          ----------------------------------------------------*/
- 163          void stolen_alarm_speech1(void)
- 164             {
- 165   1         voice_EN = 1;
- 166   1         SC_Speech(14); 
- 167   1         Delay(40);
- 168   1         voice_EN = 0; 
+ 130   1         }
+ 131          
+ 132          /*----------------------------------------------------
+ 133             Self_learn_speech()
+ 134             第一次碰主机，会有一句提示语音
+ 135          --------------------------------------------------------*/
+ 136          void Self_learn_speech(void)
+ 137             {
+ 138   1         voice_EN = 1;
+ 139   1         SC_Speech(25); 
+ 140   1         Delay(30);
+ 141   1         voice_EN = 0;
+ 142   1         flashing_flag = 0;
+ 143   1         }
+ 144          
+ 145          /*----------------------------------------------------
+ 146             host_touch_speech()
+ 147             第一次碰主机，会有一句提示语音
+ 148          --------------------------------------------------------*/
+ 149          void host_touch_speech(void)
+ 150             {
+ 151   1         voice_EN = 1;
+ 152   1         SC_Speech(2);  
+ 153   1         Delay(90);
+ 154   1         voice_EN = 0;
+ 155   1         Delay(30);
+ 156   1         }
+ 157          
+ 158          /*-----------------------------------------------------
+ 159             host_2ndtouch_speech()
+ 160             第二次触碰主机，再报一个提示语音
+ 161          -------------------------------------------------------*/
+ 162          void host_2ndtouch_speech(void)
+ 163             {
+ 164   1         voice_EN = 1;
+ 165   1         SC_Speech(19);  
+ 166   1         Delay(140);
+ 167   1         voice_EN = 0;
+ 168   1      // Delay(10);
  169   1         }
- 170          
+ 170             
  171          /*----------------------------------------------------
  172             stolen_alarm_speech()
- 173             判断为被盗的时候，发出报警语音第二段
+ 173             判断为被盗的时候，发出报警语音第一段
  174          ----------------------------------------------------*/
- 175           void stolen_alarm_speech2(void)
+ 175          void stolen_alarm_speech1(void)
  176             {
  177   1         voice_EN = 1;
- 178   1         SC_Speech(3); 
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 4   
+ 178   1         SC_Speech(16); 
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 4   
 
- 179   1         Delay(180);
- 180   1         voice_EN = 0;
- 181   1         Delay(20);
- 182   1         }
- 183          
- 184          /*----------------------------------------------------
- 185             open_lock_speech()
- 186             附机在主机附近，通过认证后，语音提示
- 187          -----------------------------------------------------*/
- 188          void open_lock_speech(void)
- 189             {
- 190   1         #ifdef Tailing
+ 179   1         Delay(60);
+ 180   1         voice_EN = 0; 
+ 181   1         }
+ 182          
+ 183          /*----------------------------------------------------
+ 184             stolen_alarm_speech()
+ 185             判断为被盗的时候，发出报警语音第二段
+ 186          ----------------------------------------------------*/
+ 187           void stolen_alarm_speech2(void)
+ 188             {
+ 189   1         voice_EN = 1;
+ 190   1         SC_Speech(3); 
+ 191   1         Delay(180);
+ 192   1         voice_EN = 0;
+ 193   1         Delay(20);
+ 194   1         }
+ 195          
+ 196          /*----------------------------------------------------
+ 197             open_lock_speech()
+ 198             附机在主机附近，通过认证后，语音提示
+ 199          -----------------------------------------------------*/
+ 200          void open_lock_speech(void)
+ 201             {
+ 202   1         #ifdef Tailing
                  voice_EN = 1;
-                 SC_Speech(20);  
+                 SC_Speech(22);  
                  Delay(30);
-                 SC_Speech(12);  
+                 SC_Speech(14);  
                  Delay(40);
                  voice_EN = 0;
                  #endif
- 198   1      
- 199   1         // 车锁已打开
- 200   1         voice_EN=1;
- 201   1         SC_Speech(15); 
- 202   1         Delay(60);
- 203   1         voice_EN=0;
- 204   1         }
- 205          
- 206          /*----------------------------------------------------
- 207             close_lock_speech()
- 208             判断附机离开，语音提示
- 209          -----------------------------------------------------*/
- 210          void close_lock_speech(void)
- 211             {
- 212   1         voice_EN = 1;
- 213   1         SC_Speech(16);  
+ 210   1      
+ 211   1         // 车锁已打开
+ 212   1         voice_EN=1;
+ 213   1         SC_Speech(17); 
  214   1         Delay(60);
- 215   1         voice_EN = 0;
+ 215   1         voice_EN=0;
  216   1         }
  217          
  218          /*----------------------------------------------------
- 219             battery_stolen_speech()
- 220             主机检测到电平不在时，语音提示电平被盗
+ 219             close_lock_speech()
+ 220             判断附机离开，语音提示
  221          -----------------------------------------------------*/
- 222          void battery_stolen_speech(void)
+ 222          void close_lock_speech(void)
  223             {
  224   1         voice_EN = 1;
- 225   1         SC_Speech(13);  
- 226   1         Delay(100);
+ 225   1         SC_Speech(18);  
+ 226   1         Delay(60);
  227   1         voice_EN = 0;
  228   1         }
  229          
  230          /*----------------------------------------------------
- 231             Cutting_Wire_Voice()
- 232             有人剪断锁线的时候，播报的语音
+ 231             battery_stolen_speech()
+ 232             主机检测到电平不在时，语音提示电平被盗
  233          -----------------------------------------------------*/
- 234          void Cutting_Wire_Voice(void)
+ 234          void battery_stolen_speech(void)
  235             {
  236   1         voice_EN = 1;
- 237   1         SC_Speech(20);  
- 238   1         Delay(120);
+ 237   1         SC_Speech(15);  
+ 238   1         Delay(100);
  239   1         voice_EN = 0;
  240   1         }
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 5   
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 5   
 
  241          
  242          /*----------------------------------------------------
- 243             Product_Test_Voice()
- 244             测试程序中的语音提示
+ 243             Cutting_Wire_Voice()
+ 244             有人剪断锁线的时候，播报的语音
  245          -----------------------------------------------------*/
- 246          void Product_Test_Voice(void)
+ 246          void Cutting_Wire_Voice(void)
  247             {
  248   1         voice_EN = 1;
- 249   1         SC_Speech(19);  
- 250   1         Delay(150);
+ 249   1         SC_Speech(20);  
+ 250   1         Delay(120);
  251   1         voice_EN = 0;
  252   1         }
  253          
- 254          /*---------------------------------------------------------------
- 255             Battery_low_alarm_speech()
- 256             用于附机，当电池电量低于一定值，语音提示
- 257          ----------------------------------------------------------------*/
- 258          void Battery_low_alarm_speech(void)
+ 254          /*----------------------------------------------------
+ 255             Product_Test_Voice()
+ 256             测试程序中的语音提示
+ 257          -----------------------------------------------------*/
+ 258          void Product_Test_Voice(void)
  259             {
  260   1         voice_EN = 1;
- 261   1         SC_Speech(9);
- 262   1         Delay(80);
+ 261   1         SC_Speech(21);  
+ 262   1         Delay(150);
  263   1         voice_EN = 0;
  264   1         }
  265          
  266          /*---------------------------------------------------------------
- 267             Battery_high_alarm_speech()
- 268             用于附机，电量高于一定值的时候，语音提示
+ 267             Battery_low_alarm_speech()
+ 268             用于附机，当电池电量低于一定值，语音提示
  269          ----------------------------------------------------------------*/
- 270          void Battery_high_alarm_speech(void)
+ 270          void Battery_low_alarm_speech(void)
  271             {
  272   1         voice_EN = 1;
- 273   1         SC_Speech(7);
- 274   1         Delay(50);
+ 273   1         SC_Speech(9);
+ 274   1         Delay(80);
  275   1         voice_EN = 0;
  276   1         }
  277          
- 278          /*-------------------------------------------------------------
- 279             Alarm_stolen_speech()
- 280             用于附机，主机被盗报警
- 281          ---------------------------------------------------------------*/
- 282          void Alarm_stolen_speech(void)
+ 278          /*---------------------------------------------------------------
+ 279             Battery_high_alarm_speech()
+ 280             用于附机，电量高于一定值的时候，语音提示
+ 281          ----------------------------------------------------------------*/
+ 282          void Battery_high_alarm_speech(void)
  283             {
  284   1         voice_EN = 1;
- 285   1         SC_Speech(5);
- 286   1         Delay(150);
+ 285   1         SC_Speech(7);
+ 286   1         Delay(50);
  287   1         voice_EN = 0;
  288   1         }
- 289             
- 290          /*--------------------------------------------------------------
- 291             Alarm_raised_speech()
- 292             用于附机，主机被抬起报警
+ 289          
+ 290          /*-------------------------------------------------------------
+ 291             Alarm_stolen_speech()
+ 292             用于附机，主机被盗报警
  293          ---------------------------------------------------------------*/
- 294          void Alarm_raised_speech(void)
+ 294          void Alarm_stolen_speech(void)
  295             {
  296   1         voice_EN = 1;
- 297   1         SC_Speech(3);
- 298   1         Delay(140);
+ 297   1         SC_Speech(4);
+ 298   1         Delay(180);
  299   1         voice_EN = 0;
  300   1         }
  301             
  302          /*--------------------------------------------------------------
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 6   
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 6   
 
- 303             Alarm_fell_speech()
- 304             用于附机，主机倒地报警
- 305          ----------------------------------------------------------------*/
- 306          void Alarm_fell_speech(void)
+ 303             Alarm_raised_speech()
+ 304             用于附机，主机被抬起报警
+ 305          ---------------------------------------------------------------*/
+ 306          void Alarm_raised_speech(void)
  307             {
  308   1         voice_EN = 1;
- 309   1         SC_Speech(2);
- 310   1         Delay(120);
+ 309   1         SC_Speech(3);
+ 310   1         Delay(140);
  311   1         voice_EN = 0;
  312   1         }
  313             
- 314          /*---------------------------------------------------------------
- 315             Host_battery_high_alarm_speech()
- 316             用于附机，主机电量充满提示
- 317          ---------------------------------------------------------------*/
- 318          void Host_battery_high_alarm_speech(void)
+ 314          /*--------------------------------------------------------------
+ 315             Alarm_fell_speech()
+ 316             用于附机，主机倒地报警
+ 317          ----------------------------------------------------------------*/
+ 318          void Alarm_fell_speech(void)
  319             {
  320   1         voice_EN = 1;
- 321   1         SC_Speech(11);  
- 322   1         Delay(80);
+ 321   1         SC_Speech(2);
+ 322   1         Delay(120);
  323   1         voice_EN = 0;
  324   1         }
- 325          
+ 325             
  326          /*---------------------------------------------------------------
- 327             battery_stolen_speech_F3()
- 328             用于附机，主机电池被盗报警
+ 327             Host_battery_high_alarm_speech()
+ 328             用于附机，主机电量充满提示
  329          ---------------------------------------------------------------*/
- 330          void battery_stolen_speech_F3(void)
+ 330          void Host_battery_high_alarm_speech(void)
  331             {
  332   1         voice_EN = 1;
  333   1         SC_Speech(11);  
- 334   1         Delay(50);
+ 334   1         Delay(80);
  335   1         voice_EN = 0;
  336   1         }
- 337             
+ 337          
  338          /*---------------------------------------------------------------
- 339             wire_broken_speech(void)
- 340             用于附机，主机锁线被剪断报警
- 341          ----------------------------------------------------------------*/
- 342          void wire_broken_speech(void)
+ 339             battery_stolen_speech_F3()
+ 340             用于附机，主机电池被盗报警
+ 341          ---------------------------------------------------------------*/
+ 342          void battery_stolen_speech_F3(void)
  343             {
  344   1         voice_EN = 1;
- 345   1         SC_Speech(15);  
- 346   1         Delay(80);
- 347   1         voice_EN = 0;  
+ 345   1         SC_Speech(7);  
+ 346   1         Delay(50);
+ 347   1         voice_EN = 0;
  348   1         }
- 349          
+ 349             
  350          /*---------------------------------------------------------------
- 351             lock_rotated_on_speech(void)
+ 351             wire_broken_speech(void)
  352             用于附机，主机锁线被剪断报警
  353          ----------------------------------------------------------------*/
- 354          void lock_rotated_on_speech(void)
+ 354          void wire_broken_speech(void)
  355             {
  356   1         voice_EN = 1;
- 357   1         SC_Speech(12);  
+ 357   1         SC_Speech(8);  
  358   1         Delay(80);
  359   1         voice_EN = 0;  
  360   1         }
- 361          /*---------------------------------------------------------------
- 362             lock_rotated_off_speech(void)
- 363             用于附机，主机锁线被剪断报警
- 364          ----------------------------------------------------------------*/
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 7   
+ 361          
+ 362          /*---------------------------------------------------------------
+ 363             lock_rotated_on_speech(void)
+ 364             用于附机，主机锁线被剪断报警
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 7   
 
- 365          void lock_rotated_off_speech(void)
- 366             {
- 367   1         voice_EN = 1;
- 368   1         SC_Speech(13);  
- 369   1         Delay(80);
- 370   1         voice_EN = 0;  
- 371   1         }
- 372          
- 373          /*-------------------------------------------------------------
- 374             IDcerted_speech()
- 375          -------------------------------------------------------------*/
- 376          void IDcerted_speech(void)
- 377             {
- 378   1         #ifdef ID
+ 365          ----------------------------------------------------------------*/
+ 366          void lock_rotated_on_speech(void)
+ 367             {
+ 368   1         voice_EN = 1;
+ 369   1         SC_Speech(12);  
+ 370   1         Delay(80);
+ 371   1         voice_EN = 0;  
+ 372   1         }
+ 373          /*---------------------------------------------------------------
+ 374             lock_rotated_off_speech(void)
+ 375             用于附机，主机锁线被剪断报警
+ 376          ----------------------------------------------------------------*/
+ 377          void lock_rotated_off_speech(void)
+ 378             {
+ 379   1         voice_EN = 1;
+ 380   1         SC_Speech(13);  
+ 381   1         Delay(80);
+ 382   1         voice_EN = 0;  
+ 383   1         }
+ 384          
+ 385          /*-------------------------------------------------------------
+ 386             IDcerted_speech()
+ 387          -------------------------------------------------------------*/
+ 388          void IDcerted_speech(void)
+ 389             {
+ 390   1         #ifdef ID
                  ID_speech();
                  #endif
- 381   1         
- 382   1         #ifdef WX
- 383   1         if((Open_action_flag == 0)&&(slave_nearby_actioned_flag == 0)&&(ID_speeched_flag == 0))
- 384   1            {     
- 385   2            ID_speech();
- 386   2            
- 387   2            ID_speeched_flag = 1;
- 388   2            }
- 389   1         #endif
- 390   1         }
- 391          /*-------------------------------------------------------------
- 392             Accumulator_voice_promot()
- 393          -------------------------------------------------------------*/   
- 394          void Accumulator_voice_promot(void)
- 395             {
- 396   1         if(++Check_Motobattery_count > 3)
- 397   1            {
- 398   2            Check_Motobattery_count = 5;
- 399   2            if((Check_Motobattery_flag == 1)&&(EN_host_stolen_alarming == 0)&&(fell_flag == 0)&&(raised_flag == 0)&&
+ 393   1         
+ 394   1         #ifdef WX
+ 395   1         if((Open_action_flag == 0)&&(slave_nearby_actioned_flag == 0)&&(ID_speeched_flag == 0))
+ 396   1            {     
+ 397   2            ID_speech();
+ 398   2            
+ 399   2            ID_speeched_flag = 1;
+ 400   2            }
+ 401   1         #endif
+ 402   1         }
+ 403          /*-------------------------------------------------------------
+ 404             Accumulator_voice_promot()
+ 405          -------------------------------------------------------------*/   
+ 406          void Accumulator_voice_promot(void)
+ 407             {
+ 408   1         if(++Check_Motobattery_count > 3)
+ 409   1            {
+ 410   2            Check_Motobattery_count = 5;
+ 411   2            if((Check_Motobattery_flag == 1)&&(EN_host_stolen_alarming == 0)&&(fell_flag == 0)&&(raised_flag == 0)&&
              -(battery_stolen_EN == 0))
- 400   2               {
- 401   3               load_battery_result = ADC_check_result;
- 402   3               verifybattery(load_battery_result);
- 403   3               Check_Motobattery_flag = 0;
- 404   3               }
- 405   2            }
- 406   1         }
- 407          
- 408          /*--------------------------------------------------------
- 409             Enter_noguard_voice()
- 410          --------------------------------------------------------*/
- 411          void Enter_noguard_voice()
- 412             {
- 413   1         if(never_alarm_speech == 1)
- 414   1            {
- 415   2            never_alarm_speech = 0;
- 416   2            Self_learn_speech();             
- 417   2            }  
+ 412   2               {
+ 413   3               load_battery_result = ADC_check_result;
+ 414   3               verifybattery(load_battery_result);
+ 415   3               Check_Motobattery_flag = 0;
+ 416   3               }
+ 417   2            }
  418   1         }
- 419             
- 420          /*---------------------------------------------------
- 421             end of file
- 422          ----------------------------------------------------*/
+ 419          
+ 420          /*--------------------------------------------------------
+ 421             Enter_noguard_voice()
+ 422          --------------------------------------------------------*/
+ 423          void Enter_noguard_voice()
+ 424             {
+ 425   1         if(never_alarm_speech == 1)
+C51 COMPILER V9.54   VOICE                                                                 09/11/2015 11:40:14 PAGE 8   
+
+ 426   1            {
+ 427   2            never_alarm_speech = 0;
+ 428   2            Self_learn_speech();             
+ 429   2            }  
+ 430   1         }
+ 431             
+ 432          /*---------------------------------------------------
+ 433             end of file
+ 434          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-C51 COMPILER V9.54   VOICE                                                                 06/25/2015 14:54:55 PAGE 8   
-
-   CODE SIZE        =    498    ----
+   CODE SIZE        =    513    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      1       2

@@ -20,7 +20,7 @@
 #define MyAddress 0xe0
 
 #define ComMode_1 0xc1	// the verification/confirmation signal. once slave receive this signal, slave transmit a confirmation signal.
-						// once host receive this signal, it knows slave is here.
+								// once host receive this signal, it knows slave is here.
 #define ComMode_2 0xc2 	// battery stolen signal out
 #define ComMode_3 0xc3 	// host stolen alarm signal 
 #define ComMode_4 0xc4 	// raised alarm signal
@@ -48,9 +48,15 @@ void send_code_to_lock(tByte x, y);
 void send_code_to_lock_Taili(tByte x, y);	
 void UART_Send_Data(tByte command);
 void UART_Send_Data_F(tByte command);
+void UART_Send_Data_F2(tByte command);
 void UART_Send_Data_match(void);
 void open_tranceiver(void);
 void close_tranceiver(void);
+void UART_Send_Data_Broadtest(tByte command);
+void open_tranceiver_F(void);
+void close_tranceiver_F(void);
+void UART_Send_Data_match_F(void);
+void UART_Send_Data_F3(tByte command);
 
 
 #endif

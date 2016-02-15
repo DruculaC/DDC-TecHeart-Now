@@ -141,38 +141,53 @@ code tByte IDkey10 _at_ 0x003004;
 code tByte IDkey11 _at_ 0x003005;
 #endif
 
+bit ID_selflearning_flag = 0;
+tByte ID_selflearning_time = 0;
+tByte match_button_level = 0;
+
+extern tByte myTxRxData[7];
+
 /*--------------------------------------------------------------*/
 
 void main(void)
 	{
 	InitVoice();
+
 	InitUART(BAUD1200);
+
+	#ifdef F2
+	InitUART(BAUD9600);
+	#endif
 
 	// 键盘中断初始化
 	press_open_button = 1;
 	press_close_button = 1;
 	
+	#ifdef WX
 	KBLS1 |= 0x03;
 	KBLS0 |= 0x03;
 	KBIF &= 0xfc;
 	KBIE |= 0x03;
 	EKB = 1;
+	#endif
+
 	EA = 1;
 
 //	Moto_EN = 1;		//初始化，关闭马达
 	voice_EN = 0;		  	//开机时，将功放关闭
-	P10=1;
+	P10 = 1;
 	
 //	ADC_check_result = 0x3ff;
 	
 	stolen_alarm_count = 0;			//清报警计数器
 	stolen_alarm_flag = 0;			//清报警标志
 
-	transmit_wire = 0;
+//	transmit_wire = 0;
 	transmiter_EN = 0;		// turn off the transmitter
 	receiver_EN = 0;			// turn on the receiver
-	transceiver_power_enable = 1;         // 上电时无线模块电源关闭
-	
+	transceiver_power_enable = 0;         // 上电时无线模块电源关闭
+
+
 	while(1)
 		{
 		#ifdef Z2
@@ -183,6 +198,29 @@ void main(void)
 			}
 		#endif
 			
+		
+		sEOS_Go_To_Sleep();			
+		}
+	}
+
+/*--------------------------------------------------------------------
+	timerT0()
+	定时器0每次溢出后执行的操作
+--------------------------------------------------------------------*/
+
+void timer0() interrupt interrupt_timer_0_overflow
+	{
+	// 重装在定时器的时间设置
+	TH0 = timer0_8H;
+	TL0 = timer0_8L;
+
+
+
+
+	// 设置一个每3s的操作
+	if(++timer0_count >= 2000)		
+		{
+
 		// 主机被盗报警
 		if(stolen_alarm_flag == 1)		
 			{
@@ -190,7 +228,7 @@ void main(void)
 			Alarm_stolen_speech();		
 			Moto_Vibration();          
 			stolen_alarm_flag = 0;
-			}	
+			}
 
 		// 抬起信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次抬起只发4遍。
 		if(raised_alarm_flag == 1)	
@@ -217,33 +255,24 @@ void main(void)
 		
 		if(battery_stolen_EN == 1)
 			{
-         Host_battery_high_alarm_speech();
+         battery_stolen_speech_F3();
 			battery_stolen_EN = 0;
 			Moto_Vibration();         			
 			}
+
+		if(ID_selflearning_flag == 1)
+			{
+			ID_selflearning_time += 1;
+			if(ID_selflearning_time > 10)
+				{
+				ID_selflearning_flag = 0;
+				ID_selflearning_time = 0;
+				}
+			}
 		
-		sEOS_Go_To_Sleep();			
-		}
-	}
-
-/*--------------------------------------------------------------------
-	timerT0()
-	定时器0每次溢出后执行的操作
---------------------------------------------------------------------*/
-
-void timer0() interrupt interrupt_timer_0_overflow
-	{
-	// 重装在定时器的时间设置
-	TH0 = timer0_8H;
-	TL0 = timer0_8L;
-
-	// 设置一个每3s的操作
-	if(++timer0_count >= 2000)		
-		{
 		
 		// 每个3s做一次电量检测，并进行相关的电量提示
 		Check_motor_accumulator();
-		MagentControl_2 = ~MagentControl_2;
 
 		#ifdef Z2
 		if(ADC_check_result <= 0x36a)		// 2.96V/3.47V 电量非常不足
@@ -310,29 +339,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				}			
 			}
 		#endif
-		
-		if(match_button_flag6 == 1)
-			{
-			#ifdef ID
-			if(++match_button_flag6count > 10)
-			#endif
-			#ifdef WX
-			if(++match_button_flag6count > 1)
-			#endif
-				{
-				match_button_HVcount = 0;
-				match_button_LVcount = 0;
-				match_button_flag1 = 0;
-				match_button_flag2 = 0;
-				match_button_flag3 = 0;
-				match_button_flag4 = 0;
-				match_button_flag5 = 0;
-				match_button_flag6 = 0;
-				match_moto_EN = 0;
-				match_button_flag6count = 0;				
-				}			
-			}		
-		
+
 		#ifdef WX
 		if((press_close_button == 1)&&(EKB == 0))
 			{
@@ -358,19 +365,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 		MagentControl_2 = 0;
 		}
 
-/*	#ifdef ID
-	if((toggle_button == 1)&&(idle_EN == 0))
-		{
-		transceiver_power_enable = 1;
-//		receiver_EN = 0;
-//		transmiter_EN = 0;
-//		RXD = 0;
-		TXD = 0;
-		idle_EN = 1;
-		}
-	#endif
-*/		
-	if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
+	if((transceiver_power_enable == 0)&&(ID_selflearning_flag == 0))
 		{
 		#ifdef Z2
 		if(++receiver_EN_count > 80)
@@ -384,14 +379,37 @@ void timer0() interrupt interrupt_timer_0_overflow
 			if(battery_hint_action == 1)
 				{
 				UART_Send_Data_F(ComMode_12);			
+
 				battery_hint_action = 0;
 				SC_RST = ~SC_RST;
 				}
 			
+			#ifdef F2
 			if(vibration_send_EN == 1)
 				{
-				UART_Send_Data_F(ComMode_1);
+				tByte i;
+				
+				UART_Send_Data_F(ComMode_1);				
+				for(i = 0; i < 15; i++)
+					UART_Send_Data_F2(ComMode_1);
 				}
+			#endif
+			
+			#ifdef F3
+			if(vibration_send_EN == 1)
+				{
+				tByte i;
+				
+				open_tranceiver_F();				
+				
+				initsignal_F();	
+				UART_Send_Data_F3(ComMode_1);
+				for(i = 0; i < 15; i++)
+					UART_Send_Data_F3(ComMode_1);
+				
+				close_tranceiver_F();				
+				}
+			#endif
 			
 			transceiver_power_enable = 1;
 			RXD = 0;
@@ -401,13 +419,13 @@ void timer0() interrupt interrupt_timer_0_overflow
 			}
 		}	
 
-	if((transceiver_power_enable == 1)&&(match_button_flag6 == 0))
+	if((transceiver_power_enable == 1)&&(ID_selflearning_flag == 0))
 		{		
 		#ifdef Z2
-		if(++receiver_DisEN_count > 2500)
+		if(++receiver_DisEN_count > 4000)
 		#endif
 		#ifdef Z3
-		if(++receiver_DisEN_count > 1500)
+		if(++receiver_DisEN_count > 2000)
 		#endif
 			{
 			transceiver_power_enable = 0;
@@ -419,6 +437,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			receiver_EN = 0;
 			RXD = 1;
 			#endif
+
 			}
 		}
 	
@@ -427,7 +446,9 @@ void timer0() interrupt interrupt_timer_0_overflow
 		if(++Press_open_button_count > 3000)
 			{
 			transceiver_power_enable = 0;
+			
 			UART_Send_Data_F(ComMode_11);
+			
 			TXD = 0;		
 			transceiver_power_enable = 1;		
 			}
@@ -439,89 +460,58 @@ void timer0() interrupt interrupt_timer_0_overflow
 	
 	if(match_button == 0)
 		{
-		match_button_HVcount = 0;
-					
-		if(++match_button_LVcount > 4000)
+		match_button_LVcount += 1;
+		if(match_button_LVcount >= 6000)
 			{
-			match_button_LVcount = 4002;
-			match_button_flag1 = 0;
-			match_button_flag2 = 0;
-			match_button_flag3 = 0;
-			match_button_flag4 = 0;
-			match_button_flag5 = 0;
+			match_button_LVcount = 6001;
+			match_button_level = 0;
+			ID_selflearning_flag = 0;
 			}
-		else
-			{
-			match_button_flag1 = 1;
-			if(match_button_flag2 == 1)
-				match_button_flag3 = 1;
-			if(match_button_flag4 == 1)
-				match_button_flag5 = 1;
-			}
-		
-		battery_LV_flag = 0;
-		battery_HV_flag = 0;
 		}
 	else
 		{
-		match_button_LVcount = 0;
+		if(match_button_LVcount > 50)
+			{
+			match_button_LVcount = 0;
+			match_button_level += 1;
+			}
+		}
+	
+	if(match_button_level >= 3)
+		{
+		match_button_level = 0;
+		ID_selflearning_flag = 1;
+		data_count = 0;
 		
-		if(match_button_flag1 == 1)
-			match_button_flag2 = 1;			
-		if(match_button_flag3 == 1)
-			match_button_flag4 = 1;	
-		if(match_button_flag5 == 1)
-			{
-			match_button_flag6 = 1;
-			match_button_flag5 = 0;
-			
-			transceiver_power_enable = 0;
-			
-			#ifdef ID
-			receiver_EN_count = 0;
-			receiver_EN = 0;
-			RXD = 1;
-			#endif
-			
-			#ifdef WX
-			UART_Send_Data_match();
-			#endif
+		Moto_Vibration();
+		Delay(10);
+		Moto_Vibration();
+		
+		transceiver_power_enable = 0;
 
-			if(match_moto_EN == 0)
-				{
-				Moto_Vibration(); 
-				match_moto_EN = 1;
-				}
-			}
-			
-		if(++match_button_HVcount > 4000)
-			{
-			match_button_HVcount = 4002;
-			match_button_flag1 = 0;
-			match_button_flag2 = 0;
-			match_button_flag3 = 0;
-			match_button_flag4 = 0;
-			match_button_flag5 = 0;
-			match_moto_EN = 0;
-			}
+		#ifdef ID
+		receiver_EN = 0;
+		RXD = 1;
+		#endif
+		
+		#ifdef WX
+		UART_Send_Data_match_F();
+		#endif
 		}
 
 	#ifdef ID
 	if(IDflash_EN == 1)
 		{
 		IDflash_EN = 0;
-		match_button_flag1 = 0;
-		match_button_flag2 = 0;
-		match_button_flag3 = 0;
-		match_button_flag4 = 0;
-		match_button_flag5 = 0;
-		match_button_flag6 = 0;
-		match_moto_EN = 0;
+
       Self_learn_programming_F();
+
 		Moto_Vibration();
 		Delay(10);
 		Moto_Vibration();
-		match_button_flag6count = 0;
+
+		ID_selflearning_flag = 0;
+		
 		}
 	#endif
 	}
@@ -534,9 +524,10 @@ void uart_isr() interrupt 4
 	if(RI)
 		{
 		RI=0;
+		
 		received_data_buffer[data_count] = SBUF;
 		
-		if(match_button_flag6 == 0)
+		if(ID_selflearning_flag == 0)
 			{
 			// judge whether buffer[0] is CmdHead
 			if((data_count == 0) && (received_data_buffer[0] == IDkey6))
@@ -546,6 +537,7 @@ void uart_isr() interrupt 4
 			else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
 				{
 				data_count = 2;
+				MagentControl_2 = ~MagentControl_2;
 				}
 			else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
 				{
@@ -623,11 +615,13 @@ void uart_isr() interrupt 4
 			}
 		else
 			{
-			if((data_count == 0)&&(received_data_buffer[0] == CmdHead))
+			if((data_count == 0) && (received_data_buffer[0] == CmdHead))
+//			if(data_count == 0)
 				{
 				data_count = 1;
 				}
-			else if((data_count == 1)&&(received_data_buffer[1] == ComMode_1))
+			else if((data_count == 1) && (received_data_buffer[1] == ComMode_1))
+//			else if(data_count == 1)
 				{
 				data_count = 2;
 				}
@@ -664,6 +658,7 @@ void uart_isr() interrupt 4
 	KBI_ISR()
 	键盘中断，使芯片从省电模式中唤醒
 -----------------------------------------------------------*/
+#ifdef WX
 void KBI_ISR(void) interrupt 7
 	{
 	EKB = 0;
@@ -673,9 +668,8 @@ void KBI_ISR(void) interrupt 7
 	receiver_EN = 0;
 	RXD = 1;
 	Toggle_button_HV_count = 0;
-//	EKB = 1;
 	}
-		
+#endif		
 /*---------------------------------------------------
 	end of file
 ----------------------------------------------------*/

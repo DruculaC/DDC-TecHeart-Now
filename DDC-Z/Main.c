@@ -1,6 +1,6 @@
 /*---------------------------------------------------
 	main.c (v1.00)
-	
+
 	DDC-Z program, for electrocar.
 ----------------------------------------------------*/
 
@@ -22,7 +22,7 @@
 #include "schedular.h"
 #include "ElecMotor.h"
 
-                                        
+
 /*------- Public variable declarations --------------------------*/
 extern tByte timer0_8H, timer0_8L, timer1_8H, timer1_8L;
 extern bit enable_sensor_delayEN;
@@ -126,28 +126,38 @@ bit Just_power_up = 1;
 
 bit Battery_hint_flag = 0;
 
+bit Autolock_G = 0;
+tWord timer0_count2 = 0;
+
 /*------- Private variable declaratuions --------------------------*/
 
 void main()
 	{
 	InitVoice();
 	
+	// lock the external motor, prohibit motor moving when power up.
+	InitElecmotor();	
+	
 	InitUART(BAUD9600);
-//	#ifdef WX
-//	InitUART(BAUD1200);
-//	#endif
 	
 	InitSensor();
 	
 	InitTransceiver();
-	
-	// lock the external motor, prohibit motor moving when power up.
-	InitElecmotor();	
-  
+
 	Externalmotor = Close;
+
+	// 将P0.1设置成输入高阻模式
+	P0M1 |= 0x02;
+	P0M2 &= 0xfd;
+	// 将P2.5，即PIN16设置成输入高阻模式
+	P2M1 |= 0x20;
+	P2M2 &= 0xdf;
 	
+	Lock_EN = 0;
+	Generator_lock = 0;
+
 	while(1)
-		{		
+		{
 		}
 	}
 
@@ -167,8 +177,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 		{
 		// reset timer0 ticket counter every 2s
 		timer0_count=0;
-		
-		#ifdef Z2
+
+//		UART_Send_Data_match();
+
+/*		#ifdef Z2
 		if(Lock_EN == 1)
 			{
 			ID_certificated_flag = 1;
@@ -178,9 +190,36 @@ void timer0() interrupt interrupt_timer_0_overflow
 			slave_nearby_count = 0;
 			}
 		#endif
+*/
+
+		#ifdef ID
+		if((++timer0_count2 >= 100)&&(Autolock_G == 0))
+			{
+			Autolock_G = 1;
+			}
+		#endif
+/*----- Wire_cut detection ----------------------------------------*/
+		if(sensor_EN == 1)
+			{
+			// judge the wire broken, if yes, it means someone has cut the wire of magnet lock
+			if(wire_broken == 0)
+				{
+				EN_host_stolen_alarming = 1;
+				host_stolen_alarm2_EN = 1;
+				Stolen_alarm_reset_count = 0;		
+				wire_broken_flag = 1;
+				}
+			else if((wire_broken == 1)&&(wire_broken_flag == 1))
+				{
+				wire_broken_reset = 1;
+				wire_broken_flag = 0;				
+				ID_speech();
+				}
+			}
+
 
 /*----- Accumulator relevantly ------------------------------------*/
-		Check_motor_accumulator();		
+		Check_motor_accumulator();
 		Accumulator_voice_promot();
 
 /*----- Enable sensor ---------------------------------------------*/
@@ -192,26 +231,26 @@ void timer0() interrupt interrupt_timer_0_overflow
 		#ifdef WX
 		Ensensor_after_slave_away();
 		#endif		
-		
+
 		ENsensor_After_Close();
 
-/*----- Alarm relevantly -----------------------------------------*/		
+/*----- Alarm relevantly -----------------------------------------*/
 		#ifdef Z3
 		Fell_Alarm_to_Slave();
 		Raise_Alarm_to_Slave();
 		Batstolen_Alarm_to_Slave();
-		#endif		
+		#endif
 		Host_stolen_action();
 
 /*----- Reset flag and disabling sensor relevantly --------------*/
-		Disable_sensor_after_IDcert();		
+		Disable_sensor_after_IDcert();
 
 		Reset_after_wirebroken();
 		Reset_after_stolen_alarming();
-		SelfLearn_Reset();					
-		}	
-	
-	// Voice hint for entering no guard mode, 
+		SelfLearn_Reset();
+		}
+
+	// Voice hint for entering no guard mode,
 	Enter_noguard_voice();
 
 /*----- Detectiong relevantly -----------------------------------*/
@@ -221,13 +260,13 @@ void timer0() interrupt interrupt_timer_0_overflow
 
 	Detect_open_action();
 	Detect_close_action();
-	
+
 	if(Battery_hint_flag == 1)
 		{
 		Battery_hint_flag = 0;
 		Battery_hint();
 		}
-	
+
 // judge host is fell or raised every 1ms?
 //	if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
 //		{
@@ -242,7 +281,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 					{					
 					// judge host been touched and also not in vibration alarm
 //					if((sensor_detect == 0)&&(Host_stolen_alarming == 0)&&(transmiter_EN == 1))		
-					if(((sensor_detect == 0)||(horizontal_sensor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
 						{
 						// judge LV is more than 2ms, if yes, it means a effective touch
 						if(++sensor_1ststage_count >= 1)			
@@ -253,11 +292,11 @@ void timer0() interrupt interrupt_timer_0_overflow
 							sensor_trigger_count = 1;
 							// alarm speech for first touch
 //							SCH_Add_Task(host_touch_speech, 0, 0);
-//							host_touch_speech();
-							Delay_500ms();
-							Delay_500ms();
-							Delay_500ms();
-							Delay_500ms();
+							host_touch_speech();
+//							Delay_500ms();
+//							Delay_500ms();
+//							Delay_500ms();
+//							Delay_500ms();
                      }
 						}
 					else
@@ -271,7 +310,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				// waiting for next touch, 
 				case 1:
 					{
-					if((sensor_detect == 0)||(horizontal_sensor == 0))
+					if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
 						{
 						// LV for 2s, means a effective touch
 						if(++sensor_2ndstage_count >= 1)
@@ -279,8 +318,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 							sensor_2ndstage_count = 0;
 							sensor_trigger_count = 2;
 							// alarm speech for 2nd touch
-//							SCH_Add_Task(host_2ndtouch_speech, 0, 0);
-							host_touch_speech();
+							host_2ndtouch_speech();
+//							host_touch_speech();
 							}
 						}
 					else
@@ -302,10 +341,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 				// waiting for 3rd touch
 				case 2:
 					{
-					if((sensor_detect == 0)||(horizontal_sensor == 0))
+					if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
 						{
 						// 2s LV is a effective touch
-						if(++sensor_3rdstage_count >= 1)
+						if(++sensor_3rdstage_count >= 3)
 							{
 							sensor_3rdstage_count = 0;
 							// stolen alarm speech enable
@@ -332,21 +371,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 						}
 					}
 				break;
-				}
-			
-			// judge the wire broken, if yes, it means someone has cut the wire of magnet lock
-			if(wire_broken == 0)
-				{
-				EN_host_stolen_alarming = 1;
-				host_stolen_alarm2_EN = 1;
-				Stolen_alarm_reset_count = 0;		
-				wire_broken_flag = 1;
-				}
-			else if((wire_broken == 1)&&(wire_broken_flag == 1))
-				{
-				wire_broken_reset = 1;
-				wire_broken_flag = 0;				
-				ID_speech();
 				}
 			
 			
@@ -391,8 +415,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 			{
 			// LV > 0.5s means a effective input
 			if(++fell_wire_time==10)	
-				{
-				// flag fell, and reset raised
+				{ 
+				//  flag fell, and reset raised
 				fell_flag=1;			
 				raised_flag=0;
 				// judge whether there once been a raised or fell
@@ -470,7 +494,7 @@ void uart_isr() interrupt 4
 			#ifdef ID
 			else if((data_count == 5) && (received_data_buffer[5] == IDkey11))
 				{
-				data_count = 0;	
+				data_count = 0;
 				ID_certificated_flag = 1;
 				After_IDcert_timecount = 0;
 				IDkey_speech_flash = 1;
@@ -497,10 +521,10 @@ void uart_isr() interrupt 4
 				data_count = 0;
 				}			
 			#endif
-			else 
+			else
 				{
 				data_count = 0;
-				}	
+				}
 
 			#ifdef WX
 			if(receive_data_finished_flag == 1)
@@ -517,14 +541,14 @@ void uart_isr() interrupt 4
 						slave_nearby_count = 0;
 						}
 					break;
-					
+
 					case ComMode_11:
 						{
 						Silence_Flag = 1;
 						Self_learn_speech();
 						}
 					break;
-					
+
 					case ComMode_12:
 						{
 						Battery_hint_flag = 1;
@@ -535,7 +559,7 @@ void uart_isr() interrupt 4
 			#endif
 			}
 		else
-			{			
+			{
 			#ifdef ID
 			if(++data_count >= 6)
 				{
@@ -543,7 +567,7 @@ void uart_isr() interrupt 4
 				IDkey_flash_EN = 1;
 				}
 			#endif
-			
+
 			#ifdef WX
 			if((data_count == 0)&&(received_data_buffer[0] == CmdHead))
 				{
@@ -575,7 +599,7 @@ void uart_isr() interrupt 4
 				IDkey_flash_EN = 1;
 				ID_speech();
 				}
-			else 
+			else
 				{
 				data_count = 0;
 				}
@@ -583,8 +607,6 @@ void uart_isr() interrupt 4
 			}
 		}
 	}
-
-
 /*---------------------------------------------------
 	end of file
 ----------------------------------------------------*/

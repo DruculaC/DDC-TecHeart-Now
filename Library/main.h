@@ -11,18 +11,18 @@
 
 // Program version
 //#define Taili, General, Tailing			
-// Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General
+// Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General, Xinri
 #define General
 
 // Define PCB board, such as Z2, Z3.
 #define Z2
 
-// Define salve model, F2, F3.
-#define F2
+// Define slave model, F2, F3.
+// #define F3
 
 // Define model.
-// ID, WX, 
-#define WX
+// ID, WX,
+#define ID
 
 // Define the Lock model.
 //#define Suidongzha, Guxingzha
@@ -48,8 +48,9 @@
 #define OSC_PER_INST (12)
 
 // baud rate defined
-#define BAUD9600 9600
-#define BAUD1200 1200
+#define BAUD9600 (9600)
+
+#define BAUD1200 (1200)
 
 //---------------------------------------------------
 // should not need to edit the sections below

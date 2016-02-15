@@ -150,7 +150,6 @@ void hSCH_Manual_Timer0_Reload()
 /*------------------------------------------------------------------
 	timerT0()
 	operation every ticket.
-
 void timer0() interrupt interrupt_timer_0_overflow
 	{
    tByte Index;

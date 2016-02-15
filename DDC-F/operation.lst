@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 1   
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE OPERATION
@@ -35,495 +35,528 @@ line level    source
   25          tWord wire_broken_time = 0;
   26          tByte wire_broken_level = 0;
   27          
-  28          /*------- Public variable declarations --------------------------*/
-  29          extern bit position_sensor_EN;   
-  30          extern bit fell_flag;                  
-  31          extern bit raised_flag;          
-  32          extern tByte sensor_trigger_count;  
-  33          extern tByte sensor_1ststage_count; 
-  34          extern bit raised_fell_once_flag;         
-  35          extern bit raised_fell_flag;              
-  36          extern bit EN_host_stolen_alarming;     
-  37          extern bit host_stolen_alarm2_EN;      
-  38          extern tByte host_stolen_alarm1_count;    
-  39          extern tByte host_stolen_alarm2_count;    
-  40          extern bit Host_stolen_alarming;             
-  41          extern tWord sensor_3rdstage_time;        
-  42          extern tByte sensor_3rdstage_effcount;    
-  43          extern tByte sensor_3rdstage_count;       
-  44          extern tWord sensor_3rdstage_interval;    
-  45          extern tWord sensor_2ndstage_time;     
-  46          extern tByte sensor_2ndstage_count;    
-  47          extern tWord ADC_check_result;      
-  48          extern tByte wire_broken_count;     
-  49          extern bit wire_broken_flag;        
-  50          extern bit battery_stolen_EN;       
-  51          extern tByte battery_stolen_count;
-  52          extern bit sensor_3rdalarm_flag;
-  53          extern tByte enable_sensor_delay_count;      
-  54          extern bit Silence_Flag;
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 2   
+  28          bit vibration_flag1 = 0;
+  29          tWord vibration_count1 = 0;
+  30          
+  31          /*------- Public variable declarations --------------------------*/
+  32          extern bit position_sensor_EN;   
+  33          extern bit fell_flag;                  
+  34          extern bit raised_flag;          
+  35          extern tByte sensor_trigger_count;  
+  36          extern tByte sensor_1ststage_count; 
+  37          extern bit raised_fell_once_flag;         
+  38          extern bit raised_fell_flag;              
+  39          extern bit EN_host_stolen_alarming;     
+  40          extern bit host_stolen_alarm2_EN;      
+  41          extern tByte host_stolen_alarm1_count;    
+  42          extern tByte host_stolen_alarm2_count;    
+  43          extern bit Host_stolen_alarming;             
+  44          extern tWord sensor_3rdstage_time;        
+  45          extern tByte sensor_3rdstage_effcount;    
+  46          extern tByte sensor_3rdstage_count;       
+  47          extern tWord sensor_3rdstage_interval;    
+  48          extern tWord sensor_2ndstage_time;     
+  49          extern tByte sensor_2ndstage_count;    
+  50          extern tWord ADC_check_result;      
+  51          extern tByte wire_broken_count;     
+  52          extern bit wire_broken_flag;        
+  53          extern bit battery_stolen_EN;       
+  54          extern tByte battery_stolen_count;
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 2   
 
-  55          extern tByte Open_action_flag;      
-  56          extern tByte ID_certificated_numbers;
-  57          extern bit ID_certificated_flag;       
-  58          extern tByte After_IDcert_timecount;      
-  59          extern bit never_alarm;
-  60          extern bit IDkey_selflearn_flag1;
-  61          extern bit IDkey_selflearn_flag2;
-  62          extern bit IDkey_selflearn_flag3;
-  63          extern bit IDkey_selflearn_flag4;
-  64          extern bit IDkey_selflearn_flag5;
-  65          extern bit ID_selflearning_flag;
-  66          extern tByte ID_selflearning_timecount;
-  67          extern tWord IDkey_selflearn_HVcount;
-  68          extern tWord IDkey_selflearn_LVcount;
-  69          extern tByte fell_alarm_count;
-  70          extern tByte raised_alarm_count;
-  71          extern tByte Check_Motobattery_count;
-  72          extern bit Check_Motobattery_flag;
-  73          extern tWord load_battery_result;
-  74          extern bit ID_speeched_flag;
-  75          extern bit slave_nearby_actioned_flag;
-  76          extern bit IDkey_speech_flash;
-  77          extern bit wire_broken_reset;
-  78          extern tByte Stolen_alarm_reset_count;
-  79          extern bit vibration_flag;
-  80          extern tByte slave_nearby_count;
-  81          extern bit wheeled_flag;
-  82          extern bit IDkey_flash_EN;
-  83          extern bit flashing_flag;
-  84          extern tWord vibration_count;
-  85          extern tWord wheeled_count;
-  86          extern bit Just_power_up;
-  87          
-  88          /*-----------------------------------------
-  89             slave_away_operation()
-  90             
-  91             operation for slave is away
-  92          ------------------------------------------*/
-  93          void slave_away_operation(void)
-  94             {  
-  95   1         if(Silence_Flag == 0)
-  96   1            {
-  97   2            close_lock_speech(); 
-  98   2            load_battery_result = ADC_check_result;
-  99   2            verifybattery(load_battery_result);
- 100   2      
- 101   2      //    Check_Motobattery_flag = 1;
- 102   2      //    Check_Motobattery_count = 0;
- 103   2            }
- 104   1         // Enable_sensor();  
- 105   1         enable_sensor_delayEN = 1;
- 106   1         enable_sensor_delay_count = 0;
- 107   1         // delay time, avoid sensor trigger on.
- 108   1         Delay(20);
- 109   1         ID_certificated_numbers = 0;
- 110   1      
- 111   1         if(Silence_Flag == 1)
- 112   1            Silence_Flag = 0;
- 113   1         }
- 114          
- 115          /*----------------------------------------------------------------------
- 116                slave_nearby_operation()
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 3   
+  55          extern bit sensor_3rdalarm_flag;
+  56          extern tByte enable_sensor_delay_count;      
+  57          extern bit Silence_Flag;
+  58          extern tByte Open_action_flag;      
+  59          extern tByte ID_certificated_numbers;
+  60          extern bit ID_certificated_flag;       
+  61          extern tByte After_IDcert_timecount;      
+  62          extern bit never_alarm;
+  63          extern bit IDkey_selflearn_flag1;
+  64          extern bit IDkey_selflearn_flag2;
+  65          extern bit IDkey_selflearn_flag3;
+  66          extern bit IDkey_selflearn_flag4;
+  67          extern bit IDkey_selflearn_flag5;
+  68          extern bit ID_selflearning_flag;
+  69          extern tByte ID_selflearning_timecount;
+  70          extern tWord IDkey_selflearn_HVcount;
+  71          extern tWord IDkey_selflearn_LVcount;
+  72          extern tByte fell_alarm_count;
+  73          extern tByte raised_alarm_count;
+  74          extern tByte Check_Motobattery_count;
+  75          extern bit Check_Motobattery_flag;
+  76          extern tWord load_battery_result;
+  77          extern bit ID_speeched_flag;
+  78          extern bit slave_nearby_actioned_flag;
+  79          extern bit IDkey_speech_flash;
+  80          extern bit wire_broken_reset;
+  81          extern tByte Stolen_alarm_reset_count;
+  82          extern bit vibration_flag;
+  83          extern tByte slave_nearby_count;
+  84          extern bit wheeled_flag;
+  85          extern bit IDkey_flash_EN;
+  86          extern bit flashing_flag;
+  87          extern tWord vibration_count;
+  88          extern tWord wheeled_count;
+  89          extern bit Just_power_up;
+  90          extern bit Autolock_G;
+  91          extern tWord timer0_count2;
+  92          
+  93          /*-----------------------------------------
+  94             slave_away_operation()
+  95             
+  96             operation for slave is away
+  97          ------------------------------------------*/
+  98          void slave_away_operation(void)
+  99             {  
+ 100   1         if(Silence_Flag == 0)
+ 101   1            {
+ 102   2            close_lock_speech(); 
+ 103   2            load_battery_result = ADC_check_result;
+ 104   2            verifybattery(load_battery_result);
+ 105   2      
+ 106   2      //    Check_Motobattery_flag = 1;
+ 107   2      //    Check_Motobattery_count = 0;
+ 108   2            }
+ 109   1         // Enable_sensor();  
+ 110   1         enable_sensor_delayEN = 1;
+ 111   1         enable_sensor_delay_count = 0;
+ 112   1         // delay time, avoid sensor trigger on.
+ 113   1         Delay(20);
+ 114   1         ID_certificated_numbers = 0;
+ 115   1      
+ 116   1         if(Silence_Flag == 1)
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 3   
 
- 117                operation for slave is nearby
- 118          ----------------------------------------------------------------------*/
- 119          void slave_nearby_operation(void)
- 120             {
- 121   1         slave_nearby_actioned_flag = 1;
- 122   1         
- 123   1         ID_speeched_flag = 0;      
- 124   1         After_IDcert_timecount = 0;
- 125   1         ID_certificated_flag = 0;
- 126   1         ID_certificated_numbers = 0;     
- 127   1      
- 128   1         if(Silence_Flag == 0)
- 129   1            {
- 130   2            open_lock_speech();
- 131   2            if(Just_power_up == 0)
- 132   2               verifybattery(load_battery_result);
- 133   2            key_rotate_on_speech();
- 134   2            }
- 135   1         }
- 136          
- 137          /*------------------------------------------------------------------
- 138             InitSensor()
- 139             Initialise Sensor.
- 140          ------------------------------------------------------------------*/
- 141          void InitSensor(void)
- 142             {
- 143   1         sensor_EN = 0;
- 144   1         position_sensor_EN = 0;
- 145   1         enable_sensor_delayEN = 0; 
- 146   1         raised_sensor_detect = 1;
- 147   1         fell_sensor_detect = 1; 
- 148   1         }
- 149             
- 150          /*------------------------------------------------------------------
- 151             Host_stolen_action()
- 152             Determine host has been triggled 3 times, alarm action.
- 153          ------------------------------------------------------------------*/
- 154          void Host_stolen_action(void)
- 155             {
- 156   1         // if host has been touched 3 times, alarm 2 speeches alternantively.
- 157   1         if(EN_host_stolen_alarming == 1)
- 158   1            {
- 159   2            Host_stolen_alarming = 1;
- 160   2            
- 161   2            stolen_alarm_speech1();
- 162   2            #ifdef Z3
- 163   2            if(wire_broken_flag == 0)
- 164   2               {
- 165   3               UART_Send_Data(ComMode_3);                                                       
- 166   3               }
- 167   2            else
- 168   2               {                                                                     
- 169   3               UART_Send_Data(ComMode_6);                                                       
- 170   3               }
- 171   2            #endif
- 172   2            stolen_alarm_speech2();
- 173   2            }
- 174   1         }
- 175          
- 176          /*------------------------------------------------------------------
- 177             ENsensor_afterIDcert()
- 178             6s After ID certificated, enable sensor. 
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 4   
+ 117   1            Silence_Flag = 0;
+ 118   1         }
+ 119          
+ 120          /*----------------------------------------------------------------------
+ 121                slave_nearby_operation()
+ 122                operation for slave is nearby
+ 123          ----------------------------------------------------------------------*/
+ 124          void slave_nearby_operation(void)
+ 125             {
+ 126   1         slave_nearby_actioned_flag = 1;
+ 127   1         
+ 128   1         ID_speeched_flag = 0;      
+ 129   1         After_IDcert_timecount = 0;
+ 130   1         ID_certificated_flag = 0;
+ 131   1         ID_certificated_numbers = 0;     
+ 132   1      
+ 133   1         if(Silence_Flag == 0)
+ 134   1            {
+ 135   2            open_lock_speech();
+ 136   2            Externalmotor = 0;
+ 137   2            if(Just_power_up == 0)
+ 138   2               verifybattery(load_battery_result);
+ 139   2            key_rotate_on_speech();
+ 140   2            }
+ 141   1         }
+ 142          
+ 143          /*------------------------------------------------------------------
+ 144             InitSensor()
+ 145             Initialise Sensor.
+ 146          ------------------------------------------------------------------*/
+ 147          void InitSensor(void)
+ 148             {
+ 149   1         sensor_EN = 0;
+ 150   1         position_sensor_EN = 0;
+ 151   1         enable_sensor_delayEN = 0; 
+ 152   1         raised_sensor_detect = 1;
+ 153   1         fell_sensor_detect = 1; 
+ 154   1         }
+ 155             
+ 156          /*------------------------------------------------------------------
+ 157             Host_stolen_action()
+ 158             Determine host has been triggled 3 times, alarm action.
+ 159          ------------------------------------------------------------------*/
+ 160          void Host_stolen_action(void)
+ 161             {
+ 162   1         // if host has been touched 3 times, alarm 2 speeches alternantively.
+ 163   1         if(EN_host_stolen_alarming == 1)
+ 164   1            {
+ 165   2            Host_stolen_alarming = 1;
+ 166   2            
+ 167   2            stolen_alarm_speech1();
+ 168   2            stolen_alarm_speech2();
+ 169   2            #ifdef Z3
+ 170   2            if(wire_broken_flag == 0)
+ 171   2               {
+ 172   3               UART_Send_Data(ComMode_3);                                                       
+ 173   3               }
+ 174   2            else
+ 175   2               {                                                                     
+ 176   3               UART_Send_Data(ComMode_6);                                                       
+ 177   3               }
+ 178   2            #endif
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 4   
 
- 179             If ID certficated 6 times, don't enable sensor.
- 180          ------------------------------------------------------------------*/
- 181          void ENsensor_afterIDcert(void)
- 182             {
- 183   1         if(ID_certificated_flag == 1)
- 184   1            {
- 185   2            // 3 tickets after ID certificated.
- 186   2            if(++After_IDcert_timecount >= 5)
- 187   2               {
- 188   3               ID_certificated_flag = 0;
- 189   3               After_IDcert_timecount = 0;         
- 190   3               ID_certificated_numbers = 0;
- 191   3               
- 192   3               // 
- 193   3               if((Open_action_flag == 0)&&(never_alarm == 0))
- 194   3                  {
- 195   4                  Enable_sensor();              
- 196   4                  }           
- 197   3               never_alarm = 0;
- 198   3               
- 199   3               }        
- 200   2            }
- 201   1         }
- 202          
- 203          /*------------------------------------------------------------------
- 204             ENsensor_After_Close()
- 205          ------------------------------------------------------------------*/
- 206          void ENsensor_After_Close(void)
- 207             {
- 208   1         if((enable_sensor_delayEN == 1)&&(key_rotate == 0))
- 209   1            {
- 210   2            if(++enable_sensor_delay_count >= 3)
- 211   2               {
- 212   3               enable_sensor_delay_count = 0;
- 213   3               enable_sensor_delayEN = 0;
- 214   3               if(never_alarm == 0)
- 215   3                  Enable_sensor();
- 216   3               }
- 217   2            }  
- 218   1         }
- 219          
- 220          /*-----------------------------------------------------------------
- 221             SelfLearn_Reset()
- 222             PIN22 triggles 3 times, the system enters selflearn mode
- 223          ------------------------------------------------------------------*/
- 224          void SelfLearn_Reset(void)
- 225             {  
- 226   1         if(ID_selflearning_flag == 1)
- 227   1            {
- 228   2            if(++ID_selflearning_timecount > 10)
- 229   2               {
- 230   3               ID_selflearning_flag = 0;
- 231   3               ID_selflearning_timecount = 0;            
- 232   3               // Reset relatively flag and count.
- 233   3               IDkey_selflearn_HVcount = 0;
- 234   3               IDkey_selflearn_LVcount = 0;
- 235   3               IDkey_selflearn_flag1 = 0;
- 236   3               IDkey_selflearn_flag2 = 0;
- 237   3               IDkey_selflearn_flag3 = 0;
- 238   3               IDkey_selflearn_flag4 = 0;
- 239   3               IDkey_selflearn_flag5 = 0;
- 240   3               }        
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 5   
+ 179   2            }
+ 180   1         }
+ 181          
+ 182          /*------------------------------------------------------------------
+ 183             ENsensor_afterIDcert()
+ 184             6s After ID certificated, enable sensor. 
+ 185             If ID certficated 6 times, don't enable sensor.
+ 186          ------------------------------------------------------------------*/
+ 187          void ENsensor_afterIDcert(void)
+ 188             {
+ 189   1         if(ID_certificated_flag == 1)
+ 190   1            {
+ 191   2            // 3 tickets after ID certificated.
+ 192   2            if(++After_IDcert_timecount >= 15)
+ 193   2               {
+ 194   3               ID_certificated_flag = 0;
+ 195   3               After_IDcert_timecount = 0;         
+ 196   3               ID_certificated_numbers = 0;
+ 197   3               
+ 198   3               // 
+ 199   3               if((Open_action_flag == 0)&&(never_alarm == 0))
+ 200   3                  {
+ 201   4                  Enable_sensor();              
+ 202   4                  }           
+ 203   3               never_alarm = 0;
+ 204   3               
+ 205   3               }        
+ 206   2            }
+ 207   1         }
+ 208          
+ 209          /*------------------------------------------------------------------
+ 210             ENsensor_After_Close()
+ 211          ------------------------------------------------------------------*/
+ 212          void ENsensor_After_Close(void)
+ 213             {
+ 214   1         if((enable_sensor_delayEN == 1)&&((key_rotate == 0)||(Autolock_G == 1)))
+ 215   1            {
+ 216   2            if(++enable_sensor_delay_count >= 3)
+ 217   2               {
+ 218   3               enable_sensor_delay_count = 0;
+ 219   3               enable_sensor_delayEN = 0;
+ 220   3               if(never_alarm == 0)
+ 221   3                  Enable_sensor();
+ 222   3               }
+ 223   2            }  
+ 224   1         }
+ 225          
+ 226          /*-----------------------------------------------------------------
+ 227             SelfLearn_Reset()
+ 228             PIN22 triggles 3 times, the system enters selflearn mode
+ 229          ------------------------------------------------------------------*/
+ 230          void SelfLearn_Reset(void)
+ 231             {  
+ 232   1         if(ID_selflearning_flag == 1)
+ 233   1            {
+ 234   2            if(++ID_selflearning_timecount > 10)
+ 235   2               {
+ 236   3               ID_selflearning_flag = 0;
+ 237   3               ID_selflearning_timecount = 0;            
+ 238   3               // Reset relatively flag and count.
+ 239   3               IDkey_selflearn_HVcount = 0;
+ 240   3               IDkey_selflearn_LVcount = 0;
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 5   
 
- 241   2            }
- 242   1         }
- 243          
- 244          /*---------------------------------------------------
- 245             Fell_Alarm_to_Slave()
- 246             Send fell alarm signal to remote slave.
- 247          ----------------------------------------------------*/
- 248          void Fell_Alarm_to_Slave(void)
- 249             {
- 250   1         if((fell_flag==1)&&(fell_alarm_count<5))
- 251   1            {
- 252   2            UART_Send_Data(ComMode_5);                                                       
- 253   2            fell_alarm_count++;
- 254   2            }  
- 255   1         }
- 256          
- 257          /*----------------------------------------------------
- 258             Raise_Alarm_to_Slave()
- 259             Send raised alarm signal to remote slave
- 260          -----------------------------------------------------*/
- 261          void Raise_Alarm_to_Slave(void)
- 262             {
- 263   1         if((raised_flag==1)&&(raised_alarm_count<5))    
- 264   1            {
- 265   2            UART_Send_Data(ComMode_4);                                                       
- 266   2            raised_alarm_count++;
- 267   2            }        
- 268   1         }
- 269          
- 270          /*----------------------------------------------------
- 271             Batstolen_Alarm_to_Slave()
- 272             Send battery stolen alarm signal to remote slave
- 273          -----------------------------------------------------*/
- 274          void Batstolen_Alarm_to_Slave(void)
- 275             {
- 276   1         if((battery_stolen_EN == 1)&&(battery_stolen_count < 5))
- 277   1            {
- 278   2            UART_Send_Data(ComMode_2);                                                       
- 279   2            battery_stolen_count++;
- 280   2            }  
- 281   1         }
- 282          
- 283          /*----------------------------------------------------
- 284             Disable_sensor_after_IDcert()
- 285          -----------------------------------------------------*/
- 286          void Disable_sensor_after_IDcert(void)
- 287             {
- 288   1         if(IDkey_speech_flash == 1)
- 289   1            {
- 290   2            IDkey_speech_flash = 0;
- 291   2      
- 292   2            disable_sensor();
- 293   2            }  
- 294   1         }
- 295          
- 296          /*----------------------------------------------------
- 297             Reset_after_wirebroken()
- 298          -----------------------------------------------------*/
- 299          void Reset_after_wirebroken(void)
- 300             {
- 301   1         if(wire_broken_reset == 1)
- 302   1            {
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 6   
+ 241   3               IDkey_selflearn_flag1 = 0;
+ 242   3               IDkey_selflearn_flag2 = 0;
+ 243   3               IDkey_selflearn_flag3 = 0;
+ 244   3               IDkey_selflearn_flag4 = 0;
+ 245   3               IDkey_selflearn_flag5 = 0;
+ 246   3               }        
+ 247   2            }
+ 248   1         }
+ 249          
+ 250          /*---------------------------------------------------
+ 251             Fell_Alarm_to_Slave()
+ 252             Send fell alarm signal to remote slave.
+ 253          ----------------------------------------------------*/
+ 254          void Fell_Alarm_to_Slave(void)
+ 255             {
+ 256   1         if((fell_flag==1)&&(fell_alarm_count<5))
+ 257   1            {
+ 258   2            UART_Send_Data(ComMode_5);                                                       
+ 259   2            fell_alarm_count++;
+ 260   2            }  
+ 261   1         }
+ 262          
+ 263          /*----------------------------------------------------
+ 264             Raise_Alarm_to_Slave()
+ 265             Send raised alarm signal to remote slave
+ 266          -----------------------------------------------------*/
+ 267          void Raise_Alarm_to_Slave(void)
+ 268             {
+ 269   1         if((raised_flag==1)&&(raised_alarm_count<5))    
+ 270   1            {
+ 271   2            UART_Send_Data(ComMode_4);                                                       
+ 272   2            raised_alarm_count++;
+ 273   2            }        
+ 274   1         }
+ 275          
+ 276          /*----------------------------------------------------
+ 277             Batstolen_Alarm_to_Slave()
+ 278             Send battery stolen alarm signal to remote slave
+ 279          -----------------------------------------------------*/
+ 280          void Batstolen_Alarm_to_Slave(void)
+ 281             {
+ 282   1         if((battery_stolen_EN == 1)&&(battery_stolen_count < 20))
+ 283   1            {
+ 284   2            UART_Send_Data(ComMode_2);                                                       
+ 285   2            battery_stolen_count++;
+ 286   2            }  
+ 287   1         }
+ 288          
+ 289          /*----------------------------------------------------
+ 290             Disable_sensor_after_IDcert()
+ 291          -----------------------------------------------------*/
+ 292          void Disable_sensor_after_IDcert(void)
+ 293             {
+ 294   1         if(IDkey_speech_flash == 1)
+ 295   1            {
+ 296   2            IDkey_speech_flash = 0;
+ 297   2      
+ 298   2      //    disable_sensor();
+ 299   2            }  
+ 300   1         }
+ 301          
+ 302          /*----------------------------------------------------
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 6   
 
- 303   2            wire_broken_reset = 0;
- 304   2            host_stolen_alarm1_count = 0;
- 305   2            EN_host_stolen_alarming = 0;           
- 306   2            Host_stolen_alarming = 0;
- 307   2            sensor_3rdalarm_flag = 0;
- 308   2            }
- 309   1         }
- 310          
- 311          /*----------------------------------------------------
- 312             Reset_after_stolen_alarming()
- 313             15 tickets after stolen alarm, shut alarm.
- 314          -----------------------------------------------------*/
- 315          void Reset_after_stolen_alarming(void)
- 316             {
- 317   1         if(EN_host_stolen_alarming == 1)
- 318   1            {
- 319   2            if(++Stolen_alarm_reset_count > 3)
- 320   2               {
- 321   3               host_stolen_alarm1_count = 0;
- 322   3               EN_host_stolen_alarming = 0;
- 323   3               Host_stolen_alarming = 0;
- 324   3               sensor_3rdalarm_flag = 0;
- 325   3               Stolen_alarm_reset_count = 0;
- 326   3               close_tranceiver();
- 327   3               }
- 328   2            }
- 329   1         }
- 330          
- 331          /*-----------------------------------------------------
- 332             Ensensor_after_slave_away()
- 333          ------------------------------------------------------*/
- 334          void Ensensor_after_slave_away(void)
- 335             {
- 336   1         if((vibration_flag == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
- 337   1            {
- 338   2            if(++slave_nearby_count > 5)
- 339   2               {
- 340   3               slave_nearby_count = 3;
- 341   3               slave_nearby_actioned_flag = 0;
- 342   3               ID_certificated_flag = 0;
- 343   3               if(never_alarm == 0)
- 344   3                  Enable_sensor();
- 345   3               }
- 346   2            }  
- 347   1         }
- 348          
- 349          /*----------------------------------------------------
- 350             Detect_selflearn_action()
- 351          -----------------------------------------------------*/
- 352          void Detect_selflearn_action(void)
- 353             {
- 354   1         if(key_rotate == 1)
- 355   1            {
- 356   2            if(wire_broken == 1)
- 357   2               {
- 358   3               wire_broken_time += 1;
- 359   3               if(wire_broken_time >= 6000)
- 360   3                  {
- 361   4                  wire_broken_level = 0;
- 362   4                  ID_selflearning_flag = 0;
- 363   4                  }
- 364   3               }
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 7   
+ 303             Reset_after_wirebroken()
+ 304          -----------------------------------------------------*/
+ 305          void Reset_after_wirebroken(void)
+ 306             {
+ 307   1         if(wire_broken_reset == 1)
+ 308   1            {
+ 309   2            wire_broken_reset = 0;
+ 310   2            host_stolen_alarm1_count = 0;
+ 311   2            EN_host_stolen_alarming = 0;           
+ 312   2            Host_stolen_alarming = 0;
+ 313   2            sensor_3rdalarm_flag = 0;
+ 314   2            }
+ 315   1         }
+ 316          
+ 317          /*----------------------------------------------------
+ 318             Reset_after_stolen_alarming()
+ 319             15 tickets after stolen alarm, shut alarm.
+ 320          -----------------------------------------------------*/
+ 321          void Reset_after_stolen_alarming(void)
+ 322             {
+ 323   1         if(EN_host_stolen_alarming == 1)
+ 324   1            {
+ 325   2            if(++Stolen_alarm_reset_count > 5)
+ 326   2               {
+ 327   3               host_stolen_alarm1_count = 0;
+ 328   3               EN_host_stolen_alarming = 0;
+ 329   3               Host_stolen_alarming = 0;
+ 330   3               sensor_3rdalarm_flag = 0;
+ 331   3               Stolen_alarm_reset_count = 0;
+ 332   3               Generator_lock = 1;
+ 333   3               close_tranceiver();
+ 334   3               }
+ 335   2            }
+ 336   1         }
+ 337          
+ 338          /*-----------------------------------------------------
+ 339             Ensensor_after_slave_away()
+ 340          ------------------------------------------------------*/
+ 341          void Ensensor_after_slave_away(void)
+ 342             {
+ 343   1         if((vibration_flag1 == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
+ 344   1            {
+ 345   2            if(++slave_nearby_count > 6)
+ 346   2               {
+ 347   3               slave_nearby_count = 7;
+ 348   3               slave_nearby_actioned_flag = 0;
+ 349   3               ID_certificated_flag = 0;
+ 350   3               if(never_alarm == 0)
+ 351   3                  Enable_sensor();
+ 352   3               }
+ 353   2            }  
+ 354   1         }
+ 355          
+ 356          /*----------------------------------------------------
+ 357             Detect_selflearn_action()
+ 358          -----------------------------------------------------*/
+ 359          void Detect_selflearn_action(void)
+ 360             {
+ 361   1         if(key_rotate == 1)
+ 362   1            {
+ 363   2            if(wire_broken == 1)
+ 364   2               {
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 7   
 
- 365   2            else
- 366   2               {
- 367   3               if(wire_broken_time > 50)
- 368   3                  {
- 369   4                  wire_broken_time = 0;
- 370   4                  wire_broken_level += 1;
+ 365   3               wire_broken_time += 1;
+ 366   3               if(wire_broken_time >= 6000)
+ 367   3                  {
+ 368   4                  wire_broken_time = 6001;
+ 369   4                  wire_broken_level = 0;
+ 370   4                  ID_selflearning_flag = 0;
  371   4                  }
  372   3               }
- 373   2            
- 374   2            if(wire_broken_level > 6)
- 375   2               {
- 376   3               wire_broken_level = 0;
- 377   3               ID_selflearning_flag = 1;
- 378   3               Self_learn_speech();
- 379   3               }
- 380   2            }
- 381   1            
- 382   1         if(IDkey_flash_EN == 1)
- 383   1            {
- 384   2            IDkey_flash_EN = 0;
- 385   2            flashing_flag = 1;
- 386   2            
- 387   2            Self_learn_programming();
- 388   2            
- 389   2            Self_learn_speech();
- 390   2            
- 391   2            #if (defined Z3) && (defined ID)
- 392   2            UART_Send_Data_match();
- 393   2            #endif
- 394   2            }  
- 395   1         }
- 396          
- 397          /*---------------------------------------------------
- 398             Detect_open_action()
- 399          ---------------------------------------------------*/
- 400          void Detect_open_action(void)
- 401             {
- 402   1      // if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))    
- 403   1         if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1))      
- 404   1            {
- 405   2            disable_sensor();
- 406   2            Open_action_flag = 1;
- 407   2            ID_speeched_flag = 0;
- 408   2            
- 409   2            After_IDcert_timecount = 0;
- 410   2            ID_certificated_flag = 0;
- 411   2            ID_certificated_numbers = 0;
- 412   2            slave_nearby_actioned_flag = 1;
- 413   2            ElecMotor_CW();
- 414   2            slave_nearby_operation();
- 415   2            
- 416   2            Just_power_up = 0;
- 417   2            }        
- 418   1         }
- 419          
- 420          /*---------------------------------------------------
- 421             Detect_close_action()
- 422          ---------------------------------------------------*/
- 423          void Detect_close_action(void)
- 424             {
- 425   1         if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0))&&(Open_action_flag == 1))
- 426   1            {
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 8   
+ 373   2            else
+ 374   2               {
+ 375   3               if(wire_broken_time > 50)
+ 376   3                  {
+ 377   4                  wire_broken_time = 0;
+ 378   4                  wire_broken_level += 1;
+ 379   4                  }
+ 380   3               }
+ 381   2            
+ 382   2            if(wire_broken_level > 6)
+ 383   2               {
+ 384   3               wire_broken_level = 0;
+ 385   3               ID_selflearning_flag = 1;
+ 386   3               Self_learn_speech();
+ 387   3               }
+ 388   2            }
+ 389   1            
+ 390   1         if(IDkey_flash_EN == 1)
+ 391   1            {
+ 392   2            IDkey_flash_EN = 0;
+ 393   2            flashing_flag = 1;
+ 394   2            ID_selflearning_flag = 0;
+ 395   2            
+ 396   2            Self_learn_programming();
+ 397   2            
+ 398   2            Self_learn_speech();
+ 399   2            
+ 400   2            #if (defined Z3) && (defined ID)
+                    UART_Send_Data_match();
+                    #endif
+ 403   2            }  
+ 404   1         }
+ 405          
+ 406          /*---------------------------------------------------
+ 407             Detect_open_action()
+ 408          ---------------------------------------------------*/
+ 409          void Detect_open_action(void)
+ 410             {
+ 411   1      // if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))    
+ 412   1         if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1))      
+ 413   1            {
+ 414   2            disable_sensor();
+ 415   2            Open_action_flag = 1;
+ 416   2            ID_speeched_flag = 0;
+ 417   2            
+ 418   2            After_IDcert_timecount = 0;
+ 419   2            ID_certificated_flag = 0;
+ 420   2            ID_certificated_numbers = 0;
+ 421   2            slave_nearby_actioned_flag = 1;
+ 422   2            ElecMotor_CW();
+ 423   2            slave_nearby_operation();
+ 424   2            
+ 425   2            Just_power_up = 0;
+ 426   2            
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 8   
 
- 427   2            if((vibration_flag == 0)&&(wheeled_flag == 0))
- 428   2               {
- 429   3               key_rotate_off_time += 1;
- 430   3               if(key_rotate_off_time >= 1500)
- 431   3                  {
- 432   4                  if((key_rotate == 0)||(slave_nearby_actioned_flag == 0))
- 433   4                     {
- 434   5                     ElecMotor_ACW();
- 435   5      
- 436   5                     Open_action_flag = 0;
- 437   5                     slave_away_operation();
- 438   5                     IDkey_speech_flash = 0;
- 439   5                     ID_speeched_flag = 0;
- 440   5                     }                       
- 441   4                  }
- 442   3               }
- 443   2            }
- 444   1         else if(key_rotate == 1)
- 445   1            key_rotate_off_time = 0;
- 446   1         }
- 447          
- 448          /*------------------------------------------------------
- 449             Detect_vibration()
- 450          -------------------------------------------------------*/
- 451          void Detect_vibration(void)
- 452             {
- 453   1         if((sensor_detect == 0)||(horizontal_sensor == 0))
- 454   1            {
- 455   2            vibration_flag = 1;
- 456   2            vibration_count = 0;
- 457   2            }
- 458   1          if(vibration_flag == 1)
- 459   1            {
- 460   2            if(++vibration_count >= 2000)
- 461   2               {
- 462   3               vibration_flag = 0;
- 463   3               vibration_count = 0;
- 464   3               }
- 465   2            }  
- 466   1         }
- 467          
- 468          /*----------------------------------------------------
- 469             Detect_wheel_moving()
- 470          -----------------------------------------------------*/
- 471          void Detect_wheel_moving(void)
- 472             {
- 473   1         if(wheeled_rotate == 1)
- 474   1            {
- 475   2            wheeled_flag = 1;
- 476   2            wheeled_count = 0;
- 477   2            }
- 478   1         if(wheeled_flag == 1)
- 479   1            {
- 480   2            if(++wheeled_count >= 2000)
- 481   2               {
- 482   3               wheeled_flag = 0;
- 483   3               wheeled_count = 0;
- 484   3               }
- 485   2            }  
- 486   1         }
- 487          
- 488          /*---------------------------------------------------
-C51 COMPILER V9.54   OPERATION                                                             07/31/2015 14:02:48 PAGE 9   
+ 427   2            Generator_lock = 1;
+ 428   2            
+ 429   2            Autolock_G = 0;
+ 430   2            timer0_count2 = 0;
+ 431   2            }        
+ 432   1         }
+ 433          
+ 434          /*---------------------------------------------------
+ 435             Detect_close_action()
+ 436          ---------------------------------------------------*/
+ 437          void Detect_close_action(void)
+ 438             {
+ 439   1         if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
+ 440   1            {
+ 441   2            if((vibration_flag == 0)&&(wheeled_flag == 0))
+ 442   2               {
+ 443   3               key_rotate_off_time += 1;
+ 444   3               if(key_rotate_off_time >= 1500)
+ 445   3                  {
+ 446   4                  if((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))
+ 447   4                     {
+ 448   5                     ElecMotor_ACW();
+ 449   5      
+ 450   5                     Open_action_flag = 0;
+ 451   5                     slave_away_operation();
+ 452   5                     IDkey_speech_flash = 0;
+ 453   5                     ID_speeched_flag = 0;      
+ 454   5      
+ 455   5                     timer0_count2 = 0;
+ 456   5                     }                       
+ 457   4                  }
+ 458   3               }
+ 459   2            }
+ 460   1         else if(key_rotate == 1)
+ 461   1            key_rotate_off_time = 0;
+ 462   1         }
+ 463          
+ 464          /*------------------------------------------------------
+ 465             Detect_vibration()
+ 466          -------------------------------------------------------*/
+ 467          void Detect_vibration(void)
+ 468             {
+ 469   1         if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
+ 470   1            {
+ 471   2            vibration_flag = 1;
+ 472   2            vibration_count = 0;
+ 473   2            
+ 474   2            vibration_flag1 = 1;
+ 475   2            vibration_count1 = 0;   
+ 476   2            
+ 477   2            timer0_count2 = 0;
+ 478   2            }
+ 479   1            
+ 480   1          if(vibration_flag == 1)
+ 481   1            {
+ 482   2            if(++vibration_count >= 4000)
+ 483   2               {
+ 484   3               vibration_flag = 0;
+ 485   3               vibration_count = 0;
+ 486   3               }
+ 487   2            }
+ 488   1      
+C51 COMPILER V9.54   OPERATION                                                             12/02/2015 14:21:38 PAGE 9   
 
- 489             end of file
- 490          ----------------------------------------------------*/
+ 489   1          if(vibration_flag1 == 1)
+ 490   1            {
+ 491   2            if(++vibration_count1 >= 10000)
+ 492   2               {
+ 493   3               vibration_flag1 = 0;
+ 494   3               vibration_count1 = 0;
+ 495   3               }
+ 496   2            }
+ 497   1         }
+ 498          
+ 499          /*----------------------------------------------------
+ 500             Detect_wheel_moving()
+ 501          -----------------------------------------------------*/
+ 502          void Detect_wheel_moving(void)
+ 503             {
+ 504   1         if(wheeled_rotate == 1)
+ 505   1            {
+ 506   2            wheeled_flag = 1;
+ 507   2            wheeled_count = 0;
+ 508   2            
+ 509   2            timer0_count2 = 0;
+ 510   2            }
+ 511   1         if(wheeled_flag == 1)
+ 512   1            {
+ 513   2            if(++wheeled_count >= 2000)
+ 514   2               {
+ 515   3               wheeled_flag = 0;
+ 516   3               wheeled_count = 0;
+ 517   3               }
+ 518   2            }  
+ 519   1         }
+ 520          
+ 521          /*---------------------------------------------------
+ 522             end of file
+ 523          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    662    ----
+   CODE SIZE        =    745    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =      5    ----
+   PDATA SIZE       =      7    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =      2    ----
+   BIT SIZE         =      3    ----
 END OF MODULE INFORMATION.
 
 

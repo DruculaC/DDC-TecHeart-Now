@@ -25,6 +25,11 @@ tWord key_rotate_off_time = 0;
 tWord wire_broken_time = 0;
 tByte wire_broken_level = 0;
 
+bit vibration_flag1 = 0;
+tWord vibration_count1 = 0;
+
+
+tByte vibration_count2 = 0;
 /*------- Public variable declarations --------------------------*/
 extern bit position_sensor_EN;  	
 extern bit fell_flag;						
@@ -84,6 +89,8 @@ extern bit flashing_flag;
 extern tWord vibration_count;
 extern tWord wheeled_count;
 extern bit Just_power_up;
+extern bit Autolock_G;
+extern tWord timer0_count2;
 
 /*-----------------------------------------
 	slave_away_operation()
@@ -125,13 +132,41 @@ void slave_nearby_operation(void)
 	ID_certificated_flag = 0;
 	ID_certificated_numbers = 0;		
 
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Externalmotor = 0;
+	Lock_EN = 1;
+	Generator_lock = 1;
+	
 	if(Silence_Flag == 0)
 		{
 		open_lock_speech();
+		Externalmotor = 0;
 		if(Just_power_up == 0)
 			verifybattery(load_battery_result);
 		key_rotate_on_speech();
 		}
+
+
+/*
+	if(Silence_Flag == 0)
+		{
+		open_lock_speech();
+		Externalmotor = 0;
+		if(Just_power_up == 0)
+			verifybattery(load_battery_result);
+		key_rotate_on_speech();
+		}
+	else
+		{
+		Delay_500ms();
+		Delay_500ms();
+		Externalmotor = 0;
+		}
+*/		
+
 	}
 
 /*------------------------------------------------------------------
@@ -159,6 +194,7 @@ void Host_stolen_action(void)
 		Host_stolen_alarming = 1;
 		
 		stolen_alarm_speech1();
+		stolen_alarm_speech2();
 		#ifdef Z3
 		if(wire_broken_flag == 0)
 			{
@@ -169,7 +205,6 @@ void Host_stolen_action(void)
 			UART_Send_Data(ComMode_6);																			
 			}
 		#endif
-		stolen_alarm_speech2();
 		}
 	}
 
@@ -183,7 +218,7 @@ void ENsensor_afterIDcert(void)
 	if(ID_certificated_flag == 1)
 		{
 		// 3 tickets after ID certificated.
-		if(++After_IDcert_timecount >= 5)
+		if(++After_IDcert_timecount >= 15)
 			{
 			ID_certificated_flag = 0;
 			After_IDcert_timecount = 0;			
@@ -205,7 +240,7 @@ void ENsensor_afterIDcert(void)
 ------------------------------------------------------------------*/
 void ENsensor_After_Close(void)
 	{
-	if((enable_sensor_delayEN == 1)&&(key_rotate == 0))
+	if((enable_sensor_delayEN == 1)&&((key_rotate == 0)||(Autolock_G == 1)))
 		{
 		if(++enable_sensor_delay_count >= 3)
 			{
@@ -273,7 +308,7 @@ void Raise_Alarm_to_Slave(void)
 -----------------------------------------------------*/
 void Batstolen_Alarm_to_Slave(void)
 	{
-	if((battery_stolen_EN == 1)&&(battery_stolen_count < 5))
+	if((battery_stolen_EN == 1)&&(battery_stolen_count < 20))
 		{
 		UART_Send_Data(ComMode_2);																			
 		battery_stolen_count++;
@@ -316,7 +351,7 @@ void Reset_after_stolen_alarming(void)
 	{
 	if(EN_host_stolen_alarming == 1)
 		{
-		if(++Stolen_alarm_reset_count > 3)
+		if(++Stolen_alarm_reset_count > 5)
 			{
 			host_stolen_alarm1_count = 0;
 			EN_host_stolen_alarming = 0;
@@ -333,11 +368,11 @@ void Reset_after_stolen_alarming(void)
 ------------------------------------------------------*/
 void Ensensor_after_slave_away(void)
 	{
-	if((vibration_flag == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
+	if((vibration_flag1 == 0)&&(wheeled_flag == 0)&&(Just_power_up == 0))
 		{
-		if(++slave_nearby_count > 5)
+		if(++slave_nearby_count > 6)
 			{
-			slave_nearby_count = 3;
+			slave_nearby_count = 7;
 			slave_nearby_actioned_flag = 0;
 			ID_certificated_flag = 0;
 			if(never_alarm == 0)
@@ -414,8 +449,11 @@ void Detect_open_action(void)
 		slave_nearby_actioned_flag = 1;
 		ElecMotor_CW();
 		slave_nearby_operation();
-		
+
 		Just_power_up = 0;
+				
+		Autolock_G = 0;
+		timer0_count2 = 0;
 		} 			
 	}
 
@@ -424,21 +462,23 @@ void Detect_open_action(void)
 ---------------------------------------------------*/
 void Detect_close_action(void)
 	{
-	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0))&&(Open_action_flag == 1))
+	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
 		{
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{
 			key_rotate_off_time += 1;
 			if(key_rotate_off_time >= 1500)
 				{
-				if((key_rotate == 0)||(slave_nearby_actioned_flag == 0))
+				if((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))
 					{
 					ElecMotor_ACW();
 
 					Open_action_flag = 0;
 					slave_away_operation();
 					IDkey_speech_flash = 0;
-					ID_speeched_flag = 0;
+					ID_speeched_flag = 0;		
+
+					timer0_count2 = 0;
 					}								
 				}
 			}
@@ -452,19 +492,40 @@ void Detect_close_action(void)
 -------------------------------------------------------*/
 void Detect_vibration(void)
 	{
-	if((sensor_detect == 0)||(horizontal_sensor == 0))
+	if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
 		{
-		vibration_flag = 1;
-		vibration_count = 0;
+		if(++vibration_count2 >= 2)
+			{
+			vibration_count2 = 0;
+			vibration_flag = 1;
+			vibration_count = 0;
+			
+			vibration_flag1 = 1;
+			vibration_count1 = 0;	
+			
+			timer0_count2 = 0;			
+			}		
 		}
+	else
+		vibration_count2 = 0;
+		
     if(vibration_flag == 1)
 		{
-		if(++vibration_count >= 2000)
+		if(++vibration_count >= 4000)
 			{
 			vibration_flag = 0;
 			vibration_count = 0;
 			}
-		}	
+		}
+
+    if(vibration_flag1 == 1)
+		{
+		if(++vibration_count1 >= 10000)
+			{
+			vibration_flag1 = 0;
+			vibration_count1 = 0;
+			}
+		}
 	}
 
 /*----------------------------------------------------
@@ -476,6 +537,8 @@ void Detect_wheel_moving(void)
 		{
 		wheeled_flag = 1;
 		wheeled_count = 0;
+		
+		timer0_count2 = 0;
 		}
 	if(wheeled_flag == 1)
 		{

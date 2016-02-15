@@ -108,7 +108,7 @@ void timer0() interrupt interrupt_timer_0_overflow
       transmiter_EN = ~transmiter_EN;
 		}		
 		
-	if(Lock_EN == 0)
+/*	if(Lock_EN == 0)
 		{
 		if(++lock_time >= 70)
 			{
@@ -116,6 +116,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			Lock_EN = 1;
 			}
 		}
+*/
 	}
 
 
@@ -214,7 +215,7 @@ void timerT1() interrupt interrupt_timer_1_overflow
 			case ComMode_1://接收到的是主机发送过来的编码1的信号，说明主机在3M内，是正常的
 				{	
             Lock_EN = 0;
-				lock_time = 0;
+//				lock_time = 0;
 				}
 			break;
 			}

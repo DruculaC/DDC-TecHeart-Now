@@ -40,7 +40,7 @@ void InitTransceiver(void)
 	P10 = High;
 	transmiter_EN = Close;
 	receiver_EN = Open;	
-	transmiter_power = 0; 		// High power mode
+//	transmiter_power = 0; 		// High power mode
 	}
 	
 /*----------------------------------------------------
@@ -54,7 +54,7 @@ void initsignal()
 	{
 	tByte k,k1;
 	tByte mystartbuffer = 0xaa;
-	for(k1 = 0; k1 < 3; k1++)
+	for(k1 = 0; k1 < 1; k1++)
 		{
 		for(k=0;k<8;k++)
 			{
@@ -208,13 +208,14 @@ void UART_Send_Data(tByte command)
 	
 	initsignal();
 	
-	for(ii = 0; ii < 30; ii++)
+	for(ii = 0; ii < 160; ii++)
 		{
 		SendNByte(myTxRxData, 6);
 		Delay_10ms();		
 		}
 
 	close_tranceiver();
+	Delay_500ms();
 	}
 
 /*------------------------------------------------------------------
@@ -223,7 +224,31 @@ void UART_Send_Data(tByte command)
 void UART_Send_Data_F(tByte command)
 	{
    tByte ii = 0;
-	open_tranceiver();
+	open_tranceiver_F();
+
+	myTxRxData[0] = IDkey6;
+	myTxRxData[1] = IDkey7;
+	myTxRxData[2] = IDkey8;
+	myTxRxData[3] = IDkey9;
+	myTxRxData[4] = IDkey10;
+	myTxRxData[5] = command;
+
+	initsignal_F();	
+	
+	SendNByte(myTxRxData, 6);
+
+	receiver_EN = 0;
+	close_tranceiver_F();
+
+	}
+
+/*------------------------------------------------------------------
+	UART附机发送数据
+------------------------------------------------------------------*/
+void UART_Send_Data_F2(tByte command)
+	{
+   tByte ii = 0;
+	open_tranceiver_F();
 	myTxRxData[0] = IDkey6;
 	myTxRxData[1] = IDkey7;
 	myTxRxData[2] = IDkey8;
@@ -231,10 +256,33 @@ void UART_Send_Data_F(tByte command)
 	myTxRxData[4] = IDkey10;
 	myTxRxData[5] = command;
 	
-	initsignal_F();
+	Delay_1ms();
+	Delay_1ms();
+	Delay_1ms();
 	SendNByte(myTxRxData, 6);
 
-	close_tranceiver();	
+	receiver_EN = 0;
+	
+	close_tranceiver_F();
+	}
+
+/*------------------------------------------------------------------
+	UART附机发送数据
+------------------------------------------------------------------*/
+void UART_Send_Data_F3(tByte command)
+	{
+   tByte ii = 0;
+	myTxRxData[0] = IDkey6;
+	myTxRxData[1] = IDkey7;
+	myTxRxData[2] = IDkey8;
+	myTxRxData[3] = IDkey9;
+	myTxRxData[4] = IDkey10;
+	myTxRxData[5] = command;
+	
+	Delay_1ms();
+	Delay_1ms();
+	Delay_1ms();
+	SendNByte(myTxRxData, 6);
 	}
 
 /*------------------------------------------------------------------
@@ -243,9 +291,21 @@ void UART_Send_Data_F(tByte command)
 -------------------------------------------------------------------*/
 void open_tranceiver(void)
 	{
-	#ifdef ID
+	#ifdef Z3
 	InitUART(BAUD1200);
 	#endif
+	
+	receiver_EN = 1;
+	transmiter_EN = 0;	
+	}
+
+/*------------------------------------------------------------------
+	open_tranceiver_F()
+	开发射机
+-------------------------------------------------------------------*/
+void open_tranceiver_F(void)
+	{
+	InitUART(BAUD9600);
 	
 	receiver_EN = 1;
 	transmiter_EN = 0;	
@@ -263,13 +323,28 @@ void close_tranceiver(void)
 	
 	receiver_EN = 0;
 	
-	#ifdef ID
+	#ifdef Z3
 	InitUART(BAUD9600);
 	#endif
+	}
+/*------------------------------------------------------------------
+	close_tranceiver_F()
+	开发射机
+-------------------------------------------------------------------*/
+void close_tranceiver_F(void)
+	{
+	#ifdef F3
+	transmiter_EN = 1;
+	#endif
+	
+	receiver_EN = 0;
+	
+	InitUART(BAUD1200);
 	}
 
 /*------------------------------------------------------------------
 	UART发送数据
+	发送密码，用于主机
 ------------------------------------------------------------------*/
 void UART_Send_Data_match(void)
 	{
@@ -285,10 +360,36 @@ void UART_Send_Data_match(void)
 	
 	initsignal();
 	
-	SendNByte(myTxRxData, 7);
-   Delay_50ms();
+	SendNByte(myTxRxData, 8);
+	Delay_50ms();
 	
 	close_tranceiver();
+	}
+
+/*------------------------------------------------------------------
+	UART_Send_Data_match_F发送数据
+	发送密码，用于主机
+------------------------------------------------------------------*/
+void UART_Send_Data_match_F(void)
+	{
+	receiver_EN = 1;
+	transmiter_EN = 0;	
+	InitUART(BAUD9600);
+	
+	myTxRxData[0] = CmdHead;
+	myTxRxData[1] = ComMode_1;
+	myTxRxData[2] = IDkey6;
+	myTxRxData[3] = IDkey7;
+	myTxRxData[4] = IDkey8;
+	myTxRxData[5] = IDkey9;
+	myTxRxData[6] = IDkey10;
+	
+	initsignal();
+	
+	SendNByte(myTxRxData, 8);
+	Delay_50ms();
+	
+	receiver_EN = 0;
 	}
 
 /*-----------------------------------------------------------------------------
@@ -527,6 +628,34 @@ void send_code_to_lock_Taili(tByte x, y)
 		}
 	}
 }
+
+/*------------------------------------------------------------------
+	UART发送数据
+------------------------------------------------------------------*/
+void UART_Send_Data_Broadtest(tByte command)
+	{
+   tByte ii = 0;
+//	open_tranceiver();
+
+	myTxRxData[0] = IDkey6;
+	myTxRxData[1] = IDkey7;
+	myTxRxData[2] = IDkey8;
+	myTxRxData[3] = IDkey9;
+	myTxRxData[4] = IDkey10;
+	myTxRxData[5] = command;
+	
+	initsignal();
+	
+	for(ii = 0; ii < 10; ii++)
+		{
+		SendNByte(myTxRxData, 6);
+		Delay_10ms();		
+		}
+
+//	close_tranceiver();
+//	Delay_500ms();
+	}
+
 
 /*---------------------------------------------------
 	end of file

@@ -7,7 +7,6 @@
 #ifndef _DELAY_H
 #define _DELAY_H
 
-
 // *** Timings vary with compiler optimisation settings ***
 #define LOOP_TIMEOUT_INIT_001ms 65427
 #define LOOP_TIMEOUT_INIT_005ms 64995

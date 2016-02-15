@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   50          bit receive_data_finished_flag = 0;    //接收这一串数据完成后，此标志位置1
   51          tByte data_count = 0;            //接收数据缓存的位数，即表明第几个缓存数据
   52          tByte one_receive_byte = 0;      //接收数据的一个字节，接收完后将其赋值给received_data_buffer相对应的字节
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 2   
 
   53          tByte one_receive_byte_count = 0;         //one_receive_byte有8位，此计数表明接收到第几位，每次计数到8的时候表明
              -一个字节接收完成。
@@ -126,7 +126,7 @@ line level    source
  108          tWord receiver_DisEN_count = 0;
  109          
  110          bit match_moto_EN = 0;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 3   
 
  111          
  112          bit battery_LV_flag = 0;
@@ -145,131 +145,160 @@ line level    source
  125          bit vibration_send_EN = 0;
  126          
  127          #ifdef WX
-              code tByte IDkey6 _at_ 0x001ffb;
-              code tByte IDkey7 _at_ 0x001ffc;
-              code tByte IDkey8 _at_ 0x001ffd;
-              code tByte IDkey9 _at_ 0x001ffe;
-              code tByte IDkey10 _at_ 0x001fff;
-              code tByte IDkey11 _at_ 0x001fff;
-              #endif
+ 128          code tByte IDkey6 _at_ 0x001ffb;
+ 129          code tByte IDkey7 _at_ 0x001ffc;
+ 130          code tByte IDkey8 _at_ 0x001ffd;
+ 131          code tByte IDkey9 _at_ 0x001ffe;
+ 132          code tByte IDkey10 _at_ 0x001fff;
+ 133          code tByte IDkey11 _at_ 0x001fff;
+ 134          #endif
  135          #ifdef ID
- 136          code tByte IDkey6 _at_ 0x003000;
- 137          code tByte IDkey7 _at_ 0x003001;
- 138          code tByte IDkey8 _at_ 0x003002;
- 139          code tByte IDkey9 _at_ 0x003003;
- 140          code tByte IDkey10 _at_ 0x003004;
- 141          code tByte IDkey11 _at_ 0x003005;
- 142          #endif
+              code tByte IDkey6 _at_ 0x003000;
+              code tByte IDkey7 _at_ 0x003001;
+              code tByte IDkey8 _at_ 0x003002;
+              code tByte IDkey9 _at_ 0x003003;
+              code tByte IDkey10 _at_ 0x003004;
+              code tByte IDkey11 _at_ 0x003005;
+              #endif
  143          
- 144          /*--------------------------------------------------------------*/
- 145          
- 146          void main(void)
- 147             {
- 148   1         InitVoice();
- 149   1         InitUART(BAUD1200);
- 150   1      
- 151   1         // 键盘中断初始化
- 152   1         press_open_button = 1;
- 153   1         press_close_button = 1;
- 154   1         
- 155   1         KBLS1 |= 0x03;
- 156   1         KBLS0 |= 0x03;
- 157   1         KBIF &= 0xfc;
- 158   1         KBIE |= 0x03;
- 159   1         EKB = 1;
- 160   1         EA = 1;
+ 144          bit ID_selflearning_flag = 0;
+ 145          tByte ID_selflearning_time = 0;
+ 146          tByte match_button_level = 0;
+ 147          
+ 148          extern tByte myTxRxData[7];
+ 149          
+ 150          /*--------------------------------------------------------------*/
+ 151          
+ 152          void main(void)
+ 153             {
+ 154   1         InitVoice();
+ 155   1      
+ 156   1         InitUART(BAUD1200);
+ 157   1      
+ 158   1         #ifdef F2
+                 InitUART(BAUD9600);
+                 #endif
  161   1      
- 162   1      // Moto_EN = 1;      //初始化，关闭马达
- 163   1         voice_EN = 0;        //开机时，将功放关闭
- 164   1         P10=1;
+ 162   1         // 键盘中断初始化
+ 163   1         press_open_button = 1;
+ 164   1         press_close_button = 1;
  165   1         
- 166   1      // ADC_check_result = 0x3ff;
- 167   1         
- 168   1         stolen_alarm_count = 0;       //清报警计数器
- 169   1         stolen_alarm_flag = 0;        //清报警标志
- 170   1      
- 171   1         transmit_wire = 0;
- 172   1         transmiter_EN = 0;      // turn off the transmitter
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 4   
+ 166   1         #ifdef WX
+ 167   1         KBLS1 |= 0x03;
+ 168   1         KBLS0 |= 0x03;
+ 169   1         KBIF &= 0xfc;
+ 170   1         KBIE |= 0x03;
+ 171   1         EKB = 1;
+ 172   1         #endif
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 4   
 
- 173   1         receiver_EN = 0;        // turn on the receiver
- 174   1         transceiver_power_enable = 1;         // 上电时无线模块电源关闭
- 175   1         
- 176   1         while(1)
- 177   1            {
- 178   2            #ifdef Z2
+ 173   1      
+ 174   1         EA = 1;
+ 175   1      
+ 176   1      // Moto_EN = 1;      //初始化，关闭马达
+ 177   1         voice_EN = 0;        //开机时，将功放关闭
+ 178   1         P10 = 1;
+ 179   1         
+ 180   1      // ADC_check_result = 0x3ff;
+ 181   1         
+ 182   1         stolen_alarm_count = 0;       //清报警计数器
+ 183   1         stolen_alarm_flag = 0;        //清报警标志
+ 184   1      
+ 185   1      // transmit_wire = 0;
+ 186   1         transmiter_EN = 0;      // turn off the transmitter
+ 187   1         receiver_EN = 0;        // turn on the receiver
+ 188   1         transceiver_power_enable = 0;         // 上电时无线模块电源关闭
+ 189   1      
+ 190   1      
+ 191   1         while(1)
+ 192   1            {
+ 193   2            #ifdef Z2
                     if(idle_EN == 1)
                        {
                        idle_EN = 0;
                        PCON |= 0x02;        
                        }
                     #endif
- 185   2               
- 186   2            // 主机被盗报警
- 187   2            if(stolen_alarm_flag == 1)    
- 188   2               {
- 189   3               // 语音提示，马达振动
- 190   3               Alarm_stolen_speech();     
- 191   3               Moto_Vibration();          
- 192   3               stolen_alarm_flag = 0;
- 193   3               }  
- 194   2      
- 195   2            // 抬起信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次抬起只发4遍。
- 196   2            if(raised_alarm_flag == 1) 
- 197   2               {
- 198   3               Alarm_raised_speech();     
- 199   3               Moto_Vibration();         
- 200   3               raised_alarm_flag = 0;
- 201   3               }
- 202   2      
- 203   2            // 倒地信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次倒地只发4遍。
- 204   2            if(fell_alarm_flag == 1)
- 205   2               {
- 206   3               Alarm_fell_speech();      
- 207   3               Moto_Vibration();         
- 208   3               fell_alarm_flag=0;
- 209   3               }
- 210   2      
- 211   2            if(wire_broken_EN == 1)
- 212   2               {
- 213   3               wire_broken_speech();
- 214   3               Moto_Vibration();         
- 215   3               wire_broken_EN = 0;
- 216   3               }
- 217   2            
- 218   2            if(battery_stolen_EN == 1)
- 219   2               {
- 220   3               Host_battery_high_alarm_speech();
- 221   3               battery_stolen_EN = 0;
- 222   3               Moto_Vibration();                
- 223   3               }
- 224   2            
- 225   2            sEOS_Go_To_Sleep();        
- 226   2            }
- 227   1         }
- 228          
- 229          /*--------------------------------------------------------------------
- 230             timerT0()
- 231             定时器0每次溢出后执行的操作
- 232          --------------------------------------------------------------------*/
- 233          
- 234          void timer0() interrupt interrupt_timer_0_overflow
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 5   
+ 200   2               
+ 201   2            
+ 202   2            sEOS_Go_To_Sleep();        
+ 203   2            }
+ 204   1         }
+ 205          
+ 206          /*--------------------------------------------------------------------
+ 207             timerT0()
+ 208             定时器0每次溢出后执行的操作
+ 209          --------------------------------------------------------------------*/
+ 210          
+ 211          void timer0() interrupt interrupt_timer_0_overflow
+ 212             {
+ 213   1         // 重装在定时器的时间设置
+ 214   1         TH0 = timer0_8H;
+ 215   1         TL0 = timer0_8L;
+ 216   1      
+ 217   1      
+ 218   1      
+ 219   1      
+ 220   1         // 设置一个每3s的操作
+ 221   1         if(++timer0_count >= 2000)    
+ 222   1            {
+ 223   2      
+ 224   2            // 主机被盗报警
+ 225   2            if(stolen_alarm_flag == 1)    
+ 226   2               {
+ 227   3               // 语音提示，马达振动
+ 228   3               Alarm_stolen_speech();     
+ 229   3               Moto_Vibration();          
+ 230   3               stolen_alarm_flag = 0;
+ 231   3               }
+ 232   2      
+ 233   2            // 抬起信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次抬起只发4遍。
+ 234   2            if(raised_alarm_flag == 1) 
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 5   
 
- 235             {
- 236   1         // 重装在定时器的时间设置
- 237   1         TH0 = timer0_8H;
- 238   1         TL0 = timer0_8L;
- 239   1      
- 240   1         // 设置一个每3s的操作
- 241   1         if(++timer0_count >= 2000)    
- 242   1            {
- 243   2            
- 244   2            // 每个3s做一次电量检测，并进行相关的电量提示
- 245   2            Check_motor_accumulator();
- 246   2            MagentControl_2 = ~MagentControl_2;
- 247   2      
- 248   2            #ifdef Z2
+ 235   2               {
+ 236   3               Alarm_raised_speech();     
+ 237   3               Moto_Vibration();         
+ 238   3               raised_alarm_flag = 0;
+ 239   3               }
+ 240   2      
+ 241   2            // 倒地信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次倒地只发4遍。
+ 242   2            if(fell_alarm_flag == 1)
+ 243   2               {
+ 244   3               Alarm_fell_speech();      
+ 245   3               Moto_Vibration();         
+ 246   3               fell_alarm_flag=0;
+ 247   3               }
+ 248   2      
+ 249   2            if(wire_broken_EN == 1)
+ 250   2               {
+ 251   3               wire_broken_speech();
+ 252   3               Moto_Vibration();         
+ 253   3               wire_broken_EN = 0;
+ 254   3               }
+ 255   2            
+ 256   2            if(battery_stolen_EN == 1)
+ 257   2               {
+ 258   3               battery_stolen_speech_F3();
+ 259   3               battery_stolen_EN = 0;
+ 260   3               Moto_Vibration();                
+ 261   3               }
+ 262   2      
+ 263   2            if(ID_selflearning_flag == 1)
+ 264   2               {
+ 265   3               ID_selflearning_time += 1;
+ 266   3               if(ID_selflearning_time > 10)
+ 267   3                  {
+ 268   4                  ID_selflearning_flag = 0;
+ 269   4                  ID_selflearning_time = 0;
+ 270   4                  }
+ 271   3               }
+ 272   2            
+ 273   2            
+ 274   2            // 每个3s做一次电量检测，并进行相关的电量提示
+ 275   2            Check_motor_accumulator();
+ 276   2      
+ 277   2            #ifdef Z2
                     if(ADC_check_result <= 0x36a)    // 2.96V/3.47V 电量非常不足
                        {
                        battery_ULV_flag = 1;
@@ -289,6 +318,8 @@ line level    source
                     if(battery_ULV_flag == 1)
                        {
                        if(++battery_ULV_count >= 1)
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 6   
+
                           {
                           SC_RST = ~SC_RST;
                           battery_ULV_count = 0;
@@ -306,427 +337,390 @@ line level    source
                           }
                        }
                     #endif
- 285   2            
- 286   2            #ifdef Z3
- 287   2            if(ADC_check_result <= 0x36a)                 // 3.11V/3.64V 电量不足
- 288   2               {
- 289   3               battery_LV_flag = 1;
- 290   3               battery_HV_flag = 0;
- 291   3               battery_HV_speech_over = 0;
- 292   3               }
- 293   2            else if(ADC_check_result >= 0x37a)            // 3.52V/4.03V 电量充足
- 294   2               {
- 295   3               battery_HV_flag = 1;
- 296   3               battery_LV_flag = 0;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 6   
-
- 297   3               }
- 298   2            else
- 299   2               {
- 300   3               battery_LV_flag = 0;
- 301   3               battery_HV_flag = 0;
- 302   3               }
- 303   2                  
- 304   2            if(battery_LV_flag == 1)
- 305   2               {
- 306   3               if(++battery_LV_flag_count > 20)
- 307   3                  {
- 308   4                  Battery_low_alarm_speech();
- 309   4                  battery_LV_flag_count = 0;
- 310   4                  }        
- 311   3               }
- 312   2            #endif
- 313   2            
- 314   2            if(match_button_flag6 == 1)
- 315   2               {
- 316   3               #ifdef ID
- 317   3               if(++match_button_flag6count > 10)
- 318   3               #endif
- 319   3               #ifdef WX
-                       if(++match_button_flag6count > 1)
-                       #endif
- 322   3                  {
- 323   4                  match_button_HVcount = 0;
- 324   4                  match_button_LVcount = 0;
- 325   4                  match_button_flag1 = 0;
- 326   4                  match_button_flag2 = 0;
- 327   4                  match_button_flag3 = 0;
- 328   4                  match_button_flag4 = 0;
- 329   4                  match_button_flag5 = 0;
- 330   4                  match_button_flag6 = 0;
- 331   4                  match_moto_EN = 0;
- 332   4                  match_button_flag6count = 0;           
- 333   4                  }        
- 334   3               }     
- 335   2            
- 336   2            #ifdef WX
-                    if((press_close_button == 1)&&(EKB == 0))
-                       {
-                       if(++Toggle_button_HV_count > 150)
-                          {
-                          transceiver_power_enable = 1;
-                          TXD = 0;
-                          MagentControl_2 = 1;
-                          vibration_send_EN = 0;
-                          
-                          EKB = 1;
-                          idle_EN = 1;
-                          }
-                       }
-                    #endif
- 351   2            timer0_count = 0;
- 352   2            }
- 353   1         
- 354   1         if(press_close_button == 0)
- 355   1            {
- 356   2            Toggle_button_HV_flag = 0;
- 357   2            Toggle_button_HV_count = 0;
- 358   2            MagentControl_2 = 0;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 7   
+ 314   2            
+ 315   2            #ifdef Z3
+ 316   2            if(ADC_check_result <= 0x36a)                 // 3.11V/3.64V 电量不足
+ 317   2               {
+ 318   3               battery_LV_flag = 1;
+ 319   3               battery_HV_flag = 0;
+ 320   3               battery_HV_speech_over = 0;
+ 321   3               }
+ 322   2            else if(ADC_check_result >= 0x37a)            // 3.52V/4.03V 电量充足
+ 323   2               {
+ 324   3               battery_HV_flag = 1;
+ 325   3               battery_LV_flag = 0;
+ 326   3               }
+ 327   2            else
+ 328   2               {
+ 329   3               battery_LV_flag = 0;
+ 330   3               battery_HV_flag = 0;
+ 331   3               }
+ 332   2                  
+ 333   2            if(battery_LV_flag == 1)
+ 334   2               {
+ 335   3               if(++battery_LV_flag_count > 20)
+ 336   3                  {
+ 337   4                  Battery_low_alarm_speech();
+ 338   4                  battery_LV_flag_count = 0;
+ 339   4                  }        
+ 340   3               }
+ 341   2            #endif
+ 342   2      
+ 343   2            #ifdef WX
+ 344   2            if((press_close_button == 1)&&(EKB == 0))
+ 345   2               {
+ 346   3               if(++Toggle_button_HV_count > 150)
+ 347   3                  {
+ 348   4                  transceiver_power_enable = 1;
+ 349   4                  TXD = 0;
+ 350   4                  MagentControl_2 = 1;
+ 351   4                  vibration_send_EN = 0;
+ 352   4                  
+ 353   4                  EKB = 1;
+ 354   4                  idle_EN = 1;
+ 355   4                  }
+ 356   3               }
+ 357   2            #endif
+ 358   2            timer0_count = 0;
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 7   
 
  359   2            }
- 360   1      
- 361   1      /* #ifdef ID
- 362   1         if((toggle_button == 1)&&(idle_EN == 0))
- 363   1            {
- 364   1            transceiver_power_enable = 1;
- 365   1      //    receiver_EN = 0;
- 366   1      //    transmiter_EN = 0;
- 367   1      //    RXD = 0;
- 368   1            TXD = 0;
- 369   1            idle_EN = 1;
- 370   1            }
- 371   1         #endif
- 372   1      */    
- 373   1         if((transceiver_power_enable == 0)&&(match_button_flag6 == 0))
- 374   1            {
- 375   2            #ifdef Z2
+ 360   1         
+ 361   1         if(press_close_button == 0)
+ 362   1            {
+ 363   2            Toggle_button_HV_flag = 0;
+ 364   2            Toggle_button_HV_count = 0;
+ 365   2            MagentControl_2 = 0;
+ 366   2            }
+ 367   1      
+ 368   1         if((transceiver_power_enable == 0)&&(ID_selflearning_flag == 0))
+ 369   1            {
+ 370   2            #ifdef Z2
                     if(++receiver_EN_count > 80)
                     #endif
- 378   2            #ifdef Z3
- 379   2            if(++receiver_EN_count > 300)
- 380   2            #endif
- 381   2               {
- 382   3               receiver_EN_count = 0;
- 383   3               
- 384   3               if(battery_hint_action == 1)
- 385   3                  {
- 386   4                  UART_Send_Data_F(ComMode_12);       
- 387   4                  battery_hint_action = 0;
- 388   4                  SC_RST = ~SC_RST;
- 389   4                  }
- 390   3               
- 391   3               if(vibration_send_EN == 1)
- 392   3                  {
- 393   4                  UART_Send_Data_F(ComMode_1);
- 394   4                  }
- 395   3               
- 396   3               transceiver_power_enable = 1;
- 397   3               RXD = 0;
- 398   3               TXD = 0;       
- 399   3               receiver_EN = 0;
- 400   3               transmiter_EN = 0;
- 401   3               }
- 402   2            }  
- 403   1      
- 404   1         if((transceiver_power_enable == 1)&&(match_button_flag6 == 0))
- 405   1            {     
- 406   2            #ifdef Z2
-                    if(++receiver_DisEN_count > 2500)
-                    #endif
- 409   2            #ifdef Z3
- 410   2            if(++receiver_DisEN_count > 1500)
- 411   2            #endif
- 412   2               {
- 413   3               transceiver_power_enable = 0;
- 414   3               
- 415   3               receiver_DisEN_count = 0;
- 416   3      
- 417   3               #ifdef F3
- 418   3               transmiter_EN = 1;
- 419   3               receiver_EN = 0;
- 420   3               RXD = 1;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 8   
-
- 421   3               #endif
- 422   3               }
- 423   2            }
- 424   1         
- 425   1         if(press_open_button == 0)
- 426   1            {
- 427   2            if(++Press_open_button_count > 3000)
- 428   2               {
- 429   3               transceiver_power_enable = 0;
- 430   3               UART_Send_Data_F(ComMode_11);
- 431   3               TXD = 0;    
- 432   3               transceiver_power_enable = 1;    
- 433   3               }
- 434   2            }
- 435   1         else
- 436   1            {
- 437   2            Press_open_button_count = 0;
- 438   2            }
- 439   1         
- 440   1         if(match_button == 0)
- 441   1            {
- 442   2            match_button_HVcount = 0;
- 443   2                     
- 444   2            if(++match_button_LVcount > 4000)
- 445   2               {
- 446   3               match_button_LVcount = 4002;
- 447   3               match_button_flag1 = 0;
- 448   3               match_button_flag2 = 0;
- 449   3               match_button_flag3 = 0;
- 450   3               match_button_flag4 = 0;
- 451   3               match_button_flag5 = 0;
- 452   3               }
- 453   2            else
- 454   2               {
- 455   3               match_button_flag1 = 1;
- 456   3               if(match_button_flag2 == 1)
- 457   3                  match_button_flag3 = 1;
- 458   3               if(match_button_flag4 == 1)
- 459   3                  match_button_flag5 = 1;
- 460   3               }
- 461   2            
- 462   2            battery_LV_flag = 0;
- 463   2            battery_HV_flag = 0;
- 464   2            }
- 465   1         else
- 466   1            {
- 467   2            match_button_LVcount = 0;
- 468   2            
- 469   2            if(match_button_flag1 == 1)
- 470   2               match_button_flag2 = 1;       
- 471   2            if(match_button_flag3 == 1)
- 472   2               match_button_flag4 = 1; 
- 473   2            if(match_button_flag5 == 1)
- 474   2               {
- 475   3               match_button_flag6 = 1;
- 476   3               match_button_flag5 = 0;
- 477   3               
- 478   3               transceiver_power_enable = 0;
- 479   3               
- 480   3               #ifdef ID
- 481   3               receiver_EN_count = 0;
- 482   3               receiver_EN = 0;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 9   
-
- 483   3               RXD = 1;
- 484   3               #endif
- 485   3               
- 486   3               #ifdef WX
-                       UART_Send_Data_match();
+ 373   2            #ifdef Z3
+ 374   2            if(++receiver_EN_count > 300)
+ 375   2            #endif
+ 376   2               {
+ 377   3               receiver_EN_count = 0;
+ 378   3               
+ 379   3               if(battery_hint_action == 1)
+ 380   3                  {
+ 381   4                  UART_Send_Data_F(ComMode_12);       
+ 382   4      
+ 383   4                  battery_hint_action = 0;
+ 384   4                  SC_RST = ~SC_RST;
+ 385   4                  }
+ 386   3               
+ 387   3               #ifdef F2
+                       if(vibration_send_EN == 1)
+                          {
+                          tByte i;
+                          
+                          UART_Send_Data_F(ComMode_1);           
+                          for(i = 0; i < 15; i++)
+                             UART_Send_Data_F2(ComMode_1);
+                          }
                        #endif
- 489   3      
- 490   3               if(match_moto_EN == 0)
- 491   3                  {
- 492   4                  Moto_Vibration(); 
- 493   4                  match_moto_EN = 1;
- 494   4                  }
- 495   3               }
- 496   2               
- 497   2            if(++match_button_HVcount > 4000)
- 498   2               {
- 499   3               match_button_HVcount = 4002;
- 500   3               match_button_flag1 = 0;
- 501   3               match_button_flag2 = 0;
- 502   3               match_button_flag3 = 0;
- 503   3               match_button_flag4 = 0;
- 504   3               match_button_flag5 = 0;
- 505   3               match_moto_EN = 0;
- 506   3               }
- 507   2            }
- 508   1      
- 509   1         #ifdef ID
- 510   1         if(IDflash_EN == 1)
- 511   1            {
- 512   2            IDflash_EN = 0;
- 513   2            match_button_flag1 = 0;
- 514   2            match_button_flag2 = 0;
- 515   2            match_button_flag3 = 0;
- 516   2            match_button_flag4 = 0;
- 517   2            match_button_flag5 = 0;
- 518   2            match_button_flag6 = 0;
- 519   2            match_moto_EN = 0;
- 520   2            Self_learn_programming_F();
- 521   2            Moto_Vibration();
- 522   2            Delay(10);
- 523   2            Moto_Vibration();
- 524   2            match_button_flag6count = 0;
- 525   2            }
- 526   1         #endif
- 527   1         }
- 528          
- 529          /*-----------------------------------------------
- 530             UART interrupt
- 531          -----------------------------------------------*/
- 532          void uart_isr() interrupt 4 
- 533             {
- 534   1         if(RI)
- 535   1            {
- 536   2            RI=0;
- 537   2            received_data_buffer[data_count] = SBUF;
- 538   2            
- 539   2            if(match_button_flag6 == 0)
- 540   2               {
- 541   3               // judge whether buffer[0] is CmdHead
- 542   3               if((data_count == 0) && (received_data_buffer[0] == IDkey6))
+ 397   3               
+ 398   3               #ifdef F3
+ 399   3               if(vibration_send_EN == 1)
+ 400   3                  {
+ 401   4                  tByte i;
+ 402   4                  
+ 403   4                  open_tranceiver_F();          
+ 404   4                  
+ 405   4                  initsignal_F();   
+ 406   4                  UART_Send_Data_F3(ComMode_1);
+ 407   4                  for(i = 0; i < 15; i++)
+ 408   4                     UART_Send_Data_F3(ComMode_1);
+ 409   4                  
+ 410   4                  close_tranceiver_F();            
+ 411   4                  }
+ 412   3               #endif
+ 413   3               
+ 414   3               transceiver_power_enable = 1;
+ 415   3               RXD = 0;
+ 416   3               TXD = 0;       
+ 417   3               receiver_EN = 0;
+ 418   3               transmiter_EN = 0;
+ 419   3               }
+ 420   2            }  
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 8   
+
+ 421   1      
+ 422   1         if((transceiver_power_enable == 1)&&(ID_selflearning_flag == 0))
+ 423   1            {     
+ 424   2            #ifdef Z2
+                    if(++receiver_DisEN_count > 4000)
+                    #endif
+ 427   2            #ifdef Z3
+ 428   2            if(++receiver_DisEN_count > 2000)
+ 429   2            #endif
+ 430   2               {
+ 431   3               transceiver_power_enable = 0;
+ 432   3               
+ 433   3               receiver_DisEN_count = 0;
+ 434   3      
+ 435   3               #ifdef F3
+ 436   3               transmiter_EN = 1;
+ 437   3               receiver_EN = 0;
+ 438   3               RXD = 1;
+ 439   3               #endif
+ 440   3      
+ 441   3               }
+ 442   2            }
+ 443   1         
+ 444   1         if(press_open_button == 0)
+ 445   1            {
+ 446   2            if(++Press_open_button_count > 3000)
+ 447   2               {
+ 448   3               transceiver_power_enable = 0;
+ 449   3               
+ 450   3               UART_Send_Data_F(ComMode_11);
+ 451   3               
+ 452   3               TXD = 0;    
+ 453   3               transceiver_power_enable = 1;    
+ 454   3               }
+ 455   2            }
+ 456   1         else
+ 457   1            {
+ 458   2            Press_open_button_count = 0;
+ 459   2            }
+ 460   1         
+ 461   1         if(match_button == 0)
+ 462   1            {
+ 463   2            match_button_LVcount += 1;
+ 464   2            if(match_button_LVcount >= 6000)
+ 465   2               {
+ 466   3               match_button_LVcount = 6001;
+ 467   3               match_button_level = 0;
+ 468   3               ID_selflearning_flag = 0;
+ 469   3               }
+ 470   2            }
+ 471   1         else
+ 472   1            {
+ 473   2            if(match_button_LVcount > 50)
+ 474   2               {
+ 475   3               match_button_LVcount = 0;
+ 476   3               match_button_level += 1;
+ 477   3               }
+ 478   2            }
+ 479   1         
+ 480   1         if(match_button_level >= 3)
+ 481   1            {
+ 482   2            match_button_level = 0;
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 9   
+
+ 483   2            ID_selflearning_flag = 1;
+ 484   2            data_count = 0;
+ 485   2            
+ 486   2            Moto_Vibration();
+ 487   2            Delay(10);
+ 488   2            Moto_Vibration();
+ 489   2            
+ 490   2            transceiver_power_enable = 0;
+ 491   2      
+ 492   2            #ifdef ID
+                    receiver_EN = 0;
+                    RXD = 1;
+                    #endif
+ 496   2            
+ 497   2            #ifdef WX
+ 498   2            UART_Send_Data_match_F();
+ 499   2            #endif
+ 500   2            }
+ 501   1      
+ 502   1         #ifdef ID
+                 if(IDflash_EN == 1)
+                    {
+                    IDflash_EN = 0;
+              
+                    Self_learn_programming_F();
+              
+                    Moto_Vibration();
+                    Delay(10);
+                    Moto_Vibration();
+              
+                    ID_selflearning_flag = 0;
+                    
+                    }
+                 #endif
+ 517   1         }
+ 518          
+ 519          /*-----------------------------------------------
+ 520             UART interrupt
+ 521          -----------------------------------------------*/
+ 522          void uart_isr() interrupt 4 
+ 523             {
+ 524   1         if(RI)
+ 525   1            {
+ 526   2            RI=0;
+ 527   2            
+ 528   2            received_data_buffer[data_count] = SBUF;
+ 529   2            
+ 530   2            if(ID_selflearning_flag == 0)
+ 531   2               {
+ 532   3               // judge whether buffer[0] is CmdHead
+ 533   3               if((data_count == 0) && (received_data_buffer[0] == IDkey6))
+ 534   3                  {
+ 535   4                  data_count = 1;
+ 536   4                  }
+ 537   3               else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
+ 538   3                  {
+ 539   4                  data_count = 2;
+ 540   4                  MagentControl_2 = ~MagentControl_2;
+ 541   4                  }
+ 542   3               else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
  543   3                  {
- 544   4                  data_count = 1;
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 10  
+ 544   4                  data_count = 3;
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 10  
 
  545   4                  }
- 546   3               else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
+ 546   3               else if((data_count == 3) && (received_data_buffer[3] == IDkey9))
  547   3                  {
- 548   4                  data_count = 2;
+ 548   4                  data_count = 4;
  549   4                  }
- 550   3               else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
+ 550   3               else if((data_count == 4) && (received_data_buffer[4] == IDkey10))
  551   3                  {
- 552   4                  data_count = 3;
+ 552   4                  data_count = 5;
  553   4                  }
- 554   3               else if((data_count == 3) && (received_data_buffer[3] == IDkey9))
+ 554   3               else if(data_count == 5)
  555   3                  {
- 556   4                  data_count = 4;
- 557   4                  }
- 558   3               else if((data_count == 4) && (received_data_buffer[4] == IDkey10))
- 559   3                  {
- 560   4                  data_count = 5;
- 561   4                  }
- 562   3               else if(data_count == 5)
- 563   3                  {
- 564   4                  receive_data_finished_flag = 1;
- 565   4                  data_count = 0;
- 566   4                  }
- 567   3               else 
- 568   3                  {
- 569   4                  data_count = 0;
- 570   4                  }
- 571   3      
- 572   3               if(receive_data_finished_flag==1)   
- 573   3                  {
- 574   4                  receive_data_finished_flag=0;       
- 575   4                  switch(received_data_buffer[5])
- 576   4                     {
- 577   5                     case ComMode_2:
- 578   5                        {
- 579   6                        battery_stolen_EN = 1;
- 580   6                        }
- 581   5                     break;
- 582   5                     
- 583   5                     case ComMode_3:
- 584   5                        {
- 585   6                        stolen_alarm_flag = 1;
- 586   6      
- 587   6                        raised_alarm_count=0;
- 588   6                        raised_alarm_flag=0;
- 589   6                        fell_alarm_count=0;
- 590   6                        fell_alarm_flag=0;
- 591   6                        }
- 592   5                     break;
- 593   5                  
- 594   5                     case ComMode_4:
- 595   5                        {
- 596   6                        raised_alarm_flag=1;
- 597   6      
- 598   6                        stolen_alarm_count=0;
- 599   6                        stolen_alarm_flag=0;
- 600   6                        fell_alarm_count=0;
- 601   6                        fell_alarm_flag=0;
- 602   6                        }
- 603   5                     break;
- 604   5      
- 605   5                     case ComMode_5:
- 606   5                        {
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 11  
+ 556   4                  receive_data_finished_flag = 1;
+ 557   4                  data_count = 0;
+ 558   4                  }
+ 559   3               else 
+ 560   3                  {
+ 561   4                  data_count = 0;
+ 562   4                  }
+ 563   3      
+ 564   3               if(receive_data_finished_flag==1)   
+ 565   3                  {
+ 566   4                  receive_data_finished_flag=0;       
+ 567   4                  switch(received_data_buffer[5])
+ 568   4                     {
+ 569   5                     case ComMode_2:
+ 570   5                        {
+ 571   6                        battery_stolen_EN = 1;
+ 572   6                        }
+ 573   5                     break;
+ 574   5                     
+ 575   5                     case ComMode_3:
+ 576   5                        {
+ 577   6                        stolen_alarm_flag = 1;
+ 578   6      
+ 579   6                        raised_alarm_count=0;
+ 580   6                        raised_alarm_flag=0;
+ 581   6                        fell_alarm_count=0;
+ 582   6                        fell_alarm_flag=0;
+ 583   6                        }
+ 584   5                     break;
+ 585   5                  
+ 586   5                     case ComMode_4:
+ 587   5                        {
+ 588   6                        raised_alarm_flag=1;
+ 589   6      
+ 590   6                        stolen_alarm_count=0;
+ 591   6                        stolen_alarm_flag=0;
+ 592   6                        fell_alarm_count=0;
+ 593   6                        fell_alarm_flag=0;
+ 594   6                        }
+ 595   5                     break;
+ 596   5      
+ 597   5                     case ComMode_5:
+ 598   5                        {
+ 599   6                        fell_alarm_flag=1;   
+ 600   6      
+ 601   6                        stolen_alarm_count=0;
+ 602   6                        stolen_alarm_flag=0;
+ 603   6                        raised_alarm_count=0;
+ 604   6                        raised_alarm_flag=0;
+ 605   6                        }
+ 606   5                     break;
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 11  
 
- 607   6                        fell_alarm_flag=1;   
- 608   6      
- 609   6                        stolen_alarm_count=0;
- 610   6                        stolen_alarm_flag=0;
- 611   6                        raised_alarm_count=0;
- 612   6                        raised_alarm_flag=0;
- 613   6                        }
- 614   5                     break;
- 615   5      
- 616   5                     case ComMode_6:
- 617   5                        {
- 618   6                        wire_broken_EN = 1;
- 619   6                        }
- 620   5                     break;
- 621   5                     }
+ 607   5      
+ 608   5                     case ComMode_6:
+ 609   5                        {
+ 610   6                        wire_broken_EN = 1;
+ 611   6                        }
+ 612   5                     break;
+ 613   5                     }
+ 614   4                  }
+ 615   3               }
+ 616   2            else
+ 617   2               {
+ 618   3               if((data_count == 0) && (received_data_buffer[0] == CmdHead))
+ 619   3      //       if(data_count == 0)
+ 620   3                  {
+ 621   4                  data_count = 1;
  622   4                  }
- 623   3               }
- 624   2            else
- 625   2               {
- 626   3               if((data_count == 0)&&(received_data_buffer[0] == CmdHead))
- 627   3                  {
- 628   4                  data_count = 1;
- 629   4                  }
- 630   3               else if((data_count == 1)&&(received_data_buffer[1] == ComMode_1))
- 631   3                  {
- 632   4                  data_count = 2;
- 633   4                  }
- 634   3               else if(data_count == 2)
- 635   3                  {
- 636   4                  data_count = 3;
- 637   4                  }
- 638   3               else if(data_count == 3)
- 639   3                  {
- 640   4                  data_count = 4;
- 641   4                  }
- 642   3               else if(data_count == 4)
- 643   3                  {
- 644   4                  data_count = 5;
- 645   4                  }
- 646   3               else if(data_count == 5)
- 647   3                  {
- 648   4                  data_count = 6;
- 649   4                  }
- 650   3               else if(data_count == 6)
- 651   3                  {
- 652   4                  data_count = 0;
- 653   4                  IDflash_EN = 1;
- 654   4                  }
- 655   3               else 
- 656   3                  {
- 657   4                  data_count = 0;
- 658   4                  }
- 659   3               }     
- 660   2            }
- 661   1         }
- 662          
- 663          /*-----------------------------------------------------------
- 664             KBI_ISR()
- 665             键盘中断，使芯片从省电模式中唤醒
- 666          -----------------------------------------------------------*/
- 667          void KBI_ISR(void) interrupt 7
- 668             {
-C51 COMPILER V9.54   MAIN                                                                  07/31/2015 14:02:49 PAGE 12  
+ 623   3               else if((data_count == 1) && (received_data_buffer[1] == ComMode_1))
+ 624   3      //       else if(data_count == 1)
+ 625   3                  {
+ 626   4                  data_count = 2;
+ 627   4                  }
+ 628   3               else if(data_count == 2)
+ 629   3                  {
+ 630   4                  data_count = 3;
+ 631   4                  }
+ 632   3               else if(data_count == 3)
+ 633   3                  {
+ 634   4                  data_count = 4;
+ 635   4                  }
+ 636   3               else if(data_count == 4)
+ 637   3                  {
+ 638   4                  data_count = 5;
+ 639   4                  }
+ 640   3               else if(data_count == 5)
+ 641   3                  {
+ 642   4                  data_count = 6;
+ 643   4                  }
+ 644   3               else if(data_count == 6)
+ 645   3                  {
+ 646   4                  data_count = 0;
+ 647   4                  IDflash_EN = 1;
+ 648   4                  }
+ 649   3               else 
+ 650   3                  {
+ 651   4                  data_count = 0;
+ 652   4                  }
+ 653   3               }     
+ 654   2            }
+ 655   1         }
+ 656          
+ 657          /*-----------------------------------------------------------
+ 658             KBI_ISR()
+ 659             键盘中断，使芯片从省电模式中唤醒
+ 660          -----------------------------------------------------------*/
+ 661          #ifdef WX
+ 662          void KBI_ISR(void) interrupt 7
+ 663             {
+ 664   1         EKB = 0;
+ 665   1         KBIF &= 0xfc;
+ 666   1         transceiver_power_enable = 1;
+ 667   1         vibration_send_EN = 1;
+ 668   1         receiver_EN = 0;
+C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 12  
 
- 669   1         EKB = 0;
- 670   1         KBIF &= 0xfc;
- 671   1         transceiver_power_enable = 1;
- 672   1         vibration_send_EN = 1;
- 673   1         receiver_EN = 0;
- 674   1         RXD = 1;
- 675   1         Toggle_button_HV_count = 0;
- 676   1      // EKB = 1;
- 677   1         }
- 678                
- 679          /*---------------------------------------------------
- 680             end of file
- 681          ----------------------------------------------------*/
+ 669   1         RXD = 1;
+ 670   1         Toggle_button_HV_count = 0;
+ 671   1         }
+ 672          #endif      
+ 673          /*---------------------------------------------------
+ 674             end of file
+ 675          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1069    ----
+   CODE SIZE        =   1017    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =     71    ----
+   PDATA SIZE       =     73       1
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =     41    ----
+   BIT SIZE         =     42    ----
 END OF MODULE INFORMATION.
 
 

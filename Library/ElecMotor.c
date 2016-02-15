@@ -27,7 +27,7 @@ void InitElecmotor(void)
 	#endif
 	
 	#ifdef Suidongzha
-	ElecMotor_CW();
+//	ElecMotor_CW();
 	#endif
 	}
 /*-------------------------------------------------------
@@ -36,6 +36,10 @@ void InitElecmotor(void)
 --------------------------------------------------------*/
 void ElecMotor_CW(void)
 	{
+	MagentControl_1 = 1;
+	MagentControl_2 = 0;
+	Delay_100ms();
+	
 	ElecMotor_code();
 
 	MagentControl_1 = 1;
@@ -43,7 +47,7 @@ void ElecMotor_CW(void)
 	ElecMotor_Delay_CW();
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
-	Externalmotor = 0;
+//	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -53,6 +57,9 @@ void ElecMotor_CW(void)
 void ElecMotor_ACW(void)
 	{
 	Externalmotor = 1;
+	Lock_EN = 0;
+	Generator_lock = 0;
+	
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	ElecMotor_Delay_ACW();
@@ -102,11 +109,18 @@ void ElecMotor_Delay_CW(void)
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
 
+
+	#ifdef Z3
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
+	Delay_500ms();
+	#endif
 	
 	if(ElecMotor_overcurrent == 0)
 		{
@@ -120,15 +134,23 @@ void ElecMotor_Delay_CW(void)
 -----------------------------------------------------*/
 void ElecMotor_Delay_ACW(void)
 	{
-	Delay_500ms();
-	Delay_500ms();
 
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
+	
+	#ifdef Guxingzha
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	Delay_500ms();
+	#endif
+	
+	#ifdef Z3
+	Delay_500ms();
+	#endif
 
 	if(ElecMotor_overcurrent == 0)
 		{
