@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 1   
+C51 COMPILER V9.54   BATTERY                                                               09/06/2016 14:33:03 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE BATTERY
@@ -10,413 +10,164 @@ line level    source
 
    1          /*---------------------------------------------------
    2             Battery.c (v1.00)
-   3             new 201506
-   4             电池电量判断
-   5          ---------------------------------------------------*/ 
-   6          
-   7          #include "main.h"
-   8          #include "port.h"
-   9          
-  10          #include "Battery.h"
-  11          #include "voice.h"
-  12          #include "Delay.h"
-  13          #include "AD.h"
-  14          
-  15          extern tWord ADC_check_result;      
-  16          tByte Check2_stage = 0;
-  17          tByte Battery_level = 0;
-  18          
-  19          /*----------------------------------------------------
-  20             Check_motor_accumulator() - 48V 电平
-  21             Check P20's voltage.
-  22          -----------------------------------------------------*/
-  23          void Check_motor_accumulator(void)
-  24             {
-  25   1         // detect the battery voltage
-  26   1         ADC_check_result = GetADCResult(6);
-  27   1         }
-  28          
-  29          
-  30          /*----------------------------------------------------
-  31             verifybattery()
-  32             voice alarm for battery status with power module
-  33          -----------------------------------------------------*/
-  34          void verifybattery(tWord Check2)
-  35             {  
-  36   1         //------------ Withoutbattery_48V & 60V ------------------------  
-  37   1         #ifdef Z2
-  38   1         if(Check2 < 0x240)
-  39   1            Battery_level = 48;
-  40   1         else if(Check2 > 0x240)
-  41   1            Battery_level = 60;
-  42   1            
-  43   1         switch(Battery_level)
-  44   1            {
-  45   2            case 48:
-  46   2               {
-  47   3               // battery is sufficient, battery > 50.5V, 3.14V/4.7V
-  48   3               if((Check2 >= 0x213))
-  49   3                  {
-  50   4                  voice_EN = 1;
-  51   4                  SC_Speech(20);    
-  52   4                  Delay(60);
-  53   4                  voice_EN = 0;
-  54   4                  }
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 2   
+   3             Battery201603（70km60V）r1
+   4          ---------------------------------------------------*/
+   5          
+   6          #include "main.h"
+   7          #include "port.h"
+   8          
+   9          #include "Battery.h"
+  10          #include "voice.h"
+  11          #include "Delay.h"
+  12          #include "AD.h"
+  13          
+  14          extern tWord ADC_check_result;      
+  15          tByte Check2_stage = 0;
+  16          tByte Battery_level = 0;
+  17          
+  18          /*----------------------------------------------------
+  19             Check_motor_accumulator() - 48V 电平
+  20             Check P20's voltage.
+  21          -----------------------------------------------------*/
+  22          void Check_motor_accumulator(void)
+  23             {
+  24   1         // detect the battery voltage
+  25   1         ADC_check_result = GetADCResult(6);
+  26   1         }
+  27          
+  28          /*----------------------------------------------------
+  29             verifybattery()
+  30             voice alarm for battery status with power module
+  31          -----------------------------------------------------*/
+  32          void verifybattery(tWord Check2)
+  33             {  
+  34   1         #ifdef Kilometer_65
+  35   1         // 电量还能行驶
+  36   1         voice_EN = 1;
+  37   1         SC_Speech(8);     
+  38   1         Delay(70);  
+  39   1         // 多少
+  40   1         if(Check2 < 0x237)
+  41   1            {
+  42   2            SC_Speech(13);       // 2
+  43   2            Delay(30);
+  44   2            }
+  45   1         else if((Check2 >= 0x237)&&(Check2 < 0x242))
+  46   1            {
+  47   2            SC_Speech(16);       // 5
+  48   2            Delay(30);
+  49   2            }
+  50   1         else if((Check2 >= 0x242)&&(Check2 < 0x250))
+  51   1            {
+  52   2            SC_Speech(21);       // 10
+  53   2            Delay(30);
+  54   2            }
+C51 COMPILER V9.54   BATTERY                                                               09/06/2016 14:33:03 PAGE 2   
 
-  55   3               // 20km, 49.5V < battery < 50.5V, 3.08V/4.93V
-  56   3               else if((Check2 < 0x213)&&(Check2 >= 0x20a))    
-  57   3                  {
-  58   4                  voice_EN = 1;
-  59   4                  SC_Speech(8);  
-  60   4                  Delay(100);
-  61   4                  voice_EN = 0;
-  62   4                  }
-  63   3               // 15km, 48.8V < battery < 49.5V, 3.03V/4.93V 
-  64   3               else if((Check2 < 0x20a)&&(Check2 >= 0x202))    
-  65   3                  {
-  66   4                  voice_EN = 1;
-  67   4                  SC_Speech(7);     
-  68   4                  Delay(100);
-  69   4                  voice_EN = 0;
-  70   4                  }
-  71   3               // 10km, 48V < battery <48.8V, 2.99V/4.9V
-  72   3               else if((Check2 < 0x202)&&(Check2 >= 0x1f9))    
-  73   3                  {
-  74   4                  voice_EN = 1;
-  75   4                  SC_Speech(6);     
-  76   4                  Delay(100);
-  77   4                  voice_EN = 0;
-  78   4                  }
-  79   3               // 5km, 46.8V < battery < 48V, 2.91V/4.9V
-  80   3               else if((Check2 < 0x1f9)&&(Check2 >= 0x1ee))    
-  81   3                  {
-  82   4                  voice_EN =1;
-  83   4                  SC_Speech(5);     
-  84   4                  Delay(100);
-  85   4                  voice_EN = 0;
-  86   4                  }                     
-  87   3               // battery is low, battery < 46.8V, 
-  88   3               else if(Check2 < 0x1ee)
-  89   3                  {
-  90   4                  motorBAT_low_speech();
-  91   4                  }        
-  92   3               }
-  93   2            break;
-  94   2            
-  95   2            case 60:
-  96   2               {
-  97   3               // battery is sufficient, battery > 63.5V, 3.95V/4.7V
-  98   3               if((Check2 >= 0x298))
-  99   3                  {
- 100   4                  voice_EN = 1;
- 101   4                  SC_Speech(20);    
- 102   4                  Delay(60);
- 103   4                  voice_EN = 0;
- 104   4                  }
- 105   3               // 35km, 62V < battery < 63.5V, 3.86V/4.93V
- 106   3               else if((Check2 < 0x298)&&(Check2 >= 0x287))    
- 107   3                  {
- 108   4                  voice_EN = 1;
- 109   4                  SC_Speech(9);  
- 110   4                  Delay(100);
- 111   4                  voice_EN = 0;
- 112   4                  }
- 113   3               // 20km, 60V < battery < 62V, 3.74V/4.93V
- 114   3               else if((Check2 < 0x287)&&(Check2 >= 0x273))    
- 115   3                  {
- 116   4                  voice_EN = 1;
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 3   
+  55   1         else if((Check2 >= 0x250)&&(Check2 < 0x25f))
+  56   1            {
+  57   2            SC_Speech(21);       // 10
+  58   2            Delay(30);
+  59   2            SC_Speech(17);       // 6
+  60   2            Delay(30);
+  61   2            }
+  62   1         else if((Check2 >= 0x25f)&&(Check2 < 0x267))
+  63   1            {
+  64   2            SC_Speech(13);       // 2
+  65   2            Delay(30);
+  66   2            SC_Speech(21);       // 10
+  67   2            Delay(30);
+  68   2            SC_Speech(13);       // 2
+  69   2            Delay(30);
+  70   2            }
+  71   1         else if((Check2 >= 0x267)&&(Check2 < 0x26f))
+  72   1            {
+  73   2            SC_Speech(13);       // 2
+  74   2            Delay(30);
+  75   2            SC_Speech(21);       // 10
+  76   2            Delay(30);
+  77   2            SC_Speech(19);       // 8
+  78   2            Delay(30);
+  79   2            }
+  80   1         else if((Check2 >= 0x26f)&&(Check2 < 0x279))
+  81   1            {
+  82   2            SC_Speech(14);       // 3
+  83   2            Delay(30);
+  84   2            SC_Speech(21);       // 10
+  85   2            Delay(30);
+  86   2            SC_Speech(15);       // 4
+  87   2            Delay(30);
+  88   2            }
+  89   1         else if((Check2 >= 0x279)&&(Check2 < 0x282))
+  90   1            {
+  91   2            SC_Speech(15);       // 4
+  92   2            Delay(30);
+  93   2            SC_Speech(21);       // 10
+  94   2            Delay(30);
+  95   2            }
+  96   1         else if((Check2 >= 0x282)&&(Check2 < 0x28a))
+  97   1            {
+  98   2            SC_Speech(15);       // 4
+  99   2            Delay(30);
+ 100   2            SC_Speech(21);       // 10
+ 101   2            Delay(30);
+ 102   2            SC_Speech(17);       // 6
+ 103   2            Delay(30);
+ 104   2            }
+ 105   1         else if((Check2 >= 0x28a)&&(Check2 < 0x28e))
+ 106   1            {
+ 107   2            SC_Speech(16);       // 5
+ 108   2            Delay(30);
+ 109   2            SC_Speech(21);       // 10
+ 110   2            Delay(30);
+ 111   2            SC_Speech(13);       // 2
+ 112   2            Delay(30);
+ 113   2            }
+ 114   1         else if((Check2 >= 0x28e)&&(Check2 < 0x291))
+ 115   1            {
+ 116   2            SC_Speech(16);       // 5
+C51 COMPILER V9.54   BATTERY                                                               09/06/2016 14:33:03 PAGE 3   
 
- 117   4                  SC_Speech(8);  
- 118   4                  Delay(100);
- 119   4                  voice_EN = 0;
- 120   4                  }
- 121   3               // 15km, 59.3V < battery < 60V, 3.7V/4.93V 
- 122   3               else if((Check2 < 0x273)&&(Check2 >= 0x26c))    
- 123   3                  {
- 124   4                  voice_EN = 1;
- 125   4                  SC_Speech(7);     
- 126   4                  Delay(100);
- 127   4                  voice_EN = 0;
- 128   4                  }
- 129   3               // 10km, 58.3V < battery <59.3V, 3.64V/4.93V
- 130   3               else if((Check2 < 0x26c)&&(Check2 >= 0x264))    
- 131   3                  {
- 132   4                  voice_EN = 1;
- 133   4                  SC_Speech(6);     
- 134   4                  Delay(100);
- 135   4                  voice_EN = 0;
- 136   4                  }
- 137   3               // 5km, 57.6V < battery < 58.3V, 3.6V/4.93V
- 138   3               else if((Check2 < 0x264)&&(Check2 >= 0x25b))    
- 139   3                  {
- 140   4                  voice_EN =1;
- 141   4                  SC_Speech(5);     
- 142   4                  Delay(100);
- 143   4                  voice_EN = 0;
- 144   4                  }                     
- 145   3               // battery is low, battery < 57.6V, 
- 146   3               else if(Check2 < 0x25b)
- 147   3                  {
- 148   4                  motorBAT_low_speech();
- 149   4                  }
- 150   3               }
- 151   2            }
- 152   1         #endif
- 153   1         
- 154   1         //------------ Withbattery_48V & 60V ------------------------  
- 155   1         #ifdef Z3
-                 if(Check2 < 0x240)
-                    Battery_level = 48;
-                 else if(Check2 > 0x240)
-                    Battery_level = 60;
-                    
-                 switch(Battery_level)
-                    {
-                    case 48:
-                       {
-                       // battery is sufficient, battery > 50.5V, 3.14V/4.7V
-                       if((Check2 >= 0x213))
-                          {
-                          voice_EN = 1;
-                          SC_Speech(20);    
-                          Delay(60);
-                          voice_EN = 0;
-                          }
-                       // 20km, 49.5V < battery < 50.5V, 3.08V/4.93V
-                       else if((Check2 < 0x213)&&(Check2 >= 0x20a))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(8);  
-                          Delay(100);
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 4   
-
-                          voice_EN = 0;
-                          }
-                       // 15km, 48.8V < battery < 49.5V, 3.03V/4.93V 
-                       else if((Check2 < 0x20a)&&(Check2 >= 0x202))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(7);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 10km, 48V < battery <48.8V, 2.99V/4.9V
-                       else if((Check2 < 0x202)&&(Check2 >= 0x1f9))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(6);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 5km, 46.8V < battery < 48V, 2.91V/4.9V
-                       else if((Check2 < 0x1f9)&&(Check2 >= 0x1ee))    
-                          {
-                          voice_EN =1;
-                          SC_Speech(5);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }                     
-                       // battery is low, battery < 46.8V, 
-                       else if(Check2 < 0x1ee)
-                          {
-                          motorBAT_low_speech();
-                          }        
-                       }
-                    break;
-                    
-                    case 60:
-                       {
-                       // battery is sufficient, battery > 63.5V, 3.95V/4.7V
-                       if((Check2 >= 0x298))
-                          {
-                          voice_EN = 1;
-                          SC_Speech(20);    
-                          Delay(60);
-                          voice_EN = 0;
-                          }
-                       // 35km, 62V < battery < 63.5V, 3.86V/4.93V
-                       else if((Check2 < 0x298)&&(Check2 >= 0x287))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(9);  
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 20km, 60V < battery < 62V, 3.74V/4.93V
-                       else if((Check2 < 0x287)&&(Check2 >= 0x273))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(8);  
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 15km, 59.3V < battery < 60V, 3.7V/4.93V 
-                       else if((Check2 < 0x273)&&(Check2 >= 0x26c))    
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 5   
-
-                          {
-                          voice_EN = 1;
-                          SC_Speech(7);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 10km, 58.3V < battery <59.3V, 3.64V/4.93V
-                       else if((Check2 < 0x26c)&&(Check2 >= 0x264))    
-                          {
-                          voice_EN = 1;
-                          SC_Speech(6);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }
-                       // 5km, 57.6V < battery < 58.3V, 3.6V/4.93V
-                       else if((Check2 < 0x264)&&(Check2 >= 0x25b))    
-                          {
-                          voice_EN =1;
-                          SC_Speech(5);     
-                          Delay(100);
-                          voice_EN = 0;
-                          }                     
-                       // battery is low, battery < 57.6V, 
-                       else if(Check2 < 0x25b)
-                          {
-                          motorBAT_low_speech();
-                          }
-                       }
-                    }
-                 #endif   
- 271   1         
- 272   1         /*
- 273   1         #ifdef Z3
- 274   1         if(Check2 < 0x2a0)
- 275   1            Battery_level = 48;
- 276   1         else if(Check2 > 0x2a1)
- 277   1            Battery_level = 60;
- 278   1            
- 279   1         switch(Battery_level)
- 280   1            {
- 281   1            case 48:
- 282   1               {
- 283   1               // battery is sufficient, battery > 50.5V, 3.14V/4.93V
- 284   1               if((Check2 >= 0x261))
- 285   1                  {
- 286   1                  voice_EN = 1;
- 287   1                  SC_Speech(20);    
- 288   1                  Delay(60);
- 289   1                  voice_EN = 0;
- 290   1                  }
- 291   1               // 20km, 49.5V < battery < 50.5V, 3.08V/4.93V
- 292   1               else if((Check2 < 0x261)&&(Check2 >= 0x257))    
- 293   1                  {
- 294   1                  voice_EN = 1;
- 295   1                  SC_Speech(8);  
- 296   1                  Delay(100);
- 297   1                  voice_EN = 0;
- 298   1                  }
- 299   1               // 15km, 48.8V < battery < 49.5V, 3.03V/4.93V 
- 300   1               else if((Check2 < 0x257)&&(Check2 >= 0x24d))    
- 301   1                  {
- 302   1                  voice_EN = 1;
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 6   
-
- 303   1                  SC_Speech(7);     
- 304   1                  Delay(100);
- 305   1                  voice_EN = 0;
- 306   1                  }
- 307   1               // 10km, 48V < battery <48.8V, 2.99V/4.9V
- 308   1               else if((Check2 < 0x24d)&&(Check2 >= 0x243))    
- 309   1                  {
- 310   1                  voice_EN = 1;
- 311   1                  SC_Speech(6);     
- 312   1                  Delay(100);
- 313   1                  voice_EN = 0;
- 314   1                  }
- 315   1               // 5km, 46.8V < battery < 48V, 2.91V/4.9V
- 316   1               else if((Check2 < 0x243)&&(Check2 >= 0x236))    
- 317   1                  {
- 318   1                  voice_EN =1;
- 319   1                  SC_Speech(5);     
- 320   1                  Delay(100);
- 321   1                  voice_EN = 0;
- 322   1                  }                     
- 323   1               // battery is low, battery < 46.8V, 
- 324   1               else if(Check2 < 0x236)
- 325   1                  {
- 326   1                  motorBAT_low_speech();
- 327   1                  }        
- 328   1               }
- 329   1            break;
- 330   1            
- 331   1            case 60:
- 332   1               {
- 333   1               // battery is sufficient, battery > 63.5V, 3.95V/4.93V
- 334   1               if((Check2 >= 0x2f9))
- 335   1                  {
- 336   1                  voice_EN = 1;
- 337   1                  SC_Speech(20);    
- 338   1                  Delay(60);
- 339   1                  voice_EN = 0;
- 340   1                  }
- 341   1               // 35km, 62V < battery < 63.5V, 3.86V/4.93V
- 342   1               else if((Check2 < 0x2f9)&&(Check2 >= 0x2e5))    
- 343   1                  {
- 344   1                  voice_EN = 1;
- 345   1                  SC_Speech(9);  
- 346   1                  Delay(100);
- 347   1                  voice_EN = 0;
- 348   1                  }
- 349   1               // 20km, 60V < battery < 62V, 3.74V/4.93V
- 350   1               else if((Check2 < 0x2e5)&&(Check2 >= 0x2cf))    
- 351   1                  {
- 352   1                  voice_EN = 1;
- 353   1                  SC_Speech(8);  
- 354   1                  Delay(100);
- 355   1                  voice_EN = 0;
- 356   1                  }
- 357   1               // 15km, 59.3V < battery < 60V, 3.7V/4.93V 
- 358   1               else if((Check2 < 0x2cf)&&(Check2 >= 0x2c7))    
- 359   1                  {
- 360   1                  voice_EN = 1;
- 361   1                  SC_Speech(7);     
- 362   1                  Delay(100);
- 363   1                  voice_EN = 0;
- 364   1                  }
-C51 COMPILER V9.54   BATTERY                                                               02/03/2016 16:50:22 PAGE 7   
-
- 365   1               // 10km, 58.3V < battery <59.3V, 3.64V/4.93V
- 366   1               else if((Check2 < 0x2c7)&&(Check2 >= 0x2bd))    
- 367   1                  {
- 368   1                  voice_EN = 1;
- 369   1                  SC_Speech(6);     
- 370   1                  Delay(100);
- 371   1                  voice_EN = 0;
- 372   1                  }
- 373   1               // 5km, 57.6V < battery < 58.3V, 3.6V/4.93V
- 374   1               else if((Check2 < 0x2bd)&&(Check2 >= 0x2b3))    
- 375   1                  {
- 376   1                  voice_EN =1;
- 377   1                  SC_Speech(5);     
- 378   1                  Delay(100);
- 379   1                  voice_EN = 0;
- 380   1                  }                     
- 381   1               // battery is low, battery < 57.6V, 
- 382   1               else if(Check2 < 0x2b3)
- 383   1                  {
- 384   1                  motorBAT_low_speech();
- 385   1                  }
- 386   1               }
- 387   1            }
- 388   1         #endif
- 389   1         */
- 390   1         }
- 391          /*---------------------------------------------------
- 392             end of file
- 393          ----------------------------------------------------*/
+ 117   2            Delay(30);
+ 118   2            SC_Speech(21);       // 10
+ 119   2            Delay(30);
+ 120   2            SC_Speech(19);       // 8
+ 121   2            Delay(30);
+ 122   2            }
+ 123   1         else if((Check2 >= 0x291)&&(Check2 < 0x293))
+ 124   1            {
+ 125   2            SC_Speech(17);       // 6
+ 126   2            Delay(30);
+ 127   2            SC_Speech(21);       // 10
+ 128   2            Delay(30);
+ 129   2            SC_Speech(15);       // 4
+ 130   2            Delay(30);
+ 131   2            }
+ 132   1         else if(Check2 >= 0x293)
+ 133   1            {
+ 134   2            SC_Speech(18);       // 7
+ 135   2            Delay(30);
+ 136   2            SC_Speech(21);       // 10
+ 137   2            Delay(30);
+ 138   2            }     
+ 139   1         // 公里
+ 140   1         SC_Speech(11);    
+ 141   1         Delay(60);  
+ 142   1         voice_EN = 0;
+ 143   1         SC_RST = 1;
+ 144   1         Delay_50ms();
+ 145   1         SC_RST = 0;
+ 146   1         Delay_50ms();
+ 147   1         #endif
+ 148   1         }
+ 149             
+ 150          /*---------------------------------------------------
+ 151             end of file
+ 152          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    419    ----
+   CODE SIZE        =    557    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      2       2

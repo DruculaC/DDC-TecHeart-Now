@@ -1,7 +1,7 @@
 /*---------------------------------------------------
 	voice.c (v1.00)
 	通用语音文件
-	201506
+	201603
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -37,17 +37,15 @@ extern bit never_alarm_speech;
 void SC_Speech(tByte cnt)
 	{
 	tByte ii;
-	SC_RST = 0;
-//	delay_ms(100);
-	Delay_50ms();
 	SC_RST = 1;
-//	delay_ms(150);
+	Delay_50ms();
+	SC_RST = 0;
 	Delay_50ms();
 	for(ii=0; ii < cnt; ii++)
 		{
-		SC_DATA = 1; 
+		SC_DATA = 1;
 		delay_us(20);
-		SC_DATA = 0; 
+		SC_DATA = 0;
 		delay_us(20);
 		}
 	}
@@ -60,11 +58,11 @@ void InitVoice()
 	{
 	P14=0;
 	SC_DATA = 0;
-	SC_RST = 0;
-	delay_us(350); 
 	SC_RST = 1;
+	delay_us(350); 
+	SC_RST = 0;
 	delay_us(350);
-	P14 = 1;	
+//	P14 = 1;	
 	voice_EN = 0;				// Close speaker.
 	}
 
@@ -83,11 +81,11 @@ void key_rotate_on_speech(void)
 
 	#ifdef Shengbaolong
 	voice_EN = 1;
-	SC_Speech(11);  
+	SC_Speech(5);  
 	Delay(30);
-	SC_Speech(14);  
+	SC_Speech(6);  
 	Delay(30);
-	SC_Speech(10);  
+	SC_Speech(4);  
 	Delay(100);	
 	voice_EN = 0;	
 	#endif
@@ -136,7 +134,7 @@ void Battery_hint(void)
 void ID_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(24); 
+	SC_Speech(26); 
 	Delay(30);
 	voice_EN = 0;
 	}
@@ -148,7 +146,7 @@ void ID_speech(void)
 void Self_learn_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(25); 
+	SC_Speech(27); 
 	Delay(30);
 	voice_EN = 0;
 	flashing_flag = 0;
@@ -174,7 +172,7 @@ void host_touch_speech(void)
 void host_2ndtouch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(19);  
+	SC_Speech(22);  
 	Delay(140);
 	voice_EN = 0;
 //	Delay(10);
@@ -187,7 +185,7 @@ void host_2ndtouch_speech(void)
 void stolen_alarm_speech1(void)
 	{
 	voice_EN = 1;
-	SC_Speech(16); 
+	SC_Speech(7); 
 	Delay(60);
 	voice_EN = 0; 
 	}
@@ -213,16 +211,16 @@ void open_lock_speech(void)
 	{
 	#ifdef Tailing
 	voice_EN = 1;
-	SC_Speech(22);  
+	SC_Speech(24);  
 	Delay(30);
-	SC_Speech(14);  
+	SC_Speech(6);  
 	Delay(40);
 	voice_EN = 0;
 	#endif
 
 	// 车锁已打开
 	voice_EN=1;
-	SC_Speech(17); 
+	SC_Speech(9); 
 	Delay(60);
 	voice_EN=0;
 	}
@@ -234,7 +232,7 @@ void open_lock_speech(void)
 void close_lock_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(18);  
+	SC_Speech(10);  
 	Delay(60);
 	voice_EN = 0;
 	}

@@ -28,6 +28,15 @@
 //#define Suidongzha, Guxingzha
 #define Guxingzha
 
+// Define battery life, Kilometer_110, Kilometer_65
+#define Kilometer_65
+
+// Define voice version, 4031C's version: IC1603_4031C3, IC1512_4031C1, IC1506_4031C1, ICold_4031C1.
+#define IC1603_4031C3
+
+// Define PCB version, such as PCB_old, PCB_1606
+#define PCB_1606
+
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A
 // Withoutbattery_48V10A, Withoutbattery_60V10A

@@ -84,6 +84,8 @@ bit sensor_3rdalarm_flag = 0;
 bit wheeled_flag = 0;
 tWord wheeled_count = 0;
 bit IDkey_speech_flash = 0;
+bit Emergency_open_G = 0;
+
 
 code tByte IDkey6 _at_ 0x003000;
 code tByte IDkey7 _at_ 0x003001;
@@ -134,26 +136,28 @@ tWord timer0_count2 = 0;
 void main()
 	{
 	InitVoice();
-	
+
 	// lock the external motor, prohibit motor moving when power up.
-	InitElecmotor();	
-	
+//	InitElecmotor();
+
+	ID_speech();
+
 	InitUART(BAUD9600);
-	
+
 	InitSensor();
-	
+
 	InitTransceiver();
 
 	Externalmotor = Close;
-
-	// 将P0.1设置成输入高阻模式
-	P0M1 |= 0x02;
-	P0M2 &= 0xfd;
+	
+	// 将P0.1, P0.2设置成输入高阻模式
+	P0M1 |= 0x06;
+	P0M2 &= 0xf9;
 	// 将P2.5，即PIN16设置成输入高阻模式
 	P2M1 |= 0x20;
 	P2M2 &= 0xdf;
-	
-	Lock_EN = 0;
+
+	Lock_EN = 1;
 	Generator_lock = 0;
 
 	while(1)
@@ -179,18 +183,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 		timer0_count=0;
 
 //		UART_Send_Data_match();
-
-/*		#ifdef Z2
-		if(Lock_EN == 1)
-			{
-			ID_certificated_flag = 1;
-			After_IDcert_timecount = 0;
-			IDkey_speech_flash = 1;
-			IDcerted_speech();
-			slave_nearby_count = 0;
-			}
-		#endif
-*/
 
 		#ifdef ID
 		if((++timer0_count2 >= 100)&&(Autolock_G == 0))
@@ -292,11 +284,11 @@ void timer0() interrupt interrupt_timer_0_overflow
 							sensor_trigger_count = 1;
 							// alarm speech for first touch
 //							SCH_Add_Task(host_touch_speech, 0, 0);
-							host_touch_speech();
-//							Delay_500ms();
-//							Delay_500ms();
-//							Delay_500ms();
-//							Delay_500ms();
+//							host_touch_speech();
+							Delay_500ms();
+							Delay_500ms();
+							Delay_500ms();
+							Delay_500ms();
                      }
 						}
 					else
@@ -318,8 +310,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 							sensor_2ndstage_count = 0;
 							sensor_trigger_count = 2;
 							// alarm speech for 2nd touch
-							host_2ndtouch_speech();
-//							host_touch_speech();
+//							host_2ndtouch_speech();
+							host_touch_speech();
 							}
 						}
 					else
@@ -507,8 +499,13 @@ void uart_isr() interrupt 4
 					}
 				if(++ID_certificated_numbers >= 11)
 					{
-					never_alarm = 1;
+					//never_alarm = 1;
+					
+					// 应急开锁
+					Emergency_open_G = ~Emergency_open_G;
+					ID_certificated_flag = 1;
 					never_alarm_speech = 1;
+					
 					Silence_Flag = 0;
 					ID_certificated_numbers = 0;
 					}

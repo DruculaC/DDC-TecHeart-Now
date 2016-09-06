@@ -30,15 +30,17 @@ void InitElecmotor(void)
 //	ElecMotor_CW();
 	#endif
 	}
+	
 /*-------------------------------------------------------
 	ElecMotor_CW()
 	Electric Motor rotates clockwise.
 --------------------------------------------------------*/
 void ElecMotor_CW(void)
 	{
-	MagentControl_1 = 1;
-	MagentControl_2 = 0;
-	Delay_100ms();
+	// 将P0.2, PIN25设置为准双向模式
+	P0M1 &= 0xfb;
+	P0M2 &= 0xfb;
+	wheeled_rotate = 0;
 	
 	ElecMotor_code();
 
@@ -47,6 +49,12 @@ void ElecMotor_CW(void)
 	ElecMotor_Delay_CW();
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
+	
+	wheeled_rotate = 1;
+	// 将P0.2, PIN25设置为准双向模式
+	P0M1 |= 0x04;
+	P0M2 &= 0xfb;
+
 //	Externalmotor = 0;
 	}
 
@@ -57,7 +65,7 @@ void ElecMotor_CW(void)
 void ElecMotor_ACW(void)
 	{
 	Externalmotor = 1;
-	Lock_EN = 0;
+	Lock_EN = 1;
 	Generator_lock = 0;
 	
 	MagentControl_1 = 0;

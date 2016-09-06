@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   50          bit receive_data_finished_flag = 0;    //接收这一串数据完成后，此标志位置1
   51          tByte data_count = 0;            //接收数据缓存的位数，即表明第几个缓存数据
   52          tByte one_receive_byte = 0;      //接收数据的一个字节，接收完后将其赋值给received_data_buffer相对应的字节
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 2   
 
   53          tByte one_receive_byte_count = 0;         //one_receive_byte有8位，此计数表明接收到第几位，每次计数到8的时候表明
              -一个字节接收完成。
@@ -126,7 +126,7 @@ line level    source
  108          tWord receiver_DisEN_count = 0;
  109          
  110          bit match_moto_EN = 0;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 3   
 
  111          
  112          bit battery_LV_flag = 0;
@@ -145,21 +145,21 @@ line level    source
  125          bit vibration_send_EN = 0;
  126          
  127          #ifdef WX
- 128          code tByte IDkey6 _at_ 0x001ffb;
- 129          code tByte IDkey7 _at_ 0x001ffc;
- 130          code tByte IDkey8 _at_ 0x001ffd;
- 131          code tByte IDkey9 _at_ 0x001ffe;
- 132          code tByte IDkey10 _at_ 0x001fff;
- 133          code tByte IDkey11 _at_ 0x001fff;
- 134          #endif
- 135          #ifdef ID
-              code tByte IDkey6 _at_ 0x003000;
-              code tByte IDkey7 _at_ 0x003001;
-              code tByte IDkey8 _at_ 0x003002;
-              code tByte IDkey9 _at_ 0x003003;
-              code tByte IDkey10 _at_ 0x003004;
-              code tByte IDkey11 _at_ 0x003005;
+              code tByte IDkey6 _at_ 0x001ffb;
+              code tByte IDkey7 _at_ 0x001ffc;
+              code tByte IDkey8 _at_ 0x001ffd;
+              code tByte IDkey9 _at_ 0x001ffe;
+              code tByte IDkey10 _at_ 0x001fff;
+              code tByte IDkey11 _at_ 0x001fff;
               #endif
+ 135          #ifdef ID
+ 136          code tByte IDkey6 _at_ 0x003000;
+ 137          code tByte IDkey7 _at_ 0x003001;
+ 138          code tByte IDkey8 _at_ 0x003002;
+ 139          code tByte IDkey9 _at_ 0x003003;
+ 140          code tByte IDkey10 _at_ 0x003004;
+ 141          code tByte IDkey11 _at_ 0x003005;
+ 142          #endif
  143          
  144          bit ID_selflearning_flag = 0;
  145          tByte ID_selflearning_time = 0;
@@ -184,13 +184,13 @@ line level    source
  164   1         press_close_button = 1;
  165   1         
  166   1         #ifdef WX
- 167   1         KBLS1 |= 0x03;
- 168   1         KBLS0 |= 0x03;
- 169   1         KBIF &= 0xfc;
- 170   1         KBIE |= 0x03;
- 171   1         EKB = 1;
- 172   1         #endif
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 4   
+                 KBLS1 |= 0x03;
+                 KBLS0 |= 0x03;
+                 KBIF &= 0xfc;
+                 KBIE |= 0x03;
+                 EKB = 1;
+                 #endif
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 4   
 
  173   1      
  174   1         EA = 1;
@@ -254,7 +254,7 @@ line level    source
  232   2      
  233   2            // 抬起信号报警，每次报完后清0，如果再次接到则继续报。一般来说，主机每次抬起只发4遍。
  234   2            if(raised_alarm_flag == 1) 
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 5   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 5   
 
  235   2               {
  236   3               Alarm_raised_speech();     
@@ -318,7 +318,7 @@ line level    source
                     if(battery_ULV_flag == 1)
                        {
                        if(++battery_ULV_count >= 1)
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 6   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 6   
 
                           {
                           SC_RST = ~SC_RST;
@@ -367,22 +367,22 @@ line level    source
  341   2            #endif
  342   2      
  343   2            #ifdef WX
- 344   2            if((press_close_button == 1)&&(EKB == 0))
- 345   2               {
- 346   3               if(++Toggle_button_HV_count > 150)
- 347   3                  {
- 348   4                  transceiver_power_enable = 1;
- 349   4                  TXD = 0;
- 350   4                  MagentControl_2 = 1;
- 351   4                  vibration_send_EN = 0;
- 352   4                  
- 353   4                  EKB = 1;
- 354   4                  idle_EN = 1;
- 355   4                  }
- 356   3               }
- 357   2            #endif
+                    if((press_close_button == 1)&&(EKB == 0))
+                       {
+                       if(++Toggle_button_HV_count > 150)
+                          {
+                          transceiver_power_enable = 1;
+                          TXD = 0;
+                          MagentControl_2 = 1;
+                          vibration_send_EN = 0;
+                          
+                          EKB = 1;
+                          idle_EN = 1;
+                          }
+                       }
+                    #endif
  358   2            timer0_count = 0;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 7   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 7   
 
  359   2            }
  360   1         
@@ -446,7 +446,7 @@ line level    source
  418   3               transmiter_EN = 0;
  419   3               }
  420   2            }  
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 8   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 8   
 
  421   1      
  422   1         if((transceiver_power_enable == 1)&&(ID_selflearning_flag == 0))
@@ -510,7 +510,7 @@ line level    source
  480   1         if(match_button_level >= 3)
  481   1            {
  482   2            match_button_level = 0;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 9   
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 9   
 
  483   2            ID_selflearning_flag = 1;
  484   2            data_count = 0;
@@ -522,30 +522,30 @@ line level    source
  490   2            transceiver_power_enable = 0;
  491   2      
  492   2            #ifdef ID
-                    receiver_EN = 0;
-                    RXD = 1;
-                    #endif
+ 493   2            receiver_EN = 0;
+ 494   2            RXD = 1;
+ 495   2            #endif
  496   2            
  497   2            #ifdef WX
- 498   2            UART_Send_Data_match_F();
- 499   2            #endif
+                    UART_Send_Data_match_F();
+                    #endif
  500   2            }
  501   1      
  502   1         #ifdef ID
-                 if(IDflash_EN == 1)
-                    {
-                    IDflash_EN = 0;
-              
-                    Self_learn_programming_F();
-              
-                    Moto_Vibration();
-                    Delay(10);
-                    Moto_Vibration();
-              
-                    ID_selflearning_flag = 0;
-                    
-                    }
-                 #endif
+ 503   1         if(IDflash_EN == 1)
+ 504   1            {
+ 505   2            IDflash_EN = 0;
+ 506   2      
+ 507   2            Self_learn_programming_F();
+ 508   2      
+ 509   2            Moto_Vibration();
+ 510   2            Delay(10);
+ 511   2            Moto_Vibration();
+ 512   2      
+ 513   2            ID_selflearning_flag = 0;
+ 514   2            
+ 515   2            }
+ 516   1         #endif
  517   1         }
  518          
  519          /*-----------------------------------------------
@@ -574,7 +574,7 @@ line level    source
  542   3               else if((data_count == 2) && (received_data_buffer[2] == IDkey8))
  543   3                  {
  544   4                  data_count = 3;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 10  
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 10  
 
  545   4                  }
  546   3               else if((data_count == 3) && (received_data_buffer[3] == IDkey9))
@@ -638,7 +638,7 @@ line level    source
  604   6                        raised_alarm_flag=0;
  605   6                        }
  606   5                     break;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 11  
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 11  
 
  607   5      
  608   5                     case ComMode_6:
@@ -695,26 +695,26 @@ line level    source
  659             键盘中断，使芯片从省电模式中唤醒
  660          -----------------------------------------------------------*/
  661          #ifdef WX
- 662          void KBI_ISR(void) interrupt 7
- 663             {
- 664   1         EKB = 0;
- 665   1         KBIF &= 0xfc;
- 666   1         transceiver_power_enable = 1;
- 667   1         vibration_send_EN = 1;
- 668   1         receiver_EN = 0;
-C51 COMPILER V9.54   MAIN                                                                  12/02/2015 14:21:40 PAGE 12  
+              void KBI_ISR(void) interrupt 7
+                 {
+                 EKB = 0;
+                 KBIF &= 0xfc;
+                 transceiver_power_enable = 1;
+                 vibration_send_EN = 1;
+                 receiver_EN = 0;
+C51 COMPILER V9.54   MAIN                                                                  05/13/2016 09:47:49 PAGE 12  
 
- 669   1         RXD = 1;
- 670   1         Toggle_button_HV_count = 0;
- 671   1         }
- 672          #endif      
+                 RXD = 1;
+                 Toggle_button_HV_count = 0;
+                 }
+              #endif      
  673          /*---------------------------------------------------
  674             end of file
  675          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1017    ----
+   CODE SIZE        =    949    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     73       1

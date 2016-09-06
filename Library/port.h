@@ -1,6 +1,6 @@
 /*----------------------------------------------------
 	port.h (v1.00)
-
+	port-old.h
 	'port header' (see chap 5) for DDC-Z
 ----------------------------------------------------*/
 
@@ -43,8 +43,14 @@ sbit voice_EN = P1^4;
 sbit SC_RST=P2^0;
 sbit SC_DATA=P2^1;
 
+#ifdef PCB_old
 // P0.7，PIN19，传感器的检测结果，通过此PIN传给MCU，然后MCU判断
-sbit horizontal_sensor = P0^7; 
+sbit horizontal_sensor = P0^7;
+#elif defined PCB_1606
+// P0.0, PIN3, horizontal sensor input
+sbit horizontal_sensor = P0^0; 
+#endif
+
 // 
 sbit the3rd_sendor = P2^6;
 
@@ -54,13 +60,10 @@ sbit receiver_EN = P1^3;
 // P0.5, PIN22, Control the External motor, it is vdd of Hall signal actually.
 sbit Externalmotor = P0^5;
 
-// P0.2, PIN25, 电磁铁状态记忆输入
-sbit magnet_status = P0^2;
 
 // P0.1, PIN26, 断线报警检测管脚，常态为1，当为0时，则表示有人剪线。
 sbit wire_broken = P0^1;
 //sbit wire_broken = P1^7;
-
 
 sbit lock_code = P0^1;
 

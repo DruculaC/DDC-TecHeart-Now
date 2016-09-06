@@ -91,6 +91,7 @@ extern tWord wheeled_count;
 extern bit Just_power_up;
 extern bit Autolock_G;
 extern tWord timer0_count2;
+extern bit Emergency_open_G;
 
 /*-----------------------------------------
 	slave_away_operation()
@@ -137,7 +138,6 @@ void slave_nearby_operation(void)
 	Delay_500ms();
 	Delay_500ms();
 	Externalmotor = 0;
-	Lock_EN = 1;
 	Generator_lock = 1;
 	
 	if(Silence_Flag == 0)
@@ -388,6 +388,9 @@ void Detect_selflearn_action(void)
 	{
 	if(key_rotate == 1)
 		{
+		// 如果钥匙打开，则打开控制器12V电源。
+		Lock_EN = 0;
+
 		if(wire_broken == 1)
 			{
 			wire_broken_time += 1;
@@ -414,6 +417,9 @@ void Detect_selflearn_action(void)
 			Self_learn_speech();
 			}
 		}
+	else if((key_rotate == 0)&&(Open_action_flag == 0))
+		Lock_EN = 1;
+
 		
 	if(IDkey_flash_EN == 1)
 		{
@@ -437,7 +443,7 @@ void Detect_selflearn_action(void)
 void Detect_open_action(void)
 	{
 //	if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))		
-	if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1))		
+	if((((key_rotate == 1)&&(ID_certificated_flag == 1))||(Emergency_open_G == 1))&&(Open_action_flag == 0))
 		{
 		disable_sensor();
 		Open_action_flag = 1;
@@ -462,7 +468,7 @@ void Detect_open_action(void)
 ---------------------------------------------------*/
 void Detect_close_action(void)
 	{
-	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
+	if((((key_rotate == 0)&&(Emergency_open_G == 0))||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
 		{
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{
@@ -479,6 +485,7 @@ void Detect_close_action(void)
 					ID_speeched_flag = 0;		
 
 					timer0_count2 = 0;
+					Emergency_open_G = 0;
 					}								
 				}
 			}

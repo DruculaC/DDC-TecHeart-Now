@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   BATTERY                                                               12/02/2015 14:21:38 PAGE 1   
+C51 COMPILER V9.54   BATTERY                                                               05/13/2016 09:47:47 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE BATTERY
@@ -10,9 +10,9 @@ line level    source
 
    1          /*---------------------------------------------------
    2             Battery.c (v1.00)
-   3             new
+   3             new 201512
    4             µÁ≥ÿµÁ¡ø≈–∂œ
-   5          ---------------------------------------------------*/ 
+   5          ---------------------------------------------------*/
    6          
    7          #include "main.h"
    8          #include "port.h"
@@ -45,27 +45,27 @@ line level    source
   35             {  
   36   1         //------------ Withoutbattery_48V & 60V ------------------------  
   37   1         #ifdef Z2
-                 if(Check2 < 0x21f)
+                 if(Check2 < 0x240)
                     Battery_level = 48;
-                 else if(Check2 > 0x224)
+                 else if(Check2 > 0x240)
                     Battery_level = 60;
                     
                  switch(Battery_level)
                     {
                     case 48:
                        {
-                       // battery is sufficient, battery > 50.5V, 3.14V/4.93V
-                       if((Check2 >= 0x1ff))
+                       // battery is sufficient, battery > 50.5V, 3.14V/4.7V
+                       if((Check2 >= 0x213))
                           {
                           voice_EN = 1;
                           SC_Speech(20);    
                           Delay(60);
                           voice_EN = 0;
                           }
-C51 COMPILER V9.54   BATTERY                                                               12/02/2015 14:21:38 PAGE 2   
+C51 COMPILER V9.54   BATTERY                                                               05/13/2016 09:47:47 PAGE 2   
 
                        // 20km, 49.5V < battery < 50.5V, 3.08V/4.93V
-                       else if((Check2 < 0x1ff)&&(Check2 >= 0x1f7))    
+                       else if((Check2 < 0x213)&&(Check2 >= 0x20a))    
                           {
                           voice_EN = 1;
                           SC_Speech(8);  
@@ -73,7 +73,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 15km, 48.8V < battery < 49.5V, 3.03V/4.93V 
-                       else if((Check2 < 0x1f7)&&(Check2 >= 0x1ef))    
+                       else if((Check2 < 0x20a)&&(Check2 >= 0x202))    
                           {
                           voice_EN = 1;
                           SC_Speech(7);     
@@ -81,7 +81,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 10km, 48V < battery <48.8V, 2.99V/4.9V
-                       else if((Check2 < 0x1ef)&&(Check2 >= 0x1e6))    
+                       else if((Check2 < 0x202)&&(Check2 >= 0x1f9))    
                           {
                           voice_EN = 1;
                           SC_Speech(6);     
@@ -89,7 +89,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 5km, 46.8V < battery < 48V, 2.91V/4.9V
-                       else if((Check2 < 0x1e6)&&(Check2 >= 0x1df))    
+                       else if((Check2 < 0x1f9)&&(Check2 >= 0x1ee))    
                           {
                           voice_EN =1;
                           SC_Speech(5);     
@@ -97,7 +97,7 @@ line level    source
                           voice_EN = 0;
                           }                     
                        // battery is low, battery < 46.8V, 
-                       else if(Check2 < 0x1df)
+                       else if(Check2 < 0x1ee)
                           {
                           motorBAT_low_speech();
                           }        
@@ -106,8 +106,8 @@ line level    source
                     
                     case 60:
                        {
-                       // battery is sufficient, battery > 63.5V, 3.95V/4.93V
-                       if((Check2 >= 0x27e))
+                       // battery is sufficient, battery > 63.5V, 3.95V/4.7V
+                       if((Check2 >= 0x298))
                           {
                           voice_EN = 1;
                           SC_Speech(20);    
@@ -115,7 +115,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 35km, 62V < battery < 63.5V, 3.86V/4.93V
-                       else if((Check2 < 0x27e)&&(Check2 >= 0x26e))    
+                       else if((Check2 < 0x298)&&(Check2 >= 0x287))    
                           {
                           voice_EN = 1;
                           SC_Speech(9);  
@@ -123,17 +123,17 @@ line level    source
                           voice_EN = 0;
                           }
                        // 20km, 60V < battery < 62V, 3.74V/4.93V
-                       else if((Check2 < 0x26e)&&(Check2 >= 0x25b))    
+                       else if((Check2 < 0x287)&&(Check2 >= 0x273))    
                           {
                           voice_EN = 1;
-C51 COMPILER V9.54   BATTERY                                                               12/02/2015 14:21:38 PAGE 3   
+C51 COMPILER V9.54   BATTERY                                                               05/13/2016 09:47:47 PAGE 3   
 
                           SC_Speech(8);  
                           Delay(100);
                           voice_EN = 0;
                           }
                        // 15km, 59.3V < battery < 60V, 3.7V/4.93V 
-                       else if((Check2 < 0x25b)&&(Check2 >= 0x255))    
+                       else if((Check2 < 0x273)&&(Check2 >= 0x26c))    
                           {
                           voice_EN = 1;
                           SC_Speech(7);     
@@ -141,7 +141,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 10km, 58.3V < battery <59.3V, 3.64V/4.93V
-                       else if((Check2 < 0x255)&&(Check2 >= 0x24c))    
+                       else if((Check2 < 0x26c)&&(Check2 >= 0x264))    
                           {
                           voice_EN = 1;
                           SC_Speech(6);     
@@ -149,7 +149,7 @@ line level    source
                           voice_EN = 0;
                           }
                        // 5km, 57.6V < battery < 58.3V, 3.6V/4.93V
-                       else if((Check2 < 0x24c)&&(Check2 >= 0x244))    
+                       else if((Check2 < 0x264)&&(Check2 >= 0x25b))    
                           {
                           voice_EN =1;
                           SC_Speech(5);     
@@ -157,7 +157,7 @@ line level    source
                           voice_EN = 0;
                           }                     
                        // battery is low, battery < 57.6V, 
-                       else if(Check2 < 0x244)
+                       else if(Check2 < 0x25b)
                           {
                           motorBAT_low_speech();
                           }
@@ -167,17 +167,17 @@ line level    source
  153   1         
  154   1         //------------ Withbattery_48V & 60V ------------------------  
  155   1         #ifdef Z3
- 156   1         if(Check2 < 0x2a0)
+ 156   1         if(Check2 < 0x240)
  157   1            Battery_level = 48;
- 158   1         else if(Check2 > 0x2a1)
+ 158   1         else if(Check2 > 0x240)
  159   1            Battery_level = 60;
  160   1            
  161   1         switch(Battery_level)
  162   1            {
  163   2            case 48:
  164   2               {
- 165   3               // battery is sufficient, battery > 50.5V, 3.14V/4.93V
- 166   3               if((Check2 >= 0x261))
+ 165   3               // battery is sufficient, battery > 50.5V, 3.14V/4.7V
+ 166   3               if((Check2 >= 0x213))
  167   3                  {
  168   4                  voice_EN = 1;
  169   4                  SC_Speech(20);    
@@ -185,17 +185,17 @@ line level    source
  171   4                  voice_EN = 0;
  172   4                  }
  173   3               // 20km, 49.5V < battery < 50.5V, 3.08V/4.93V
- 174   3               else if((Check2 < 0x261)&&(Check2 >= 0x257))    
+ 174   3               else if((Check2 < 0x213)&&(Check2 >= 0x20a))    
  175   3                  {
  176   4                  voice_EN = 1;
  177   4                  SC_Speech(8);  
  178   4                  Delay(100);
-C51 COMPILER V9.54   BATTERY                                                               12/02/2015 14:21:38 PAGE 4   
+C51 COMPILER V9.54   BATTERY                                                               05/13/2016 09:47:47 PAGE 4   
 
  179   4                  voice_EN = 0;
  180   4                  }
  181   3               // 15km, 48.8V < battery < 49.5V, 3.03V/4.93V 
- 182   3               else if((Check2 < 0x257)&&(Check2 >= 0x24d))    
+ 182   3               else if((Check2 < 0x20a)&&(Check2 >= 0x202))    
  183   3                  {
  184   4                  voice_EN = 1;
  185   4                  SC_Speech(7);     
@@ -203,7 +203,7 @@ line level    source
  187   4                  voice_EN = 0;
  188   4                  }
  189   3               // 10km, 48V < battery <48.8V, 2.99V/4.9V
- 190   3               else if((Check2 < 0x24d)&&(Check2 >= 0x243))    
+ 190   3               else if((Check2 < 0x202)&&(Check2 >= 0x1f9))    
  191   3                  {
  192   4                  voice_EN = 1;
  193   4                  SC_Speech(6);     
@@ -211,7 +211,7 @@ line level    source
  195   4                  voice_EN = 0;
  196   4                  }
  197   3               // 5km, 46.8V < battery < 48V, 2.91V/4.9V
- 198   3               else if((Check2 < 0x243)&&(Check2 >= 0x236))    
+ 198   3               else if((Check2 < 0x1f9)&&(Check2 >= 0x1ee))    
  199   3                  {
  200   4                  voice_EN =1;
  201   4                  SC_Speech(5);     
@@ -219,7 +219,7 @@ line level    source
  203   4                  voice_EN = 0;
  204   4                  }                     
  205   3               // battery is low, battery < 46.8V, 
- 206   3               else if(Check2 < 0x236)
+ 206   3               else if(Check2 < 0x1ee)
  207   3                  {
  208   4                  motorBAT_low_speech();
  209   4                  }        
@@ -228,8 +228,8 @@ line level    source
  212   2            
  213   2            case 60:
  214   2               {
- 215   3               // battery is sufficient, battery > 63.5V, 3.95V/4.93V
- 216   3               if((Check2 >= 0x2f9))
+ 215   3               // battery is sufficient, battery > 63.5V, 3.95V/4.7V
+ 216   3               if((Check2 >= 0x298))
  217   3                  {
  218   4                  voice_EN = 1;
  219   4                  SC_Speech(20);    
@@ -237,7 +237,7 @@ line level    source
  221   4                  voice_EN = 0;
  222   4                  }
  223   3               // 35km, 62V < battery < 63.5V, 3.86V/4.93V
- 224   3               else if((Check2 < 0x2f9)&&(Check2 >= 0x2e5))    
+ 224   3               else if((Check2 < 0x298)&&(Check2 >= 0x287))    
  225   3                  {
  226   4                  voice_EN = 1;
  227   4                  SC_Speech(9);  
@@ -245,7 +245,7 @@ line level    source
  229   4                  voice_EN = 0;
  230   4                  }
  231   3               // 20km, 60V < battery < 62V, 3.74V/4.93V
- 232   3               else if((Check2 < 0x2e5)&&(Check2 >= 0x2cf))    
+ 232   3               else if((Check2 < 0x287)&&(Check2 >= 0x273))    
  233   3                  {
  234   4                  voice_EN = 1;
  235   4                  SC_Speech(8);  
@@ -253,8 +253,8 @@ line level    source
  237   4                  voice_EN = 0;
  238   4                  }
  239   3               // 15km, 59.3V < battery < 60V, 3.7V/4.93V 
- 240   3               else if((Check2 < 0x2cf)&&(Check2 >= 0x2c7))    
-C51 COMPILER V9.54   BATTERY                                                               12/02/2015 14:21:38 PAGE 5   
+ 240   3               else if((Check2 < 0x273)&&(Check2 >= 0x26c))    
+C51 COMPILER V9.54   BATTERY                                                               05/13/2016 09:47:47 PAGE 5   
 
  241   3                  {
  242   4                  voice_EN = 1;
@@ -263,7 +263,7 @@ line level    source
  245   4                  voice_EN = 0;
  246   4                  }
  247   3               // 10km, 58.3V < battery <59.3V, 3.64V/4.93V
- 248   3               else if((Check2 < 0x2c7)&&(Check2 >= 0x2bd))    
+ 248   3               else if((Check2 < 0x26c)&&(Check2 >= 0x264))    
  249   3                  {
  250   4                  voice_EN = 1;
  251   4                  SC_Speech(6);     
@@ -271,7 +271,7 @@ line level    source
  253   4                  voice_EN = 0;
  254   4                  }
  255   3               // 5km, 57.6V < battery < 58.3V, 3.6V/4.93V
- 256   3               else if((Check2 < 0x2bd)&&(Check2 >= 0x2b3))    
+ 256   3               else if((Check2 < 0x264)&&(Check2 >= 0x25b))    
  257   3                  {
  258   4                  voice_EN =1;
  259   4                  SC_Speech(5);     
@@ -279,13 +279,13 @@ line level    source
  261   4                  voice_EN = 0;
  262   4                  }                     
  263   3               // battery is low, battery < 57.6V, 
- 264   3               else if(Check2 < 0x2b3)
+ 264   3               else if(Check2 < 0x25b)
  265   3                  {
  266   4                  motorBAT_low_speech();
  267   4                  }
  268   3               }
  269   2            }
- 270   1         #endif
+ 270   1         #endif   
  271   1         }
  272          /*---------------------------------------------------
  273             end of file

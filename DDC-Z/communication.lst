@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 1   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE COMMUNICATION
@@ -62,7 +62,7 @@ line level    source
   51             出来，而是相当于废代码，只占用通信时间。
   52          ----------------------------------------------------*/
   53          void initsignal()
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 2   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 2   
 
   54             {
   55   1         tByte k,k1;
@@ -126,7 +126,7 @@ line level    source
  113   3      //       Delay_5ms();
  114   3               }
  115   2            mystartbuffer=0xaa;
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 3   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 3   
 
  116   2      //    Delay_5ms();
  117   2      //    Custom_Delay(23, 28);
@@ -190,7 +190,7 @@ line level    source
  175             主机接收到编码1信号后，会反馈一个编码1信号给附机
  176             以表示主机在附机附近。
  177          ---------------------------------------------------*/
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 4   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 4   
 
  178          void ComMode_Data_WX(tByte ComMode, x) 
  179             {
@@ -254,7 +254,7 @@ line level    source
  237   1         
  238   1         SendNByte(myTxRxData, 6);
  239   1      
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 5   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 5   
 
  240   1         receiver_EN = 0;
  241   1         close_tranceiver_F();
@@ -318,7 +318,7 @@ line level    source
  299   1         transmiter_EN = 0;   
  300   1         }
  301          
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 6   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 6   
 
  302          /*------------------------------------------------------------------
  303             open_tranceiver_F()
@@ -382,7 +382,7 @@ line level    source
  361   1         initsignal();
  362   1         
  363   1         SendNByte(myTxRxData, 8);
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 7   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 7   
 
  364   1         Delay_50ms();
  365   1         
@@ -446,7 +446,7 @@ line level    source
  423   4                  // save "0" to one byte
  424   4                  one_receive_byte <<= 1;
  425   4                  one_receive_byte &= 0xfe;
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 8   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 8   
 
  426   4                  one_receive_byte_count++;
  427   4                  receive_HV_count = 0;
@@ -510,7 +510,7 @@ line level    source
  485   3               if((receive_LV_count > 35)&&(receive_LV_count <= 80)) 
  486   3                  {
  487   4                  // save "0" to one byte
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 9   
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 9   
 
  488   4                  one_receive_byte <<= 1;
  489   4                  one_receive_byte &= 0xfe;
@@ -574,7 +574,7 @@ line level    source
  547   2               {
  548   3               receive_data_finished_flag = 1;
  549   3               data_count = 0;
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 10  
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 10  
 
  550   3               }
  551   2            else 
@@ -638,7 +638,7 @@ line level    source
  609   1         myTxRxData[6]=0x00;
  610   1      */
  611   1         for(i=0;i<3;i++)
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 11  
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 11  
 
  612   1         {
  613   2            for(n=0;n<8;n++)
@@ -703,7 +703,7 @@ MODULE INFORMATION:   STATIC OVERLAYABLE
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
 
-C51 COMPILER V9.54   COMMUNICATION                                                         02/03/2016 16:50:22 PAGE 12  
+C51 COMPILER V9.54   COMMUNICATION                                                         09/06/2016 14:33:03 PAGE 12  
 
 
 C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
