@@ -1,7 +1,7 @@
 /*---------------------------------------------------
 	voice.c (v1.00)
 	通用语音文件
-	old
+	201506
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -29,8 +29,6 @@ extern bit raised_flag;
 extern tWord ADC_check_result;		
 extern bit battery_stolen_EN;			
 extern bit never_alarm_speech;
-extern bit Speech_closed_G;
-extern tByte Speech_closed_time;
  
 /*--------------------------------------------------
 	SC_Speech()
@@ -87,7 +85,7 @@ void key_rotate_on_speech(void)
 	voice_EN = 1;
 	SC_Speech(11);  
 	Delay(30);
-	SC_Speech(12);  
+	SC_Speech(14);  
 	Delay(30);
 	SC_Speech(10);  
 	Delay(100);	
@@ -140,8 +138,7 @@ void ID_speech(void)
 	voice_EN = 1;
 	SC_Speech(24); 
 	Delay(30);
-	Speech_closed_G = 1;
-	Speech_closed_time = 0;
+	voice_EN = 0;
 	}
 
 /*----------------------------------------------------
@@ -151,7 +148,6 @@ void ID_speech(void)
 void Self_learn_speech(void)
 	{
 	voice_EN = 1;
-	Speech_closed_time = 0;
 	SC_Speech(25); 
 	Delay(30);
 	voice_EN = 0;
@@ -178,7 +174,7 @@ void host_touch_speech(void)
 void host_2ndtouch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(17);  
+	SC_Speech(19);  
 	Delay(140);
 	voice_EN = 0;
 //	Delay(10);
@@ -191,7 +187,7 @@ void host_2ndtouch_speech(void)
 void stolen_alarm_speech1(void)
 	{
 	voice_EN = 1;
-	SC_Speech(14); 
+	SC_Speech(16); 
 	Delay(60);
 	voice_EN = 0; 
 	}
@@ -217,17 +213,16 @@ void open_lock_speech(void)
 	{
 	#ifdef Tailing
 	voice_EN = 1;
-	SC_Speech(20);  
+	SC_Speech(22);  
 	Delay(30);
-	SC_Speech(12);  
+	SC_Speech(14);  
 	Delay(40);
 	voice_EN = 0;
 	#endif
 
 	// 车锁已打开
 	voice_EN=1;
-	Speech_closed_time = 0;
-	SC_Speech(15); 
+	SC_Speech(17); 
 	Delay(60);
 	voice_EN=0;
 	}
@@ -239,7 +234,7 @@ void open_lock_speech(void)
 void close_lock_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(16);  
+	SC_Speech(18);  
 	Delay(60);
 	voice_EN = 0;
 	}
@@ -251,7 +246,7 @@ void close_lock_speech(void)
 void battery_stolen_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(13);  
+	SC_Speech(15);  
 	Delay(100);
 	voice_EN = 0;
 	}
@@ -275,7 +270,7 @@ void Cutting_Wire_Voice(void)
 void Product_Test_Voice(void)
 	{
 	voice_EN = 1;
-	SC_Speech(19);  
+	SC_Speech(21);  
 	Delay(150);
 	voice_EN = 0;
 	}

@@ -27,6 +27,7 @@ tByte wire_broken_level = 0;
 
 bit vibration_flag1 = 0;
 tWord vibration_count1 = 0;
+tWord ADC_check_saved_result = 0;		//作为AD检测值的存储值，即上一次播报的值。
 
 
 tByte vibration_count2 = 0;
@@ -103,9 +104,9 @@ void slave_away_operation(void)
 	if(Silence_Flag == 0)
 		{
 		close_lock_speech();	
-		load_battery_result = ADC_check_result;
-		verifybattery(load_battery_result);
 
+		Broadcast_battery();
+		
 //		Check_Motobattery_flag = 1;
 //		Check_Motobattery_count = 0;
 	   }
@@ -144,8 +145,10 @@ void slave_nearby_operation(void)
 		{
 		open_lock_speech();
 		Externalmotor = 0;
+		
 		if(Just_power_up == 0)
-			verifybattery(load_battery_result);
+			Broadcast_battery();
+			
 		key_rotate_on_speech();
 		}
 
@@ -386,7 +389,8 @@ void Ensensor_after_slave_away(void)
 -----------------------------------------------------*/
 void Detect_selflearn_action(void)
 	{
-	if(key_rotate == 1)
+	if((key_rotate == 1)||(Emergency_open_G == 1))
+//	if(key_rotate == 1)
 		{
 		// 如果钥匙打开，则打开控制器12V电源。
 		Lock_EN = 0;
@@ -417,7 +421,8 @@ void Detect_selflearn_action(void)
 			Self_learn_speech();
 			}
 		}
-	else if((key_rotate == 0)&&(Open_action_flag == 0))
+	else if((key_rotate == 0)&&(Open_action_flag == 0)&&(Emergency_open_G == 0))
+//	else if((key_rotate == 0)&&(Open_action_flag == 0))
 		Lock_EN = 1;
 
 		
@@ -442,8 +447,7 @@ void Detect_selflearn_action(void)
 ---------------------------------------------------*/
 void Detect_open_action(void)
 	{
-//	if((key_rotate == 1)&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))		
-	if((((key_rotate == 1)&&(ID_certificated_flag == 1))||(Emergency_open_G == 1))&&(Open_action_flag == 0))
+	if(((key_rotate == 1)||(Emergency_open_G == 1))&&(Open_action_flag == 0)&&(ID_certificated_flag == 1)&&(never_alarm == 0))		
 		{
 		disable_sensor();
 		Open_action_flag = 1;
@@ -469,6 +473,7 @@ void Detect_open_action(void)
 void Detect_close_action(void)
 	{
 	if((((key_rotate == 0)&&(Emergency_open_G == 0))||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
+//	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1)||(Emergency_open_G == 0))&&(Open_action_flag == 1))
 		{
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{

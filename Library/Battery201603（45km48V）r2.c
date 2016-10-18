@@ -1,6 +1,6 @@
 /*---------------------------------------------------
 	Battery.c (v1.00)
-	Battery201603（90km72V）r1
+	Battery201603（45km48V）r1
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -11,9 +11,14 @@
 #include "Delay.h"
 #include "AD.h"
 
-extern tWord ADC_check_result;		
+#define Max_battery 0x211
+
+extern tWord ADC_check_result;
+extern tWord load_battery_result;
+	
 tByte Check2_stage = 0;
 tByte Battery_level = 0;
+
 
 /*----------------------------------------------------
 	Check_motor_accumulator() - 48V 电平
@@ -23,6 +28,22 @@ void Check_motor_accumulator(void)
 	{
 	// detect the battery voltage
 	ADC_check_result = GetADCResult(6);
+	}
+
+
+/*-----------------------------------------
+	Broadcast_battery()
+	
+	载入电量值时，如果新的电量值小于原先的值，或者新电量值大于最大电量值，则载入进去播报。否则视为浮点
+	不播报。
+------------------------------------------*/
+void Broadcast_battery(void)
+	{
+	if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
+		{
+		load_battery_result = ADC_check_result;
+		}	
+	verifybattery(load_battery_result);			
 	}
 
 /*----------------------------------------------------
@@ -37,24 +58,24 @@ void verifybattery(tWord Check2)
 	SC_Speech(8);  	
 	Delay(70);	
 	// 多少
-	if(Check2 < 0x2a8)
+	if(Check2 < 0x1e5)
 		{
-		SC_Speech(14);  		// 3
+		SC_Speech(13);  		// 2
 		Delay(30);
 		}
-	else if((Check2 >= 0x2a8)&&(Check2 < 0x2b6))
+	else if((Check2 >= 0x1e5)&&(Check2 < 0x1f6))
 		{
-		SC_Speech(18);			// 7
-		Delay(30);
-		}
-	else if((Check2 >= 0x2b6)&&(Check2 < 0x2c7))
-		{
-		SC_Speech(21);  		// 10
-		Delay(30);
 		SC_Speech(16);  		// 5
 		Delay(30);
 		}
-	else if((Check2 >= 0x2c7)&&(Check2 < 0x2d8))
+	else if((Check2 >= 0x1f6)&&(Check2 < 0x1fa))
+		{
+		SC_Speech(21);  		// 10
+		Delay(30);
+		SC_Speech(12);  		// 1
+		Delay(30);
+		}
+	else if((Check2 >= 0x1fa)&&(Check2 < 0x202))
 		{
 		SC_Speech(13);  		// 2
 		Delay(30);
@@ -63,81 +84,38 @@ void verifybattery(tWord Check2)
 		SC_Speech(12);  		// 1
 		Delay(30);
 		}
-	else if((Check2 >= 0x2d8)&&(Check2 < 0x2e2))
+	else if((Check2 >= 0x202)&&(Check2 < 0x206))
 		{
 		SC_Speech(13);  		// 2
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
-		SC_Speech(19);  		// 8
-		Delay(30);
-		}
-	else if((Check2 >= 0x2e2)&&(Check2 < 0x2ec))
-		{
-		SC_Speech(14);  		// 3
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
 		SC_Speech(17);  		// 6
 		Delay(30);
 		}
-	else if((Check2 >= 0x2ec)&&(Check2 < 0x2f7))
+	else if((Check2 >= 0x206)&&(Check2 < 0x20c))
 		{
-		SC_Speech(15);  		// 4
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
 		SC_Speech(14);  		// 3
-		Delay(30);
-		}
-	else if((Check2 >= 0x2f7)&&(Check2 < 0x302))
-		{
-		SC_Speech(16);  		// 5
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
 		SC_Speech(12);  		// 1
 		Delay(30);
 		}
-	else if((Check2 >= 0x302)&&(Check2 < 0x30c))
+	else if((Check2 >= 0x20c)&&(Check2 < 0x211))
 		{
-		SC_Speech(17);  		// 6
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
-		}
-	else if((Check2 >= 0x30c)&&(Check2 < 0x311))
-		{
-		SC_Speech(17);  		// 6
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
-		SC_Speech(18);  		// 7
-		Delay(30);
-		}
-	else if((Check2 >= 0x311)&&(Check2 < 0x315))
-		{
-		SC_Speech(18);  		// 7
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
 		SC_Speech(15);  		// 4
 		Delay(30);
+		SC_Speech(21);  		// 10
+		Delay(30);
 		}
-	else if((Check2 >= 0x315)&&(Check2 < 0x317))
+	else if(Check2 >= Max_battery)
 		{
-		SC_Speech(19);  		// 8
+		SC_Speech(15);  		// 4
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(13);  		// 2
-		Delay(30);
-		}
-	else if(Check2 >= 0x317)
-		{
-		SC_Speech(20);  		// 9
-		Delay(30);
-		SC_Speech(21);  		// 10
+		SC_Speech(16);  		// 5
 		Delay(30);
 		}		
 	// 公里

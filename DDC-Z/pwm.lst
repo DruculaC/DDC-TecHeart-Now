@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   PWM                                                                   09/06/2016 14:33:04 PAGE 1   
+C51 COMPILER V9.54   PWM                                                                   10/18/2016 11:28:09 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE PWM
@@ -62,7 +62,7 @@ line level    source
   52   3               }
   53   2            break;
   54   2            // PWM2 Duty (P1.7)
-C51 COMPILER V9.54   PWM                                                                   09/06/2016 14:33:04 PAGE 2   
+C51 COMPILER V9.54   PWM                                                                   10/18/2016 11:28:09 PAGE 2   
 
   55   2            case E_CHANNEL2:
   56   2               {

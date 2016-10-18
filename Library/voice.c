@@ -29,7 +29,10 @@ extern bit raised_flag;
 extern tWord ADC_check_result;		
 extern bit battery_stolen_EN;			
 extern bit never_alarm_speech;
- 
+extern bit Speech_closed_G;
+extern tByte Speech_closed_time;
+
+
 /*--------------------------------------------------
 	SC_Speech()
 	按段数发送脉冲，即可报第几段语音。
@@ -136,7 +139,8 @@ void ID_speech(void)
 	voice_EN = 1;
 	SC_Speech(26); 
 	Delay(30);
-	voice_EN = 0;
+	Speech_closed_G = 1;
+	Speech_closed_time = 0;
 	}
 
 /*----------------------------------------------------
@@ -146,6 +150,7 @@ void ID_speech(void)
 void Self_learn_speech(void)
 	{
 	voice_EN = 1;
+	Speech_closed_time = 0;
 	SC_Speech(27); 
 	Delay(30);
 	voice_EN = 0;
@@ -220,6 +225,7 @@ void open_lock_speech(void)
 
 	// 车锁已打开
 	voice_EN=1;
+	Speech_closed_time = 0;
 	SC_Speech(9); 
 	Delay(60);
 	voice_EN=0;
@@ -420,8 +426,7 @@ void Accumulator_voice_promot(void)
 		Check_Motobattery_count = 5;
 		if((Check_Motobattery_flag == 1)&&(EN_host_stolen_alarming == 0)&&(fell_flag == 0)&&(raised_flag == 0)&&(battery_stolen_EN == 0))
 			{
-			load_battery_result = ADC_check_result;
-			verifybattery(load_battery_result);
+			Broadcast_battery();			
 			Check_Motobattery_flag = 0;
 			}
 		}

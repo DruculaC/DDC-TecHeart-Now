@@ -10,8 +10,10 @@
 #include "voice.h"
 #include "Delay.h"
 #include "AD.h"
+#define Max_battery 0x293
 
 extern tWord ADC_check_result;		
+extern tWord load_battery_result;
 tByte Check2_stage = 0;
 tByte Battery_level = 0;
 
@@ -23,6 +25,19 @@ void Check_motor_accumulator(void)
 	{
 	// detect the battery voltage
 	ADC_check_result = GetADCResult(6);
+	}
+/*-----------------------------------------
+	Broadcast_battery()
+	
+	ÄãºÃ
+------------------------------------------*/
+void Broadcast_battery(void)
+	{
+	if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
+		{
+		load_battery_result = ADC_check_result;
+		}	
+	verifybattery(load_battery_result);			
 	}
 
 /*----------------------------------------------------
@@ -120,7 +135,7 @@ void verifybattery(tWord Check2)
 		SC_Speech(19);  		// 8
 		Delay(30);
 		}
-	else if((Check2 >= 0x291)&&(Check2 < 0x293))
+	else if((Check2 >= 0x291)&&(Check2 < Max_battery))
 		{
 		SC_Speech(17);  		// 6
 		Delay(30);
@@ -129,7 +144,7 @@ void verifybattery(tWord Check2)
 		SC_Speech(15);  		// 4
 		Delay(30);
 		}
-	else if(Check2 >= 0x293)
+	else if(Check2 >= Max_battery)
 		{
 		SC_Speech(18);  		// 7
 		Delay(30);

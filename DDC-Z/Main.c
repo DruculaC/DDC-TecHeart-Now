@@ -69,7 +69,9 @@ tWord raised_fell_number = 0;				//µ¹µØ»òÕßÌ§Æð³ö·¢ºó£¬¼ÆÊý£¬µ½´ïÒ»¶¨ÊýÖµºó£¬½«Æ
 bit raised_fell_once_flag = 0;			//raised_fell_flagÊÇ·ñÔø¾­±êÖ¾¹ý£¬Èç¹û±êÖ¾¹ýÔòÖÃ1.È»ºóÖ÷»ú±»»Ö¸´µ¹µØ»òÕß»Ö¸´Ì§ÆðÊ±£¬´Ë±êÖ¾Î»¸´Î»¡£
 tByte Open_action_flag = 0;			//µç¶¯³µ¿ªÆô¹Ø±Õ±êÖ¾Î»£¬1±íÊ¾µç¶¯³µ¿ªÆôÁË£¬0±íÊ¾µç¶¯³µ¹Ø±ÕÁË
 tWord ADC_check_result = 0;		//×÷ÎªAD¼ì²âÖµ
-tWord load_battery_result = 0;
+
+
+tWord load_battery_result = 0xfff;
 tByte wire_broken_count = 0;		// ×÷Îª¶ÏÏßºóµÄÊ±¼ä¼ì²â
 bit battery_stolen_EN = 0;			// ×÷Îªµç³Ø±»µÁµÄÊ¹ÄÜ¶Ë
 tByte battery_stolen_count = 0;	// ×÷Îªµç³Ø±»µÁµÄ±¨¾¯´ÎÊý
@@ -86,6 +88,8 @@ tWord wheeled_count = 0;
 bit IDkey_speech_flash = 0;
 bit Emergency_open_G = 0;
 
+bit Speech_closed_G = 0;
+tByte Speech_closed_time = 0;
 
 code tByte IDkey6 _at_ 0x003000;
 code tByte IDkey7 _at_ 0x003001;
@@ -208,7 +212,16 @@ void timer0() interrupt interrupt_timer_0_overflow
 				ID_speech();
 				}
 			}
-
+		
+		if(Speech_closed_G == 1)
+			{
+			Speech_closed_time += 1;
+			if(Speech_closed_time > 2)
+				{
+				Speech_closed_time = 0;
+				voice_EN = 0;
+				}
+			}
 
 /*----- Accumulator relevantly ------------------------------------*/
 		Check_motor_accumulator();

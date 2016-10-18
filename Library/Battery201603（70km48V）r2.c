@@ -1,6 +1,6 @@
 /*---------------------------------------------------
 	Battery.c (v1.00)
-	201603
+	Battery201603£®70km48V£©r1
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -10,8 +10,10 @@
 #include "voice.h"
 #include "Delay.h"
 #include "AD.h"
+#define Max_battery 0x211
 
 extern tWord ADC_check_result;		
+extern tWord load_battery_result;
 tByte Check2_stage = 0;
 tByte Battery_level = 0;
 
@@ -23,6 +25,18 @@ void Check_motor_accumulator(void)
 	{
 	// detect the battery voltage
 	ADC_check_result = GetADCResult(6);
+	}
+/*-----------------------------------------
+	Broadcast_battery()
+	
+------------------------------------------*/
+void Broadcast_battery(void)
+	{
+	if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
+		{
+		load_battery_result = ADC_check_result;
+		}	
+	verifybattery(load_battery_result);			
 	}
 
 /*----------------------------------------------------
@@ -37,99 +51,74 @@ void verifybattery(tWord Check2)
 	SC_Speech(8);  	
 	Delay(70);	
 	// ∂‡…Ÿ
-	if(Check2 < 0x237)
+	if(Check2 < 0x1dd)
 		{
 		SC_Speech(13);  		// 2
 		Delay(30);
 		}
-	else if((Check2 >= 0x237)&&(Check2 < 0x242))
+	else if((Check2 >= 0x1dd)&&(Check2 < 0x1e5))
 		{
 		SC_Speech(16);			// 5
 		Delay(30);
 		}
-	else if((Check2 >= 0x242)&&(Check2 < 0x250))
+	else if((Check2 >= 0x1e5)&&(Check2 < 0x1ea))
 		{
 		SC_Speech(21);  		// 10
 		Delay(30);
 		}
-	else if((Check2 >= 0x250)&&(Check2 < 0x25f))
-		{
-		SC_Speech(21);  		// 10
-		Delay(30);
-		SC_Speech(17);  		// 6
-		Delay(30);
-		}
-	else if((Check2 >= 0x25f)&&(Check2 < 0x267))
+	else if((Check2 >= 0x1ea)&&(Check2 < 0x1f6))
 		{
 		SC_Speech(13);  		// 2
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(13);  		// 2
+		SC_Speech(16);  		// 5
 		Delay(30);
 		}
-	else if((Check2 >= 0x267)&&(Check2 < 0x26f))
-		{
-		SC_Speech(13);  		// 2
-		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
-		SC_Speech(19);  		// 8
-		Delay(30);
-		}
-	else if((Check2 >= 0x26f)&&(Check2 < 0x279))
+	else if((Check2 >= 0x1f6)&&(Check2 < 0x1fa))
 		{
 		SC_Speech(14);  		// 3
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(15);  		// 4
+		SC_Speech(14);  		// 3
 		Delay(30);
 		}
-	else if((Check2 >= 0x279)&&(Check2 < 0x282))
+	else if((Check2 >= 0x1fa)&&(Check2 < 0x202))
 		{
 		SC_Speech(15);  		// 4
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
 		}
-	else if((Check2 >= 0x282)&&(Check2 < 0x28a))
+	else if((Check2 >= 0x202)&&(Check2 < 0x206))
 		{
 		SC_Speech(15);  		// 4
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(17);  		// 6
+		SC_Speech(18);  		// 7
 		Delay(30);
 		}
-	else if((Check2 >= 0x28a)&&(Check2 < 0x28e))
+	else if((Check2 >= 0x206)&&(Check2 < 0x20c))
 		{
 		SC_Speech(16);  		// 5
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(13);  		// 2
-		Delay(30);
-		}
-	else if((Check2 >= 0x28e)&&(Check2 < 0x291))
-		{
 		SC_Speech(16);  		// 5
 		Delay(30);
-		SC_Speech(21);  		// 10
-		Delay(30);
-		SC_Speech(19);  		// 8
-		Delay(30);
 		}
-	else if((Check2 >= 0x291)&&(Check2 < 0x293))
+	else if((Check2 >= 0x20c)&&(Check2 < Max_battery))
 		{
 		SC_Speech(17);  		// 6
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(15);  		// 4
+		SC_Speech(14);  		// 3
 		Delay(30);
 		}
-	else if(Check2 >= 0x293)
+	else if(Check2 >= Max_battery)
 		{
 		SC_Speech(18);  		// 7
 		Delay(30);
