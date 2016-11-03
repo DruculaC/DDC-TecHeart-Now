@@ -1,6 +1,6 @@
 /*---------------------------------------------------
 	Battery.c (v1.00)
-	Battery201603£¨70km48V£©r1
+	Battery201603£¨60km48V£©r1
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -29,6 +29,8 @@ void Check_motor_accumulator(void)
 /*-----------------------------------------
 	Broadcast_battery()
 	
+	??¨¨?¦Ì?¨¢??¦Ì¨º¡À¡ê?¨¨?1?D?¦Ì?¦Ì?¨¢??¦ÌD?¨®¨²?-?¨¨¦Ì??¦Ì¡ê??¨°??D?¦Ì?¨¢??¦Ì¡ä¨®¨®¨²¡Á?¡ä¨®¦Ì?¨¢??¦Ì¡ê??¨°??¨¨???¨¨£¤2£¤¡À¡§?¡ê¡¤??¨°¨º¨®?a??¦Ì?
+	2?2£¤¡À¡§?¡ê
 ------------------------------------------*/
 void Broadcast_battery(void)
 	{
@@ -58,12 +60,14 @@ void verifybattery(tWord Check2)
 		}
 	else if((Check2 >= 0x1dd)&&(Check2 < 0x1e5))
 		{
-		SC_Speech(16);			// 5
+		SC_Speech(16);  		// 5
 		Delay(30);
 		}
 	else if((Check2 >= 0x1e5)&&(Check2 < 0x1ea))
 		{
 		SC_Speech(21);  		// 10
+		Delay(30);
+		SC_Speech(16);  		// 5
 		Delay(30);
 		}
 	else if((Check2 >= 0x1ea)&&(Check2 < 0x1f6))
@@ -72,23 +76,25 @@ void verifybattery(tWord Check2)
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(16);  		// 5
+		SC_Speech(12);  		// 1
 		Delay(30);
 		}
 	else if((Check2 >= 0x1f6)&&(Check2 < 0x1fa))
 		{
-		SC_Speech(14);  		// 3
+		SC_Speech(13);  		// 2
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(14);  		// 3
+		SC_Speech(19);  		// 8
 		Delay(30);
 		}
 	else if((Check2 >= 0x1fa)&&(Check2 < 0x202))
 		{
-		SC_Speech(15);  		// 4
+		SC_Speech(14);  		// 3
 		Delay(30);
 		SC_Speech(21);  		// 10
+		Delay(30);
+		SC_Speech(15);  		// 4
 		Delay(30);
 		}
 	else if((Check2 >= 0x202)&&(Check2 < 0x206))
@@ -97,30 +103,30 @@ void verifybattery(tWord Check2)
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(18);  		// 7
+		SC_Speech(12);  		// 1
 		Delay(30);
 		}
 	else if((Check2 >= 0x206)&&(Check2 < 0x20c))
 		{
-		SC_Speech(16);  		// 5
+		SC_Speech(15);  		// 4
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(16);  		// 5
+		SC_Speech(18);  		// 7
 		Delay(30);
 		}
 	else if((Check2 >= 0x20c)&&(Check2 < Max_battery))
 		{
-		SC_Speech(17);  		// 6
+		SC_Speech(16);  		// 5
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);
-		SC_Speech(14);  		// 3
+		SC_Speech(15);  		// 4
 		Delay(30);
 		}
 	else if(Check2 >= Max_battery)
 		{
-		SC_Speech(18);  		// 7
+		SC_Speech(17);  		// 6
 		Delay(30);
 		SC_Speech(21);  		// 10
 		Delay(30);

@@ -95,18 +95,26 @@ bit ID_speeched_flag = 0;
 
 void main()
 	{	
-	InitT0(10);
+//	InitT0(10);
 	
 	// lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
-	InitElecmotor();	
- 	
+	// InitElecmotor();	
+	
 //	hSCH_Add_Task(ElecMotor_CW, 20, 100, 1);
   
 	hSCH_Start();
 
 	while(1)
 		{
-      hSCH_Dispatch_Tasks();		
+      Delay_500ms();
+      Delay_500ms();
+      Delay_500ms();
+		ElecMotor_ACW();
+      Delay_500ms();
+      Delay_500ms();
+      Delay_500ms();
+		ElecMotor_CW();
+//		hSCH_Dispatch_Tasks();		
 		}
 	}
 

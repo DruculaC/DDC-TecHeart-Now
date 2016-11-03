@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  08/21/2015 11:49:22 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  10/21/2016 17:15:07 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   50          bit wire_broken_flag = 0;        // 剪断锁线的标志位
   51          bit IDkey_flag = 0;        // 当ID卡靠近时认证通过后置1，
   52          tByte IDkey_count = 0;     // ID卡认证通过后，计时1分钟，使钥匙能转动。
-C51 COMPILER V9.54   MAIN                                                                  08/21/2015 11:49:22 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  10/21/2016 17:15:07 PAGE 2   
 
   53          tByte enable_sensor_delay_count = 0;      // 传感器延迟的时间
   54          bit sensor_3rdalarm_flag = 0;
@@ -109,10 +109,10 @@ line level    source
   95          
   96          void main()
   97             {  
-  98   1         InitT0(10);
+  98   1      // InitT0(10);
   99   1         
  100   1         // lock the external motor, 防止锁还没完全打开的时候，车手加电导致轮子与锁的告诉碰撞。 
- 101   1         InitElecmotor();  
+ 101   1         // InitElecmotor();  
  102   1         
  103   1      // hSCH_Add_Task(ElecMotor_CW, 20, 100, 1);
  104   1        
@@ -120,20 +120,28 @@ line level    source
  106   1      
  107   1         while(1)
  108   1            {
- 109   2            hSCH_Dispatch_Tasks();     
- 110   2            }
- 111   1         }
- 112          
- 113          
- 114          /*---------------------------------------------------
-C51 COMPILER V9.54   MAIN                                                                  08/21/2015 11:49:22 PAGE 3   
+ 109   2            Delay_500ms();
+ 110   2            Delay_500ms();
+ 111   2            Delay_500ms();
+ 112   2            ElecMotor_ACW();
+ 113   2            Delay_500ms();
+ 114   2            Delay_500ms();
+C51 COMPILER V9.54   MAIN                                                                  10/21/2016 17:15:07 PAGE 3   
 
- 115             end of file
- 116          ----------------------------------------------------*/
+ 115   2            Delay_500ms();
+ 116   2            ElecMotor_CW();
+ 117   2      //    hSCH_Dispatch_Tasks();     
+ 118   2            }
+ 119   1         }
+ 120          
+ 121          
+ 122          /*---------------------------------------------------
+ 123             end of file
+ 124          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     16    ----
+   CODE SIZE        =     29    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =     32    ----

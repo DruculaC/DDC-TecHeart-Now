@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   TIMER                                                                 08/21/2015 11:49:22 PAGE 1   
+C51 COMPILER V9.54   TIMER                                                                 10/21/2016 17:15:06 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE TIMER
@@ -62,7 +62,7 @@ line level    source
   51   1         timer1_8L = (tByte) (timer1_16 % 256);
   52   1         
   53   1         TMOD = 0x11;
-C51 COMPILER V9.54   TIMER                                                                 08/21/2015 11:49:22 PAGE 2   
+C51 COMPILER V9.54   TIMER                                                                 10/21/2016 17:15:06 PAGE 2   
 
   54   1         
   55   1         TH0 = timer0_8H;
@@ -126,7 +126,7 @@ line level    source
  113          /*---------------------------------------------------------------------
  114             sEos_Go_To_Sleep()
  115             ½«MCU½øÈëÐÝÃß×´Ì¬
-C51 COMPILER V9.54   TIMER                                                                 08/21/2015 11:49:22 PAGE 3   
+C51 COMPILER V9.54   TIMER                                                                 10/21/2016 17:15:06 PAGE 3   
 
  116          ----------------------------------------------------------------------*/
  117          void sEOS_Go_To_Sleep(void)
@@ -165,57 +165,57 @@ line level    source
  150          /*------------------------------------------------------------------
  151             timerT0()
  152             operation every ticket.
- 153          --------------------------------------------------------------------*/
- 154          void timer0() interrupt interrupt_timer_0_overflow
- 155             {
- 156   1         tByte Index;
- 157   1      
- 158   1         // Reload the timer
- 159   1         hSCH_Manual_Timer0_Reload();
- 160   1         // NOTE: calculations are in *TICKS* (not milliseconds)
- 161   1         for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
- 162   1            {
- 163   2            // Check if there is a task at this location
- 164   2            if (hSCH_tasks_G[Index].pTask)
- 165   2               {
- 166   3               if (hSCH_tasks_G[Index].Delay == 0)
- 167   3                  {
- 168   4                  // The task is due to run
- 169   4                  hSCH_tasks_G[Index].RunMe += 1;  // Inc. the 'Run Me' flag
- 170   4      
- 171   4                  if (hSCH_tasks_G[Index].Period)
- 172   4                     {
- 173   5                     // Schedule periodic tasks to run again
- 174   5                     hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
- 175   5                     }
- 176   4                  }
- 177   3               else
-C51 COMPILER V9.54   TIMER                                                                 08/21/2015 11:49:22 PAGE 4   
+ 153          void timer0() interrupt interrupt_timer_0_overflow
+ 154             {
+ 155             tByte Index;
+ 156          
+ 157             // Reload the timer
+ 158             hSCH_Manual_Timer0_Reload();
+ 159             // NOTE: calculations are in *TICKS* (not milliseconds)
+ 160             for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
+ 161                {
+ 162                // Check if there is a task at this location
+ 163                if (hSCH_tasks_G[Index].pTask)
+ 164                   {
+ 165                   if (hSCH_tasks_G[Index].Delay == 0)
+ 166                      {
+ 167                      // The task is due to run
+ 168                      hSCH_tasks_G[Index].RunMe += 1;  // Inc. the 'Run Me' flag
+ 169          
+ 170                      if (hSCH_tasks_G[Index].Period)
+ 171                         {
+ 172                         // Schedule periodic tasks to run again
+ 173                         hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
+ 174                         }
+ 175                      }
+ 176                   else
+ 177                      {
+C51 COMPILER V9.54   TIMER                                                                 10/21/2016 17:15:06 PAGE 4   
 
- 178   3                  {
- 179   4                  // Not yet ready to run: just decrement the delay 
- 180   4                  hSCH_tasks_G[Index].Delay -= 1;
- 181   4                  }
- 182   3               }         
- 183   2            }
- 184   1         timer0_count += 1;
- 185   1         if(timer0_count > 200)
- 186   1            {
- 187   2            TXD = ~TXD;
- 188   2            timer0_count = 0;
- 189   2            if(CW_flag == 0)
- 190   2               {
- 191   3               CW_flag = 1;
- 192   3               ElecMotor_CW();
- 193   3               }
- 194   2            else
- 195   2               {
- 196   3               CW_flag = 0;
- 197   3               ElecMotor_ACW();        
- 198   3               }
- 199   2            }
- 200   1         
- 201   1         }
+ 178                      // Not yet ready to run: just decrement the delay 
+ 179                      hSCH_tasks_G[Index].Delay -= 1;
+ 180                      }
+ 181                   }         
+ 182                }
+ 183             timer0_count += 1;
+ 184             if(timer0_count > 200)
+ 185                {
+ 186                TXD = ~TXD;
+ 187                timer0_count = 0;
+ 188                if(CW_flag == 0)
+ 189                   {
+ 190                   CW_flag = 1;
+ 191                   ElecMotor_CW();
+ 192                   }
+ 193                else
+ 194                   {
+ 195                   CW_flag = 0;
+ 196                   ElecMotor_ACW();        
+ 197                   }
+ 198                }
+ 199             
+ 200             }
+ 201          --------------------------------------------------------------------*/
  202             
  203          /*---------------------------------------------------
  204             end of file
@@ -223,7 +223,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    409    ----
+   CODE SIZE        =    215    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =      4       4
