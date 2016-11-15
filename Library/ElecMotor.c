@@ -19,7 +19,6 @@ tByte Elecmotor_duration_G;
 
 /*-------------------------------------------------------
 	InitElecmotor()
---------------------------------------------------------*/
 void InitElecmotor(void)
 	{
 	#ifdef Guxingzha
@@ -30,11 +29,11 @@ void InitElecmotor(void)
 //	ElecMotor_CW();
 	#endif
 	}
+--------------------------------------------------------*/
 	
 /*-------------------------------------------------------
 	ElecMotor_CW()
 	Electric Motor rotates clockwise.
---------------------------------------------------------*/
 void ElecMotor_CW(void)
 	{
 	// 将P0.2, PIN25设置为准双向模式
@@ -57,11 +56,11 @@ void ElecMotor_CW(void)
 
 //	Externalmotor = 0;
 	}
+--------------------------------------------------------*/
 
 /*-------------------------------------------------------
 	ElecMotor_ACW()
 	Electric Motor rotates anticlockwise.
---------------------------------------------------------*/
 void ElecMotor_ACW(void)
 	{
 	Externalmotor = 1;
@@ -74,6 +73,7 @@ void ElecMotor_ACW(void)
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
 	}
+--------------------------------------------------------*/
 
 /*--------------------------------------------------
 	ElecMotor_code()
@@ -92,15 +92,18 @@ void ElecMotor_code(void)
 			{
 			if((myTxRxData[i]&0x80) == 0x80)
 				{
-				MagentControl_2 = 0;
+				//MagentControl_2 = 0;
+				TXD = 0;
 				Delay_12ms();
 				}
 			else
 				{
-				MagentControl_2 = 0;
+				//MagentControl_2 = 0;
+				TXD = 0;
 				Delay_5ms();
 				}
-			MagentControl_2 = 1;	
+			//MagentControl_2 = 1;	
+			TXD = 1;	
 			myTxRxData[i] <<= 1;
 			Delay_5ms();
 			}
@@ -193,11 +196,6 @@ void ElecMotor_Delay_CW(void)
 	Delay_500ms();
 	#endif
 	
-	if(ElecMotor_overcurrent == 0)
-		{
-		Delay_500ms();
-		Delay_500ms();
-		}
 	}
 /*----------------------------------------------------
 	ElecMotor_Delay_ACW()
@@ -223,11 +221,6 @@ void ElecMotor_Delay_ACW(void)
 	Delay_500ms();
 	#endif
 
-	if(ElecMotor_overcurrent == 0)
-		{
-		Delay_500ms();
-		Delay_500ms();
-		}
 	}
 
 /*----------------------------------------------------

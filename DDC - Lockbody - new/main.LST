@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  11/14/2016 09:30:58 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  11/15/2016 11:49:20 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
              -一个字节接收完成。
   50          bit receive_wire_flag = 1;    //接收通信线的标志位，1表明高电平，0表明低电平，每次timer1溢出时，判断P1.1一次
              -。以此来表明是否为一次正确的下降沿
-C51 COMPILER V9.54   MAIN                                                                  11/14/2016 09:30:58 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  11/15/2016 11:49:20 PAGE 2   
 
   51          tByte receive_HV_count = 0;      //定时器T1在没有信号到来的时候，对高电平计数，一旦超过某个值，则将one_receive
              -_byte_count清0
@@ -91,174 +91,201 @@ line level    source
   73          
   74          tByte lock_time = 0;
   75          
-  76          /*-----------------------------------------------------------*/
-  77          void main(void)
-  78             {
-  79   1         InitTimer(50, 100);
-  80   1      
-  81   1         SC_RST = 1;
-  82   1      
-  83   1         transmit_wire = 0;
-  84   1         
-  85   1         while(1)
-  86   1            {
-  87   2            sEOS_Go_To_Sleep();
-  88   2            }
-  89   1         }
-  90          
-  91          /*------------------------------------------------------------------
-  92             timerT0()
-  93             定时器0每次溢出后执行的操作
-  94          --------------------------------------------------------------------*/
-  95          
-  96          void timer0() interrupt interrupt_timer_0_overflow
-  97             {
-  98   1         // 重装在定时器的时间设置
-  99   1         TH0 = timer0_8H;
- 100   1         TL0 = timer0_8L;
- 101   1      
- 102   1         // 设置一个每3s的操作
- 103   1         if(++timer0_count >= 10)      
- 104   1            {
- 105   2            // 将计数清0
- 106   2            timer0_count = 0;
- 107   2            transmiter_EN = ~transmiter_EN;
- 108   2            }     
- 109   1         }
- 110          
-C51 COMPILER V9.54   MAIN                                                                  11/14/2016 09:30:58 PAGE 3   
+  76          bit openlock_flag = 0;
+  77          bit closelock_flag = 0;
+  78          
+  79          /*-----------------------------------------------------------*/
+  80          void main(void)
+  81             {
+  82   1         tByte i;
+  83   1         
+  84   1         InitTimer(50, 100);
+  85   1      
+  86   1         SC_RST = 1;
+  87   1      
+  88   1         
+  89   1         while(1)
+  90   1            {
+  91   2            
+  92   2            // sEOS_Go_To_Sleep();
+  93   2            if(openlock_flag == 1)
+  94   2               {
+  95   3               MagentControl_1 = 1;
+  96   3               MagentControl_2 = 0;
+  97   3               
+  98   3               for(i = 0; i < 6; i++)
+  99   3                  Delay_500ms();
+ 100   3               
+ 101   3               MagentControl_1 = 1;
+ 102   3               MagentControl_2 = 1;
+ 103   3               openlock_flag = 0;         
+ 104   3               }
+ 105   2      
+ 106   2            if(closelock_flag == 1)
+ 107   2               {
+ 108   3               MagentControl_1 = 0;
+ 109   3               MagentControl_2 = 1;          
+ 110   3               
+C51 COMPILER V9.54   MAIN                                                                  11/15/2016 11:49:20 PAGE 3   
 
- 111          
- 112          /*------------------------------------------------------------------
- 113             timerT1()
- 114             定时器1每次溢出后执行的操作
- 115          --------------------------------------------------------------------*/
- 116             
- 117          void timerT1() interrupt interrupt_timer_1_overflow         
- 118             {
- 119   1         // 重装在定时器1的设置
- 120   1         TH1 = timer1_8H;           
- 121   1         TL1 = timer1_8L;
- 122   1      
- 123   1         // 判断接收线是否为0，如果是0，则表示可能有信号过来。
- 124   1         if(receive_wire2 == 0)              
- 125   1            {
- 126   2            // 如果接收线是0，则将此标志位置0，表示此线为0过。
- 127   2            receive_wire_flag=0;
- 128   2            
- 129   2            // 接收到低电平的时间计数，大于8ms就重新计数
- 130   2            if(++receive_LV_count==150)      
- 131   2               {
- 132   3               receive_LV_count=0;
- 133   3               }
- 134   2            }
- 135   1         else
- 136   1            {
- 137   2            if(receive_wire_flag==0)//说明有一个低电平
- 138   2               {
- 139   3               receive_wire_flag=1;
- 140   3      //       one_receive_byte<<=1;
- 141   3      
- 142   3               if((receive_LV_count>20)&&(receive_LV_count<=80))//低电平持续的时间小于3ms，则为0
- 143   3                  {
- 144   4                  one_receive_byte<<=1;
- 145   4                  one_receive_byte &= 0xfe;
- 146   4                  one_receive_byte_count++;
- 147   4                  receive_HV_count=0;
- 148   4                  }
- 149   3               if(receive_LV_count > 80)//低电平持续的时间大于4.5ms，则为1
- 150   3                  {
- 151   4                  one_receive_byte<<=1;
- 152   4                  one_receive_byte |= 0x01;
- 153   4                  one_receive_byte_count++;
- 154   4                  receive_HV_count=0;
- 155   4                  }
- 156   3               else
- 157   3                  {
- 158   4                  receive_HV_count++;  
- 159   4                  }
- 160   3      
+ 111   3               for(i = 0; i < 6; i++)
+ 112   3                  Delay_500ms();
+ 113   3               
+ 114   3               MagentControl_1 = 1;
+ 115   3               MagentControl_2 = 1;
+ 116   3               closelock_flag = 0;        
+ 117   3               }
+ 118   2            }
+ 119   1         }
+ 120          
+ 121          /*------------------------------------------------------------------
+ 122             timerT0()
+ 123             定时器0每次溢出后执行的操作
+ 124          --------------------------------------------------------------------*/
+ 125          
+ 126          void timer0() interrupt interrupt_timer_0_overflow
+ 127             {
+ 128   1         // 重装在定时器的时间设置
+ 129   1         TH0 = timer0_8H;
+ 130   1         TL0 = timer0_8L;
+ 131   1      
+ 132   1         // 设置一个每3s的操作
+ 133   1         if(++timer0_count >= 10)      
+ 134   1            {
+ 135   2            // 将计数清0
+ 136   2            timer0_count = 0;
+ 137   2            }     
+ 138   1         }
+ 139          
+ 140          
+ 141          /*------------------------------------------------------------------
+ 142             timerT1()
+ 143             定时器1每次溢出后执行的操作
+ 144          --------------------------------------------------------------------*/
+ 145             
+ 146          void timerT1() interrupt interrupt_timer_1_overflow         
+ 147             {
+ 148   1         // 重装在定时器1的设置
+ 149   1         TH1 = timer1_8H;           
+ 150   1         TL1 = timer1_8L;
+ 151   1      
+ 152   1         // 判断接收线是否为0，如果是0，则表示可能有信号过来。
+ 153   1         if(receive_wire2 == 0)              
+ 154   1            {
+ 155   2            // 如果接收线是0，则将此标志位置0，表示此线为0过。
+ 156   2            receive_wire_flag=0;
+ 157   2            
+ 158   2            // 接收到低电平的时间计数，大于8ms就重新计数
+ 159   2            if(++receive_LV_count==150)      
+ 160   2               {
  161   3               receive_LV_count=0;
  162   3               }
- 163   2            else
- 164   2               {
- 165   3               receive_HV_count++;
- 166   3               if(receive_HV_count >= 100)
- 167   3                  {
- 168   4                  one_receive_byte_count=0;
- 169   4                  receive_wire_flag=1;
- 170   4                  data_count=0;
- 171   4                  }     
- 172   3               }
-C51 COMPILER V9.54   MAIN                                                                  11/14/2016 09:30:58 PAGE 4   
+ 163   2            }
+ 164   1         else
+ 165   1            {
+ 166   2            if(receive_wire_flag==0)//说明有一个低电平
+ 167   2               {
+ 168   3               receive_wire_flag=1;
+ 169   3      //       one_receive_byte<<=1;
+ 170   3      
+ 171   3               if((receive_LV_count>20)&&(receive_LV_count<=80))//低电平持续的时间小于3ms，则为0
+ 172   3                  {
+C51 COMPILER V9.54   MAIN                                                                  11/15/2016 11:49:20 PAGE 4   
 
- 173   2            }
- 174   1      
- 175   1         if(one_receive_byte_count == 8)//说明一个字节的数据已经接受完全
- 176   1            {
- 177   2            one_receive_byte_count=0;
- 178   2            received_data_buffer[data_count]=one_receive_byte;
- 179   2            if(data_count==0&&received_data_buffer[0] == CmdHead)
- 180   2               {
- 181   3               data_count=1;
- 182   3               }
- 183   2            else if(data_count==1&&received_data_buffer[1] == MyAddress)
- 184   2               {
- 185   3               data_count=2;
- 186   3               }
- 187   2            else if(data_count==2)
- 188   2               {
- 189   3               receive_data_finished_flag = 1;
- 190   3               data_count=0;
+ 173   4                  one_receive_byte<<=1;
+ 174   4                  one_receive_byte &= 0xfe;
+ 175   4                  one_receive_byte_count++;
+ 176   4                  receive_HV_count=0;
+ 177   4                  }
+ 178   3               if(receive_LV_count > 80)//低电平持续的时间大于4.5ms，则为1
+ 179   3                  {
+ 180   4                  one_receive_byte<<=1;
+ 181   4                  one_receive_byte |= 0x01;
+ 182   4                  one_receive_byte_count++;
+ 183   4                  receive_HV_count=0;
+ 184   4                  }
+ 185   3               else
+ 186   3                  {
+ 187   4                  receive_HV_count++;  
+ 188   4                  }
+ 189   3      
+ 190   3               receive_LV_count=0;
  191   3               }
- 192   2            else 
+ 192   2            else
  193   2               {
- 194   3               data_count=0;
- 195   3               }
- 196   2            }
- 197   1      
- 198   1         if(receive_data_finished_flag==1)   //说明接收到了数据，开始处理
- 199   1            {
- 200   2            receive_data_finished_flag=0; //清接收标志
- 201   2            switch(received_data_buffer[2])//解析指令
- 202   2               {
- 203   3               case ComMode_1://接收到的是主机发送过来的编码1的信号，说明主机在3M内，是正常的
- 204   3                  {  
- 205   4                  MagentControl_1 = 1;
- 206   4                  MagentControl_2 = 0;
- 207   4                  }
- 208   3               break;
- 209   3               case ComMode_2:
- 210   3                  {
- 211   4                  MagentControl_1 = 0;
- 212   4                  MagentControl_2 = 1;          
- 213   4                  }
- 214   3               break;
- 215   3               case ComMode_3:
- 216   3                  {
- 217   4                  MagentControl_1 = 1;
- 218   4                  MagentControl_2 = 1;          
- 219   4                  }
- 220   3               break;
- 221   3               }
- 222   2            }
- 223   1         }
- 224          
- 225          /*---------------------------------------------------
- 226             end of file
- 227          ----------------------------------------------------*/
+ 194   3               receive_HV_count++;
+ 195   3               if(receive_HV_count >= 100)
+ 196   3                  {
+ 197   4                  one_receive_byte_count=0;
+ 198   4                  receive_wire_flag=1;
+ 199   4                  data_count=0;
+ 200   4                  }     
+ 201   3               }
+ 202   2            }
+ 203   1      
+ 204   1         if(one_receive_byte_count == 8)//说明一个字节的数据已经接受完全
+ 205   1            {
+ 206   2            one_receive_byte_count=0;
+ 207   2            received_data_buffer[data_count]=one_receive_byte;
+ 208   2            if(data_count==0&&received_data_buffer[0] == CmdHead)
+ 209   2               {
+ 210   3               data_count=1;
+ 211   3               }
+ 212   2            else if(data_count==1&&received_data_buffer[1] == MyAddress)
+ 213   2               {
+ 214   3               data_count=2;
+ 215   3               }
+ 216   2            else if(data_count==2)
+ 217   2               {
+ 218   3               receive_data_finished_flag = 1;
+ 219   3               data_count=0;
+ 220   3               }
+ 221   2            else 
+ 222   2               {
+ 223   3               data_count=0;
+ 224   3               }
+ 225   2            }
+ 226   1      
+ 227   1         if(receive_data_finished_flag==1)   //说明接收到了数据，开始处理
+ 228   1            {
+ 229   2            receive_data_finished_flag=0; //清接收标志
+ 230   2            switch(received_data_buffer[2])//解析指令
+ 231   2               {
+ 232   3               case ComMode_1://接收到的是主机发送过来的编码1的信号，说明主机在3M内，是正常的
+ 233   3                  {  
+ 234   4                  openlock_flag = 1;
+C51 COMPILER V9.54   MAIN                                                                  11/15/2016 11:49:20 PAGE 5   
+
+ 235   4                  }
+ 236   3               break;
+ 237   3               case ComMode_2:
+ 238   3                  {
+ 239   4                  closelock_flag = 1;
+ 240   4                  }
+ 241   3               break;
+ 242   3               case ComMode_3:
+ 243   3                  {
+ 244   4                  MagentControl_1 = 1;
+ 245   4                  MagentControl_2 = 1;          
+ 246   4                  }
+ 247   3               break;
+ 248   3               }
+ 249   2            }
+ 250   1         }
+ 251          
+ 252          /*---------------------------------------------------
+ 253             end of file
+ 254          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    330    ----
+   CODE SIZE        =    381    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =     48    ----
-C51 COMPILER V9.54   MAIN                                                                  11/14/2016 09:30:58 PAGE 5   
-
+   PDATA SIZE       =     48       1
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =     17    ----
+   BIT SIZE         =     19    ----
 END OF MODULE INFORMATION.
 
 

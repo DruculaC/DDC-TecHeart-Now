@@ -13,85 +13,54 @@
 	Ö÷»ú¶Ë¿Ú¶¨Òå
 -----------------------------------------------------*/
 
-// P2.5£¬PIN16£¬Á¬½Óµ½Ô¿³××ª¶¯£¬Ô¿³××ª¿ªÊ±£¬´ËpinÎª1£»Ô¿³×¹Ø±ÕÊ±£¬´ËpinÎª0
-sbit key_rotate = P2^5;			
-
-// P2.6£¬PIN27£¬·¢Éä»úµÄ¹¦ÂÊ¿ØÖÆ¡£1±íÊ¾Ğ¡¹¦ÂÊ£¬0±íÊ¾´ó¹¦ÂÊ¡£´ó¹¦ÂÊ·¢Éä¾àÀëÔ¶¡£
-sbit transmiter_power = P2^6;
-
-// P2.7£¬PIN28£¬·¢Éä»úÊ¹ÄÜ¶Ë¿Ú¡£0±íÊ¾¿ª£¬1±íÊ¾¹Ø
-sbit transmiter_EN = P2^7;
+// P2.5ï¼ŒPIN16ï¼Œé’¥åŒ™è¾“å…¥ï¼Œ1ä¸ºç”µåŠ¨è½¦æ‰“å¼€é’¥åŒ™ï¼Œ0ä¸ºç”µåŠ¨è½¦å…³é—­é’¥åŒ™
+sbit key_rotate = P2^5;
 
 
-// P0.0, PIN3, horizontal sensor input
-sbit sensor_detect = P0^0;
-
-// P2.2£¬P2.3£¬·Ö±ğÎªPIN13£¬PIN14£¬µç´ÅÌú,  Æ½Ê±ÖµÎª00£¬¿ªËøÓÃ10£¬¹ØËøÓĞ01£¬È»ºó¶¼»Ö¸´µ½00
-sbit MagentControl_1 = P2^2;
-sbit MagentControl_2 = P2^3;
-
-// P0.4£¬PIN23£¬Ì§Æğ´«¸ĞÆ÷µÄ¼ì²â
-sbit raised_sensor_detect = P0^4;
-
-// P0.3£¬PIN24£¬µ¹µØ´«¸ĞÆ÷µÄ¼ì²â
-sbit fell_sensor_detect = P0^3;
-
-// P1.4£¬PIN10£¬¹¦·Å¿ª¹Ø¿ØÖÆ£¬1Îª´ò¿ª¹¦·Å£¬0Îª¹Ø±Õ¹¦·Å
-sbit voice_EN = P1^4;
-
-// P2.0£¬P2.1·Ö±ğÎªPIN1£¬PIN2£¬¶ÔÓ¦ÓïÒôĞ¾Æ¬µÄ¸´Î»ºÍÊı¾İ¹Ü½Å
-sbit SC_RST=P2^0;
-sbit SC_DATA=P2^1;
-
-#ifdef PCB_old
-// P0.7£¬PIN19£¬´«¸ĞÆ÷µÄ¼ì²â½á¹û£¬Í¨¹ı´ËPIN´«¸øMCU£¬È»ºóMCUÅĞ¶Ï
-sbit horizontal_sensor = P0^7;
-#elif defined PCB_1606
-// P0.0, PIN3, horizontal sensor input
-sbit horizontal_sensor = P0^0; 
-#endif
-
-// 
+// P0.2, PIN25, ä¼ æ„Ÿå™¨è¾“å…¥
+sbit sensor_detect = P0^2;
+// P0.2, PIN25, horizontal sensor input
+sbit horizontal_sensor = P0^2; 
+// P2.6, PIN27, æ»šç ä¼ æ„Ÿå™¨
 sbit the3rd_sendor = P2^6;
 
-// P1.3, PIN11, receiver enable£¬0ÊÇ´ò¿ª£¬1ÊÇ¹Ø±Õ
-sbit receiver_EN = P1^3;
+
+// P1.4ï¼ŒPIN10ï¼ŒåŠŸæ”¾å¼€å…³è¾“å‡ºï¼Œ1æ‰“å¼€åŠŸæ”¾ï¼Œ0å…³é—­åŠŸæ”¾
+sbit voice_EN = P1^4;
+
+// P2.0ï¼ŒP2.1ï¼ŒPIN1ï¼ŒPIN2ï¼Œè¯­éŸ³è¾“å‡º
+sbit SC_RST=P2^0;
+sbit SC_DATA=P2^1;
+// P0.7, PIN19ï¼Œ è¯­éŸ³çŠ¶æ€
+sbit SC_status = P0^7;
 
 // P0.5, PIN22, Control the External motor, it is vdd of Hall signal actually.
 sbit Externalmotor = P0^5;
 
+// P0.1, PIN26, è¡Œè½¦è‡ªé”è¾“å…¥
+sbit wheeled_rotate = P0^1;
 
-// P0.1, PIN26, ¶ÏÏß±¨¾¯¼ì²â¹Ü½Å£¬³£Ì¬Îª1£¬µ±Îª0Ê±£¬Ôò±íÊ¾ÓĞÈË¼ôÏß¡£
-sbit wire_broken = P0^1;
-//sbit wire_broken = P1^7;
+// P0.6, PIN20, Ö§Ë¤É«
+sbit battery_input = P0^6;
 
-sbit lock_code = P0^1;
+// P0.0, PIN3, Ö§ÜºÌ¸Ì€Ë¤Ô¶
+sbit Generator_lock = P0^0;
 
-// P1.2, PIN12, µç´ÅÌú¹ıÁ÷¼ì²â
-sbit magnet_overcurrent = P1^2;
-sbit ElecMotor_overcurrent = P1^2;
+// P2.7, PIN28, ç”¨æ¥ä½œä¸ºå¯†ç åŒ¹é…æµ‹è¯•ç”¨ã€‚
+sbit Match_wire = P2^7;
 
-// P0.2, PIN25, ³µÂÖ×ª¶¯¼ì²â
-sbit wheeled_rotate = P0^2;
+// 
 
-// P2.4, PIN15, ÓÃÓÚËøÌå³ÌĞò£¬¿ØÖÆËøµÄ¿ª¹Ø
-sbit Lock_EN = P2^4;
+sbit testport = P2^4;
 
-// P2.4, PIN15, ÓÃÓÚF3£¬¿ØÖÆÕñ¶¯Âí´ï
-sbit Moto_EN = P2^4;
-
+/*---------DDC-S -----------------------------------*/
 // P3.0, PIN9, ½ÓÊÕ¿ªËøÃÜÂë
 sbit receive_wire = P3^0;
 sbit receive_wire2 = P2^4;
 
-// P1.0, PIN18, ·¢ÉäĞÅºÅÊä³öÏß
-sbit transmit_wire = P1^0;
-
-// P0.6, PIN20, µçÁ¿ÊäÈë
-sbit battery_input = P0^6;
-
-// P1.6, PIN5, µç»úËøËÀÊä³ö
-sbit Generator_lock = P1^6;
+// P2.2, PIN13, P2.3, PIN14, å¼€é”å…³é”çš„ä¿¡å·
+sbit MagentControl_1 = P2^2;
+sbit MagentControl_2 = P2^3;
 
 /*----------------------------------------------------
 	¸½»ú¶Ë¿Ú¶¨Òå

@@ -146,12 +146,12 @@ void slave_nearby_operation(void)
 		}
 		
 	if(Silence_Flag == 0)
-		{
-		open_lock_speech();
-		Externalmotor = 0;
-		
+		{		
 		if(Just_power_up == 0)
 			Broadcast_battery();
+
+		open_lock_speech();
+		Externalmotor = 0;
 			
 		key_rotate_on_speech();
 		}
@@ -183,10 +183,7 @@ void slave_nearby_operation(void)
 void InitSensor(void)
 	{
 	sensor_EN = 0;
- 	position_sensor_EN = 0;
 	enable_sensor_delayEN = 0;	
-	raised_sensor_detect = 1;
-	fell_sensor_detect = 1;	
 	}
 	
 /*------------------------------------------------------------------
@@ -396,10 +393,8 @@ void Detect_selflearn_action(void)
 	if((key_rotate == 1)||(Emergency_open_G == 1))
 //	if(key_rotate == 1)
 		{
-		// 如果钥匙打开，则打开控制器12V电源。
-		Lock_EN = 0;
 
-		if(wire_broken == 1)
+		if(Match_wire == 1)
 			{
 			wire_broken_time += 1;
 			if(wire_broken_time >= 6000)
@@ -425,10 +420,6 @@ void Detect_selflearn_action(void)
 			Self_learn_speech();
 			}
 		}
-	else if((key_rotate == 0)&&(Open_action_flag == 0)&&(Emergency_open_G == 0))
-//	else if((key_rotate == 0)&&(Open_action_flag == 0))
-		Lock_EN = 1;
-
 		
 	if(IDkey_flash_EN == 1)
 		{
@@ -461,7 +452,8 @@ void Detect_open_action(void)
 		ID_certificated_flag = 0;
 		ID_certificated_numbers = 0;
 		slave_nearby_actioned_flag = 1;
-		ElecMotor_CW();
+		//ElecMotor_CW();
+		ElecMotor_code();
 		slave_nearby_operation();
 
 		Just_power_up = 0;
@@ -488,7 +480,8 @@ void Detect_close_action(void)
 				{
 				if((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))
 					{
-					ElecMotor_ACW();
+					//ElecMotor_ACW();
+					ElecMotor_closecode();
 
 					Open_action_flag = 0;
 					slave_away_operation();

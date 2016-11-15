@@ -73,18 +73,48 @@ tWord wheeled_count = 0;
 
 tByte lock_time = 0;
 
+bit openlock_flag = 0;
+bit closelock_flag = 0;
+
 /*-----------------------------------------------------------*/
 void main(void)
 	{
+	tByte i;
+	
 	InitTimer(50, 100);
 
 	SC_RST = 1;
 
-	transmit_wire = 0;
 	
 	while(1)
 		{
-		sEOS_Go_To_Sleep();
+		
+		// sEOS_Go_To_Sleep();
+		if(openlock_flag == 1)
+			{
+			MagentControl_1 = 1;
+			MagentControl_2 = 0;
+			
+			for(i = 0; i < 6; i++)
+				Delay_500ms();
+			
+			MagentControl_1 = 1;
+			MagentControl_2 = 1;
+			openlock_flag = 0;			
+			}
+
+		if(closelock_flag == 1)
+			{
+			MagentControl_1 = 0;
+			MagentControl_2 = 1;				
+			
+			for(i = 0; i < 6; i++)
+				Delay_500ms();
+			
+			MagentControl_1 = 1;
+			MagentControl_2 = 1;
+			closelock_flag = 0;			
+			}
 		}
 	}
 
@@ -104,7 +134,6 @@ void timer0() interrupt interrupt_timer_0_overflow
 		{
 		// 将计数清0
 		timer0_count = 0;
-      transmiter_EN = ~transmiter_EN;
 		}		
 	}
 
@@ -202,14 +231,12 @@ void timerT1() interrupt interrupt_timer_1_overflow
 			{
 			case ComMode_1://接收到的是主机发送过来的编码1的信号，说明主机在3M内，是正常的
 				{	
-				MagentControl_1 = 1;
-				MagentControl_2 = 0;
+				openlock_flag = 1;
 				}
 			break;
 			case ComMode_2:
 				{
-				MagentControl_1 = 0;
-				MagentControl_2 = 1;				
+				closelock_flag = 1;
 				}
 			break;
 			case ComMode_3:

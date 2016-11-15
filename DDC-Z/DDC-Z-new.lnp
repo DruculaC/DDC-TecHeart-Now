@@ -12,5 +12,5 @@
 ".\Schedular.obj",
 ".\UART.obj",
 "Main.obj" 
-TO "DDC-Z" 
+TO "DDC-Z-new" 
 RAMSIZE(256) 

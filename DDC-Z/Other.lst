@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   OTHER                                                                 11/14/2016 13:39:15 PAGE 1   
+C51 COMPILER V9.54   OTHER                                                                 11/15/2016 14:57:56 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE OTHER
@@ -50,66 +50,66 @@ line level    source
   40          /*-------------------------------------------------------
   41             magnet_CW()
   42             电磁铁正转，顺时针，将锁打开，
-  43          --------------------------------------------------------*/
-  44          void magnet_CW(tWord x, y, tByte z)
-  45             {
-  46   1         // 发送开锁密码
-  47   1         send_code_to_lock(ComMode_1, z);
-  48   1         
-  49   1         MagentControl_1 = 1;
-  50   1         MagentControl_2 = 0;
-  51   1         Magnet_Delay(x, y);
-  52   1         MagentControl_1 = 1;
-  53   1         MagentControl_2 = 1;
-  54   1         Externalmotor = 0;
-C51 COMPILER V9.54   OTHER                                                                 11/14/2016 13:39:15 PAGE 2   
+  43          void magnet_CW(tWord x, y, tByte z)
+  44             {
+  45             // 发送开锁密码
+  46             send_code_to_lock(ComMode_1, z);
+  47             
+  48             MagentControl_1 = 1;
+  49             MagentControl_2 = 0;
+  50             Magnet_Delay(x, y);
+  51             MagentControl_1 = 1;
+  52             MagentControl_2 = 1;
+  53             Externalmotor = 0;
+  54             }
+C51 COMPILER V9.54   OTHER                                                                 11/15/2016 14:57:56 PAGE 2   
 
-  55   1         }
+  55          --------------------------------------------------------*/
   56          
   57          /*-------------------------------------------------------
   58             magnet_CW_Taili()
   59             电磁铁正转，顺时针，将锁打开，
-  60          --------------------------------------------------------*/
-  61          void magnet_CW_Taili(tWord x, y, tByte z)
-  62             {
-  63   1         // 发送开锁密码
-  64   1         send_code_to_lock_Taili(ComMode_1, z);
-  65   1         
-  66   1         MagentControl_1 = 1;
-  67   1         MagentControl_2 = 0;
-  68   1         Magnet_Delay(x, y);
-  69   1         MagentControl_1 = 0;
-  70   1         MagentControl_2 = 0;
-  71   1         Externalmotor = 0;
-  72   1         }
+  60          void magnet_CW_Taili(tWord x, y, tByte z)
+  61             {
+  62             // 发送开锁密码
+  63             send_code_to_lock_Taili(ComMode_1, z);
+  64             
+  65             MagentControl_1 = 1;
+  66             MagentControl_2 = 0;
+  67             Magnet_Delay(x, y);
+  68             MagentControl_1 = 0;
+  69             MagentControl_2 = 0;
+  70             Externalmotor = 0;
+  71             }
+  72          --------------------------------------------------------*/
   73          
   74          /*-------------------------------------------------------
   75             magnet_ACW()
   76             电磁铁反转，逆时针，将锁关闭
-  77          --------------------------------------------------------*/
-  78          void magnet_ACW(tWord x, y)
-  79             {
-  80   1         Externalmotor = 1;
-  81   1         MagentControl_1 = 0;
-  82   1         MagentControl_2 = 1;
-  83   1         Magnet_Delay(x, y);
-  84   1         MagentControl_1 = 1;
-  85   1         MagentControl_2 = 1;
-  86   1         }
+  77          void magnet_ACW(tWord x, y)
+  78             {
+  79             Externalmotor = 1;
+  80             MagentControl_1 = 0;
+  81             MagentControl_2 = 1;
+  82             Magnet_Delay(x, y);
+  83             MagentControl_1 = 1;
+  84             MagentControl_2 = 1;
+  85             }
+  86          --------------------------------------------------------*/
   87          
   88          /*-------------------------------------------------------
   89             magnet_ACW_Taili()
   90             电磁铁反转，逆时针，将锁关闭
-  91          --------------------------------------------------------*/
-  92          void magnet_ACW_Taili(tWord x, y)
-  93             {
-  94   1         Externalmotor = 1;
-  95   1         MagentControl_1 = 0;
-  96   1         MagentControl_2 = 1;
-  97   1         Magnet_Delay(x, y);
-  98   1         MagentControl_1 = 0;
-  99   1         MagentControl_2 = 0;
- 100   1         }
+  91          void magnet_ACW_Taili(tWord x, y)
+  92             {
+  93             Externalmotor = 1;
+  94             MagentControl_1 = 0;
+  95             MagentControl_2 = 1;
+  96             Magnet_Delay(x, y);
+  97             MagentControl_1 = 0;
+  98             MagentControl_2 = 0;
+  99             }
+ 100          --------------------------------------------------------*/
  101             
  102          /*----------------------------------------------------
  103             disable_sensor()
@@ -126,7 +126,7 @@ line level    source
  114   1         sensor_trigger_count = 0;
  115   1         sensor_1ststage_count = 0;
  116   1         sensor_2ndstage_count = 0;
-C51 COMPILER V9.54   OTHER                                                                 11/14/2016 13:39:15 PAGE 3   
+C51 COMPILER V9.54   OTHER                                                                 11/15/2016 14:57:56 PAGE 3   
 
  117   1         sensor_2ndstage_time = 0;
  118   1         sensor_3rdstage_time = 0;
@@ -171,13 +171,13 @@ line level    source
  157          /*----------------------------------------------------------------
  158             Moto_Vibration()
  159             用于附机，马达振动
- 160          -----------------------------------------------------------------*/
- 161          void Moto_Vibration(void)
- 162             {
- 163   1         Moto_EN=0;           
- 164   1         Delay_500ms();
- 165   1         Moto_EN=1;
- 166   1         }
+ 160          void Moto_Vibration(void)
+ 161             {
+ 162             Moto_EN=0;           
+ 163             Delay_500ms();
+ 164             Moto_EN=1;
+ 165             }
+ 166          -----------------------------------------------------------------*/
  167             
  168          /*---------------------------------------------------
  169             end of file
@@ -185,12 +185,12 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    217    ----
+   CODE SIZE        =     83    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =   ----       8
+   PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
-C51 COMPILER V9.54   OTHER                                                                 11/14/2016 13:39:15 PAGE 4   
+C51 COMPILER V9.54   OTHER                                                                 11/15/2016 14:57:56 PAGE 4   
 
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----

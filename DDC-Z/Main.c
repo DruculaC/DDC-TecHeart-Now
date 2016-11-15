@@ -141,27 +141,21 @@ void main()
 	{
 	InitVoice();
 
-	// lock the external motor, prohibit motor moving when power up.
-//	InitElecmotor();
-
 	ID_speech();
 
 	InitUART(BAUD9600);
 
 	InitSensor();
 
-	InitTransceiver();
-
 	Externalmotor = Close;
 	
-	// 将P0.1, P0.2设置成输入高阻模式
+	// P0.1, P0.2, input mode
 	P0M1 |= 0x06;
 	P0M2 &= 0xf9;
-	// 将P2.5，即PIN16设置成输入高阻模式
-	P2M1 |= 0x20;
-	P2M2 &= 0xdf;
+	// P2.5锛孭2.6锛孭2.7, input mode
+	P2M1 |= 0xe0;
+	P2M2 &= 0x1f;
 
-	Lock_EN = 1;
 	Generator_lock = 0;
 
 	while(1)
@@ -195,7 +189,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			}
 		#endif
 /*----- Wire_cut detection ----------------------------------------*/
-		if(sensor_EN == 1)
+/*		if(sensor_EN == 1)
 			{
 			// judge the wire broken, if yes, it means someone has cut the wire of magnet lock
 			if(wire_broken == 0)
@@ -212,7 +206,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				ID_speech();
 				}
 			}
-		
+*/		
 		if(Speech_closed_G == 1)
 			{
 			Speech_closed_time += 1;
@@ -286,7 +280,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 					{					
 					// judge host been touched and also not in vibration alarm
 //					if((sensor_detect == 0)&&(Host_stolen_alarming == 0)&&(transmiter_EN == 1))		
-					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+//					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0))		
 						{
 						// judge LV is more than 2ms, if yes, it means a effective touch
 						if(++sensor_1ststage_count >= 1)			
@@ -387,7 +382,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				battery_stolen_EN = 0;
 			}
 //		}
-	
+/*	
 	// judge whether position sensor is enable
 	if(position_sensor_EN==1)		
 		{
@@ -459,6 +454,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 			sensor_3rdstage_effcount = 0;					
 			}
 		}
+		*/
  	}
 
 /*-----------------------------------------------
@@ -469,6 +465,9 @@ void uart_isr() interrupt 4
 	if(RI)
 		{
 		RI=0;
+		
+		testport = ~testport;
+		
 		received_data_buffer[data_count] = SBUF;
 
 		// assign one byte to buffer[i] 
