@@ -66,7 +66,7 @@ void ElecMotor_ACW(void)
 	{
 	Externalmotor = 1;
 	Lock_EN = 1;
-	Generator_lock = 0;
+//	Generator_lock = 0;
 	
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
@@ -101,6 +101,69 @@ void ElecMotor_code(void)
 				Delay_5ms();
 				}
 			MagentControl_2 = 1;	
+			myTxRxData[i] <<= 1;
+			Delay_5ms();
+			}
+		}
+	}
+
+/*--------------------------------------------------
+	ElecMotor_closecode()
+	send the code to Electric Motor.
+---------------------------------------------------*/
+void ElecMotor_closecode(void)	
+	{	
+	tByte i,n;
+	myTxRxData[0]=CmdHead;
+	myTxRxData[1]=MyAddress;
+	myTxRxData[2]=ComMode_2;
+	
+	for(i=0;i<3;i++)
+		{
+		for(n=0;n<8;n++)
+			{
+			if((myTxRxData[i]&0x80) == 0x80)
+				{
+				TXD = 0;
+				Delay_12ms();
+				}
+			else
+				{
+				TXD = 0;
+				Delay_5ms();
+				}
+			TXD = 1;	
+			myTxRxData[i] <<= 1;
+			Delay_5ms();
+			}
+		}
+	}
+/*--------------------------------------------------
+	ElecMotor_stopcode()
+	send the code to Electric Motor.
+---------------------------------------------------*/
+void ElecMotor_stopcode(void)	
+	{	
+	tByte i,n;
+	myTxRxData[0]=CmdHead;
+	myTxRxData[1]=MyAddress;
+	myTxRxData[2]=ComMode_3;
+	
+	for(i=0;i<3;i++)
+		{
+		for(n=0;n<8;n++)
+			{
+			if((myTxRxData[i]&0x80) == 0x80)
+				{
+				TXD = 0;
+				Delay_12ms();
+				}
+			else
+				{
+				TXD = 0;
+				Delay_5ms();
+				}
+			TXD = 1;	
 			myTxRxData[i] <<= 1;
 			Delay_5ms();
 			}

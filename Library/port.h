@@ -82,6 +82,7 @@ sbit Moto_EN = P2^4;
 
 // P3.0, PIN9, 接收开锁密码
 sbit receive_wire = P3^0;
+sbit receive_wire2 = P2^4;
 
 // P1.0, PIN18, 发射信号输出线
 sbit transmit_wire = P1^0;

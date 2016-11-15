@@ -17,6 +17,8 @@ void ElecMotor_code(void);
 void ElecMotor_Delay_CW(void);
 void ElecMotor_Delay_ACW(void);
 void ElecMotor_test(void);
+void ElecMotor_closecode(void);
+void ElecMotor_stopcode(void);
 
 #endif
 											

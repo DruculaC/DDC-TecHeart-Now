@@ -139,8 +139,12 @@ void slave_nearby_operation(void)
 	Delay_500ms();
 	Delay_500ms();
 	Externalmotor = 0;
-	Generator_lock = 1;
 	
+	if(Emergency_open_G == 0)
+		{
+		Generator_lock = 1;
+		}
+		
 	if(Silence_Flag == 0)
 		{
 		open_lock_speech();
@@ -475,6 +479,8 @@ void Detect_close_action(void)
 	if((((key_rotate == 0)&&(Emergency_open_G == 0))||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
 //	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1)||(Emergency_open_G == 0))&&(Open_action_flag == 1))
 		{
+		Generator_lock = 0;
+		
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{
 			key_rotate_off_time += 1;
@@ -487,11 +493,11 @@ void Detect_close_action(void)
 					Open_action_flag = 0;
 					slave_away_operation();
 					IDkey_speech_flash = 0;
-					ID_speeched_flag = 0;		
+					ID_speeched_flag = 0;
 
 					timer0_count2 = 0;
 					Emergency_open_G = 0;
-					}								
+					}
 				}
 			}
 		}

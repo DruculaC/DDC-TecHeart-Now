@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   51          tByte sensor_trigger_count=0;    //传感器触发计数
   52          tWord sensor_2ndstage_time=0;    //传感器进入第二阶段后流逝时间的计数
   53          tByte sensor_1ststage_count=0;   //传感器第一阶段判断低电平的计数
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 2   
 
   54          
   55          tByte raised_alarm_count = 0;    //主机被抬起后，向附机发出报警信号的次数
@@ -126,7 +126,7 @@ line level    source
  109          tByte ID_selflearning_timecount = 0;
  110          bit IDkey_flash_EN = 0;
  111          
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 3   
 
  112          bit Silence_Flag = 0;
  113          bit flashing_flag = 0;
@@ -190,7 +190,7 @@ line level    source
  171          
  172          /*------------------------------------------------------------------
  173             timerT0()
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 4   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 4   
 
  174             operation every ticket.
  175          --------------------------------------------------------------------*/
@@ -254,7 +254,7 @@ line level    source
  233   2            #endif
  234   2            // if no vibration and wheeled, decrease slave_nearby_count,
  235   2            // if more than 3 times, it means slave is away, then enable sensor.
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 5   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 5   
 
  236   2            #ifdef WX
                     Ensensor_after_slave_away();
@@ -318,7 +318,7 @@ line level    source
  294   6                           sensor_1ststage_count=0;
  295   6                           
  296   6                           // sensor trigge status progress to case 1.
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 6   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 6   
 
  297   6                           sensor_trigger_count = 1;
  298   6                           // alarm speech for first touch
@@ -382,7 +382,7 @@ line level    source
  356   6                           EN_host_stolen_alarming = 1;
  357   6                           host_stolen_alarm2_EN = 1; 
  358   6                           sensor_3rdalarm_flag = 1;  
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 7   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 7   
 
  359   6                           Stolen_alarm_reset_count = 0;
  360   6                           }
@@ -446,7 +446,7 @@ line level    source
  418   2            // judge whether there is a LV
  419   2            if(fell_sensor_detect==0)
  420   2               {
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 8   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 8   
 
  421   3               // LV > 0.5s means a effective input
  422   3               if(++fell_wire_time==10)   
@@ -510,7 +510,7 @@ line level    source
  480   3                  {
  481   4                  data_count = 1;
  482   4                  }
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 9   
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 9   
 
  483   3               else if((data_count == 1) && (received_data_buffer[1] == IDkey7))
  484   3                  {
@@ -574,7 +574,7 @@ line level    source
                           receive_data_finished_flag  = 0;
                           switch(received_data_buffer[5])
                              {
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 10  
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 10  
 
                              case ComMode_1:
                                 {
@@ -638,7 +638,7 @@ line level    source
                           data_count = 6;
                           }
                        else if(data_count == 6)
-C51 COMPILER V9.54   MAIN                                                                  11/03/2016 14:51:08 PAGE 11  
+C51 COMPILER V9.54   MAIN                                                                  11/14/2016 13:39:17 PAGE 11  
 
                           {
                           data_count = 0;
