@@ -166,7 +166,7 @@ void host_touch_speech(void)
 	{
 	voice_EN = 1;
 	SC_Speech(2);  
-	Delay(50);
+	Delay(90);
 	voice_EN = 0;
 	Delay(30);
 	}
@@ -178,7 +178,7 @@ void host_touch_speech(void)
 void host_2ndtouch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(4);  
+	SC_Speech(22);  
 	Delay(140);
 	voice_EN = 0;
 //	Delay(10);
@@ -191,8 +191,8 @@ void host_2ndtouch_speech(void)
 void stolen_alarm_speech1(void)
 	{
 	voice_EN = 1;
-	SC_Speech(24); 
-	Delay(100);
+	SC_Speech(7); 
+	Delay(60);
 	voice_EN = 0; 
 	}
 
@@ -203,7 +203,7 @@ void stolen_alarm_speech1(void)
  void stolen_alarm_speech2(void)
 	{
 	voice_EN = 1;
-	SC_Speech(25); 
+	SC_Speech(3); 
 	Delay(180);
 	voice_EN = 0;
 	Delay(20);
@@ -227,7 +227,7 @@ void open_lock_speech(void)
 	// 车锁已打开
 	voice_EN=1;
 	Speech_closed_time = 0;
-	SC_Speech(22); 
+	SC_Speech(9); 
 	Delay(60);
 	voice_EN=0;
 	}
@@ -239,7 +239,7 @@ void open_lock_speech(void)
 void close_lock_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(23);  
+	SC_Speech(10);  
 	Delay(60);
 	voice_EN = 0;
 	}

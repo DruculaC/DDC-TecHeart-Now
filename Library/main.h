@@ -22,7 +22,7 @@
 //#define General
 
 // define speech or not
-//#define voice
+#define voice
 
 // 新锁（时间短）或者旧锁（时间长）
 #define Old_lock

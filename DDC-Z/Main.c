@@ -404,7 +404,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 							Externalmotor = 0;
 
 							#ifdef voice
-							host_touch_speech();
+							host_2ndtouch_speech();
 							#endif
 							}
 						}

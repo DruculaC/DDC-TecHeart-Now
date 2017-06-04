@@ -218,7 +218,7 @@ void Host_stolen_action(void)
 		Host_stolen_alarming = 1;
 		
 		#ifdef voice
-			stolen_alarm_speech1();
+		stolen_alarm_speech1();
 		stolen_alarm_speech2();
 		#endif
 			
