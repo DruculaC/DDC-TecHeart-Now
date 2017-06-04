@@ -114,7 +114,7 @@ void ElecMotor_ACW(void)
 		
 	Externalmotor = 1;
 	Lock_EN = 1;
-//	Generator_lock = 0;
+	Generator_lock = 0;
 	
 	ElecMotor_code();	
 	MagentControl_1 = 0;

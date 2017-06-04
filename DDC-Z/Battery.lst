@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:00:43 PAGE 1   
-=======
-C51 COMPILER V9.54   BATTERY                                                               11/14/2016 13:39:14 PAGE 1   
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE BATTERY
@@ -13,369 +9,323 @@ COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\Battery
 line level    source
 
    1          /*---------------------------------------------------
-<<<<<<< HEAD
    2            Battery.c (v1.00)
-   3            Battery201603（70km60V）r1
-=======
-   2             Battery.c (v1.00)
-   3             Battery201603（90km72V）r1
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
-   4          ---------------------------------------------------*/
-   5          
-   6          #include "main.h"
-   7          #include "port.h"
-   8          
-   9          #include "Battery.h"
-  10          #include "voice.h"
-  11          #include "Delay.h"
-  12          #include "AD.h"
-<<<<<<< HEAD
-  13          #define Max_battery 0x291
-=======
-  13          #define Max_battery 0x317
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
-  14          
-  15          extern tWord ADC_check_result;    
-  16          extern tWord load_battery_result;
-  17          tByte Check2_stage = 0;
-  18          tByte Battery_level = 0;
-  19          
-  20          /*----------------------------------------------------
-  21            Check_motor_accumulator() - 48V 电平
-  22            Check P20's voltage.
-  23          -----------------------------------------------------*/
-  24          void Check_motor_accumulator(void)
-  25            {
-  26   1        // detect the battery voltage
-  27   1        ADC_check_result = GetADCResult(6);
-  28   1        }
-  29          /*-----------------------------------------
-<<<<<<< HEAD
-  30            Broadcast_battery()
-  31            
-  32            你好
-  33          ------------------------------------------*/
-  34          void Broadcast_battery(void)
-  35            {
-  36   1        if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
-  37   1          {
-  38   2          load_battery_result = ADC_check_result;
-  39   2          } 
-  40   1        verifybattery(load_battery_result);     
-  41   1        }
-  42          
-  43          /*----------------------------------------------------
-  44            verifybattery()
-  45            voice alarm for battery status with power module
-  46          -----------------------------------------------------*/
-  47          void verifybattery(tWord Check2)
-  48            { 
-  49   1        #ifdef Kilometer_65
-  50   1        // 
-  51   1        voice_EN = 1;
-  52   1        if(Check2<0x25f)
-  53   1          {
-  54   2          SC_Speech(39);      // 鐢甸噺涓嶈冻
-C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:00:43 PAGE 2   
+   3          <<<<<<< HEAD
+   4            Battery201603（70km60V）r1
+   5          =======
+   6            Battery201603（90km72V）r1
+   7          >>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+   8          ---------------------------------------------------*/
+   9          
+  10          #include "main.h"
+  11          #include "port.h"
+  12          
+  13          #include "Battery.h"
+  14          #include "voice.h"
+  15          #include "Delay.h"
+  16          #include "AD.h"
+  17          <<<<<<< HEAD
+*** ERROR C141 IN LINE 17 OF ..\Library\Battery.c: syntax error near '<<'
+  18          #define Max_battery 0x291
+  19          =======
+*** ERROR C129 IN LINE 19 OF ..\Library\Battery.c: missing ';' before '=='
+  20          #define Max_battery 0x317
+*** WARNING C317 IN LINE 20 OF ..\Library\Battery.c: attempt to redefine macro 'Max_battery'
+  21          >>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+  22          
+  23          extern tWord ADC_check_result;    
+  24          extern tWord load_battery_result;
+  25          tByte Check2_stage = 0;
+  26          tByte Battery_level = 0;
+  27          
+  28          /*----------------------------------------------------
+  29            Check_motor_accumulator() - 48V 电平
+  30            Check P20's voltage.
+  31          -----------------------------------------------------*/
+  32          void Check_motor_accumulator(void)
+  33            {
+  34            // detect the battery voltage
+  35            ADC_check_result = GetADCResult(6);
+  36            }
+  37          /*-----------------------------------------
+  38            Broadcast_battery()
+  39            
+  40            你好
+  41          ------------------------------------------*/
+  42          void Broadcast_battery(void)
+  43            {
+  44            if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
+  45              {
+  46              load_battery_result = ADC_check_result;
+  47              } 
+  48            verifybattery(load_battery_result);     
+  49            }
+  50          
+  51          
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 2   
 
-  55   2          Delay(50);
-  56   2          }
-  57   1        else if(Check2 > 0x291)
-  58   1          {   
-  59   2          SC_Speech(8);   
-  60   2          Delay(70);      
-  61   2          SC_Speech(18);      // 7
-  62   2          Delay(30);
-  63   2          SC_Speech(21);      // 10
-  64   2          Delay(30);
-  65   2          SC_Speech(11);    
-  66   2          Delay(60);  
-  67   2          }
-  68   1          voice_EN = 0;
-  69   1          SC_RST = 1;
-  70   1          Delay_50ms();
-  71   1          SC_RST = 0;
-  72   1          Delay_50ms();
-  73   1      
-  74   1      /*    if(Check2 < 0x242)
-  75   1            {
-  76   1            SC_Speech(13);      // 2
-  77   1            Delay(30);
-  78   1            }
-  79   1          else if((Check2 >= 0x242)&&(Check2 < 0x250))
-  80   1            {
-  81   1            SC_Speech(16);      // 5
-  82   1            Delay(30);
-  83   1            }
-  84   1          else if((Check2 >= 0x250)&&(Check2 < 0x25f))
-  85   1            {
-  86   1            SC_Speech(21);      // 10
-  87   1            Delay(30);
-  88   1            }
-  89   1        else if((Check2 >= 0x250)&&(Check2 < 0x25f))
-  90   1            {
-  91   1            SC_Speech(21);      // 10
-  92   1            Delay(30);
-  93   1            SC_Speech(17);      // 6
-  94   1            Delay(30);
-  95   1            }
-  96   1          else if((Check2 >= 0x25f)&&(Check2 < 0x267))
-  97   1            {
-  98   1            SC_Speech(13);      // 2
-  99   1            Delay(30);
- 100   1            SC_Speech(21);      // 10
- 101   1            Delay(30);
- 102   1            SC_Speech(13);      // 2
- 103   1            Delay(30);
- 104   1            }
- 105   1          else if((Check2 >= 0x267)&&(Check2 < 0x26f))
- 106   1            {
- 107   1            SC_Speech(13);      // 2
- 108   1            Delay(30);
- 109   1            SC_Speech(21);      // 10
- 110   1            Delay(30);
- 111   1            SC_Speech(19);      // 8
- 112   1            Delay(30);
- 113   1            }
- 114   1          else if((Check2 >= 0x26f)&&(Check2 < 0x279))
- 115   1            {
- 116   1            SC_Speech(14);      // 3
-C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:00:43 PAGE 3   
+  52          /*----------------------------------------------------
+  53            verifybattery()
+  54            voice alarm for battery status with power module
+  55          -----------------------------------------------------*/
+  56          void verifybattery(tWord Check2)
+  57            { 
+  58            #ifdef Kilometer_65
+  59            // 
+  60            voice_EN = 1;
+  61          <<<<<<< HEAD
+  62            if(Check2<0x25f)
+  63              {
+  64              SC_Speech(39);      // 鐢甸噺涓嶈冻
+  65              Delay(50);
+  66              }
+  67            else if(Check2 > 0x291)
+  68              {   
+  69              SC_Speech(8);   
+  70              Delay(70);      
+  71              SC_Speech(18);      // 7
+  72              Delay(30);
+  73          =======
+  74            SC_Speech(8);   
+  75            Delay(70);  
+  76            // 多少
+  77            if(Check2 < 0x2a8)
+  78              {
+  79              SC_Speech(14);      // 3
+  80              Delay(30);
+  81              }
+  82            else if((Check2 >= 0x2a8)&&(Check2 < 0x2b6))
+  83              {
+  84              SC_Speech(18);      // 7
+  85              Delay(30);
+  86              }
+  87            else if((Check2 >= 0x2b6)&&(Check2 < 0x2c7))
+  88              {
+  89              SC_Speech(21);      // 10
+  90              Delay(30);
+  91              SC_Speech(16);      // 5
+  92              Delay(30);
+  93              }
+  94            else if((Check2 >= 0x2c7)&&(Check2 < 0x2d8))
+  95              {
+  96              SC_Speech(13);      // 2
+  97              Delay(30);
+  98              SC_Speech(21);      // 10
+  99              Delay(30);
+ 100              SC_Speech(12);      // 1
+ 101              Delay(30);
+ 102              }
+ 103            else if((Check2 >= 0x2d8)&&(Check2 < 0x2e2))
+ 104              {
+ 105              SC_Speech(13);      // 2
+ 106              Delay(30);
+ 107              SC_Speech(21);      // 10
+ 108              Delay(30);
+ 109              SC_Speech(19);      // 8
+ 110              Delay(30);
+ 111              }
+ 112            else if((Check2 >= 0x2e2)&&(Check2 < 0x2ec))
+ 113              {
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 3   
 
- 117   1            Delay(30);
- 118   1            SC_Speech(21);      // 10
- 119   1            Delay(30);
- 120   1            SC_Speech(15);      // 4
- 121   1            Delay(30);
- 122   1            }
- 123   1          else if((Check2 >= 0x279)&&(Check2 < 0x282))
- 124   1            {
- 125   1            SC_Speech(15);      // 4
- 126   1            Delay(30);
- 127   1            SC_Speech(21);      // 10
- 128   1            Delay(30);
- 129   1            }
- 130   1          else if((Check2 >= 0x282)&&(Check2 < 0x28a))
- 131   1            {
- 132   1            SC_Speech(15);      // 4
- 133   1            Delay(30);
- 134   1            SC_Speech(21);      // 10
- 135   1            Delay(30);
- 136   1            SC_Speech(17);      // 6
- 137   1            Delay(30);
- 138   1            }
- 139   1          else if((Check2 >= 0x28a)&&(Check2 < 0x28e))
- 140   1            {
- 141   1            SC_Speech(16);      // 5
- 142   1            Delay(30);
- 143   1            SC_Speech(21);      // 10
- 144   1            Delay(30);
- 145   1            SC_Speech(13);      // 2
- 146   1            Delay(30);
- 147   1            }
- 148   1          else if((Check2 >= 0x28e)&&(Check2 < 0x291))
- 149   1            {
- 150   1            SC_Speech(16);      // 5
- 151   1            Delay(30);
- 152   1            SC_Speech(21);      // 10
- 153   1            Delay(30);
- 154   1            SC_Speech(19);      // 8
- 155   1            Delay(30);
- 156   1            }
- 157   1          else if((Check2 >= 0x291)&&(Check2 < Max_battery))
- 158   1            {
- 159   1            SC_Speech(17);      // 6
- 160   1            Delay(30);
- 161   1            SC_Speech(21);      // 10
- 162   1            Delay(30);
- 163   1            SC_Speech(15);      // 4
- 164   1            Delay(30);
- 165   1            }
- 166   1          else if(Check2 >= Max_battery)
- 167   1            {
- 168   1            SC_Speech(18);      // 7
- 169   1            Delay(30);
- 170   1            SC_Speech(21);      // 10
- 171   1            Delay(30);
- 172   1            } 
- 173   1          //
- 174   1          SC_Speech(11);    
- 175   1          Delay(60);  
- 176   1        */    
- 177   1        #endif
- 178   1        }
-C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:00:43 PAGE 4   
+ 114              SC_Speech(14);      // 3
+ 115              Delay(30);
+ 116              SC_Speech(21);      // 10
+ 117              Delay(30);
+ 118              SC_Speech(17);      // 6
+ 119              Delay(30);
+ 120              }
+ 121            else if((Check2 >= 0x2ec)&&(Check2 < 0x2f7))
+ 122              {
+ 123              SC_Speech(15);      // 4
+ 124              Delay(30);
+ 125              SC_Speech(21);      // 10
+ 126              Delay(30);
+ 127              SC_Speech(14);      // 3
+ 128              Delay(30);
+ 129              }
+ 130            else if((Check2 >= 0x2f7)&&(Check2 < 0x302))
+ 131              {
+ 132              SC_Speech(16);      // 5
+ 133              Delay(30);
+ 134              SC_Speech(21);      // 10
+ 135              Delay(30);
+ 136              SC_Speech(12);      // 1
+ 137              Delay(30);
+ 138              }
+ 139            else if((Check2 >= 0x302)&&(Check2 < 0x30c))
+ 140              {
+ 141              SC_Speech(17);      // 6
+ 142              Delay(30);
+ 143              SC_Speech(21);      // 10
+ 144              Delay(30);
+ 145              }
+ 146            else if((Check2 >= 0x30c)&&(Check2 < 0x311))
+ 147              {
+ 148              SC_Speech(17);      // 6
+ 149              Delay(30);
+ 150              SC_Speech(21);      // 10
+ 151              Delay(30);
+ 152              SC_Speech(18);      // 7
+ 153              Delay(30);
+ 154              }
+ 155            else if((Check2 >= 0x311)&&(Check2 < 0x315))
+ 156              {
+ 157              SC_Speech(18);      // 7
+ 158              Delay(30);
+ 159          >>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+ 160              SC_Speech(21);      // 10
+ 161              Delay(30);
+ 162              SC_Speech(11);    
+ 163              Delay(60);  
+ 164              }
+ 165          <<<<<<< HEAD
+ 166              voice_EN = 0;
+ 167              SC_RST = 1;
+ 168              Delay_50ms();
+ 169              SC_RST = 0;
+ 170              Delay_50ms();
+ 171          
+ 172          /*    if(Check2 < 0x242)
+ 173                {
+ 174                SC_Speech(13);      // 2
+ 175                Delay(30);
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 4   
 
- 179            
- 180          /*---------------------------------------------------
- 181            end of file
- 182          ----------------------------------------------------*/
+ 176                }
+ 177              else if((Check2 >= 0x242)&&(Check2 < 0x250))
+ 178                {
+ 179                SC_Speech(16);      // 5
+ 180                Delay(30);
+ 181                }
+ 182              else if((Check2 >= 0x250)&&(Check2 < 0x25f))
+ 183                {
+ 184                SC_Speech(21);      // 10
+ 185                Delay(30);
+ 186                }
+ 187            else if((Check2 >= 0x250)&&(Check2 < 0x25f))
+ 188                {
+ 189                SC_Speech(21);      // 10
+ 190                Delay(30);
+ 191                SC_Speech(17);      // 6
+ 192                Delay(30);
+ 193                }
+ 194              else if((Check2 >= 0x25f)&&(Check2 < 0x267))
+ 195                {
+ 196                SC_Speech(13);      // 2
+ 197                Delay(30);
+ 198                SC_Speech(21);      // 10
+ 199                Delay(30);
+ 200                SC_Speech(13);      // 2
+ 201                Delay(30);
+ 202                }
+ 203              else if((Check2 >= 0x267)&&(Check2 < 0x26f))
+ 204                {
+ 205                SC_Speech(13);      // 2
+ 206                Delay(30);
+ 207                SC_Speech(21);      // 10
+ 208                Delay(30);
+ 209                SC_Speech(19);      // 8
+ 210                Delay(30);
+ 211                }
+ 212              else if((Check2 >= 0x26f)&&(Check2 < 0x279))
+ 213                {
+ 214                SC_Speech(14);      // 3
+ 215                Delay(30);
+ 216                SC_Speech(21);      // 10
+ 217                Delay(30);
+ 218                SC_Speech(15);      // 4
+ 219                Delay(30);
+ 220                }
+ 221              else if((Check2 >= 0x279)&&(Check2 < 0x282))
+ 222                {
+ 223                SC_Speech(15);      // 4
+ 224                Delay(30);
+ 225                SC_Speech(21);      // 10
+ 226                Delay(30);
+ 227                }
+ 228              else if((Check2 >= 0x282)&&(Check2 < 0x28a))
+ 229                {
+ 230                SC_Speech(15);      // 4
+ 231                Delay(30);
+ 232                SC_Speech(21);      // 10
+ 233                Delay(30);
+ 234                SC_Speech(17);      // 6
+ 235                Delay(30);
+ 236                }
+ 237              else if((Check2 >= 0x28a)&&(Check2 < 0x28e))
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 5   
 
+ 238                {
+ 239                SC_Speech(16);      // 5
+ 240                Delay(30);
+ 241                SC_Speech(21);      // 10
+ 242                Delay(30);
+ 243                SC_Speech(13);      // 2
+ 244                Delay(30);
+ 245                }
+ 246              else if((Check2 >= 0x28e)&&(Check2 < 0x291))
+ 247                {
+ 248                SC_Speech(16);      // 5
+ 249                Delay(30);
+ 250                SC_Speech(21);      // 10
+ 251                Delay(30);
+ 252                SC_Speech(19);      // 8
+ 253                Delay(30);
+ 254                }
+ 255              else if((Check2 >= 0x291)&&(Check2 < Max_battery))
+ 256                {
+ 257                SC_Speech(17);      // 6
+ 258                Delay(30);
+ 259                SC_Speech(21);      // 10
+ 260                Delay(30);
+ 261                SC_Speech(15);      // 4
+ 262                Delay(30);
+ 263                }
+ 264              else if(Check2 >= Max_battery)
+ 265                {
+ 266                SC_Speech(18);      // 7
+ 267                Delay(30);
+ 268                SC_Speech(21);      // 10
+ 269                Delay(30);
+ 270                } 
+ 271              //
+ 272              SC_Speech(11);    
+ 273              Delay(60);  
+ 274            */    
+ 275          =======
+ 276            else if((Check2 >= 0x315)&&(Check2 < 0x317))
+ 277              {
+ 278              SC_Speech(19);      // 8
+ 279              Delay(30);
+ 280              SC_Speech(21);      // 10
+ 281              Delay(30);
+ 282              SC_Speech(13);      // 2
+ 283              Delay(30);
+ 284              }
+ 285            else if(Check2 >= 0x317)
+ 286              {
+ 287              SC_Speech(20);      // 9
+ 288              Delay(30);
+ 289              SC_Speech(21);      // 10
+ 290              Delay(30);
+ 291              }   
+ 292            // 公里
+ 293            SC_Speech(11);    
+ 294            Delay(60);  
+ 295            voice_EN = 0;
+ 296            SC_RST = 1;
+ 297            Delay_50ms();
+ 298            SC_RST = 0;
+ 299            Delay_50ms();
+C51 COMPILER V9.54   BATTERY                                                               06/04/2017 11:50:54 PAGE 6   
 
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    149    ----
-=======
-  30             Broadcast_battery()
-  31             
-  32             你好
-  33          ------------------------------------------*/
-  34          void Broadcast_battery(void)
-  35             {
-  36   1         if((ADC_check_result < load_battery_result)||(ADC_check_result > Max_battery))
-  37   1            {
-  38   2            load_battery_result = ADC_check_result;
-  39   2            }  
-  40   1         verifybattery(load_battery_result);       
-  41   1         }
-  42          
-  43          
-  44          /*----------------------------------------------------
-  45             verifybattery()
-  46             voice alarm for battery status with power module
-  47          -----------------------------------------------------*/
-  48          void verifybattery(tWord Check2)
-  49             {  
-  50   1         #ifdef Kilometer_65
-  51   1         // 电量还能行驶
-  52   1         voice_EN = 1;
-  53   1         SC_Speech(8);     
-  54   1         Delay(70);  
-C51 COMPILER V9.54   BATTERY                                                               11/14/2016 13:39:14 PAGE 2   
+ 300          >>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+ 301            #endif
+ 302            }
+ 303            
+ 304          /*---------------------------------------------------
+ 305            end of file
+ 306          ----------------------------------------------------*/
 
-  55   1         // 多少
-  56   1         if(Check2 < 0x2a8)
-  57   1            {
-  58   2            SC_Speech(14);       // 3
-  59   2            Delay(30);
-  60   2            }
-  61   1         else if((Check2 >= 0x2a8)&&(Check2 < 0x2b6))
-  62   1            {
-  63   2            SC_Speech(18);       // 7
-  64   2            Delay(30);
-  65   2            }
-  66   1         else if((Check2 >= 0x2b6)&&(Check2 < 0x2c7))
-  67   1            {
-  68   2            SC_Speech(21);       // 10
-  69   2            Delay(30);
-  70   2            SC_Speech(16);       // 5
-  71   2            Delay(30);
-  72   2            }
-  73   1         else if((Check2 >= 0x2c7)&&(Check2 < 0x2d8))
-  74   1            {
-  75   2            SC_Speech(13);       // 2
-  76   2            Delay(30);
-  77   2            SC_Speech(21);       // 10
-  78   2            Delay(30);
-  79   2            SC_Speech(12);       // 1
-  80   2            Delay(30);
-  81   2            }
-  82   1         else if((Check2 >= 0x2d8)&&(Check2 < 0x2e2))
-  83   1            {
-  84   2            SC_Speech(13);       // 2
-  85   2            Delay(30);
-  86   2            SC_Speech(21);       // 10
-  87   2            Delay(30);
-  88   2            SC_Speech(19);       // 8
-  89   2            Delay(30);
-  90   2            }
-  91   1         else if((Check2 >= 0x2e2)&&(Check2 < 0x2ec))
-  92   1            {
-  93   2            SC_Speech(14);       // 3
-  94   2            Delay(30);
-  95   2            SC_Speech(21);       // 10
-  96   2            Delay(30);
-  97   2            SC_Speech(17);       // 6
-  98   2            Delay(30);
-  99   2            }
- 100   1         else if((Check2 >= 0x2ec)&&(Check2 < 0x2f7))
- 101   1            {
- 102   2            SC_Speech(15);       // 4
- 103   2            Delay(30);
- 104   2            SC_Speech(21);       // 10
- 105   2            Delay(30);
- 106   2            SC_Speech(14);       // 3
- 107   2            Delay(30);
- 108   2            }
- 109   1         else if((Check2 >= 0x2f7)&&(Check2 < 0x302))
- 110   1            {
- 111   2            SC_Speech(16);       // 5
- 112   2            Delay(30);
- 113   2            SC_Speech(21);       // 10
- 114   2            Delay(30);
- 115   2            SC_Speech(12);       // 1
- 116   2            Delay(30);
-C51 COMPILER V9.54   BATTERY                                                               11/14/2016 13:39:14 PAGE 3   
-
- 117   2            }
- 118   1         else if((Check2 >= 0x302)&&(Check2 < 0x30c))
- 119   1            {
- 120   2            SC_Speech(17);       // 6
- 121   2            Delay(30);
- 122   2            SC_Speech(21);       // 10
- 123   2            Delay(30);
- 124   2            }
- 125   1         else if((Check2 >= 0x30c)&&(Check2 < 0x311))
- 126   1            {
- 127   2            SC_Speech(17);       // 6
- 128   2            Delay(30);
- 129   2            SC_Speech(21);       // 10
- 130   2            Delay(30);
- 131   2            SC_Speech(18);       // 7
- 132   2            Delay(30);
- 133   2            }
- 134   1         else if((Check2 >= 0x311)&&(Check2 < 0x315))
- 135   1            {
- 136   2            SC_Speech(18);       // 7
- 137   2            Delay(30);
- 138   2            SC_Speech(21);       // 10
- 139   2            Delay(30);
- 140   2            SC_Speech(15);       // 4
- 141   2            Delay(30);
- 142   2            }
- 143   1         else if((Check2 >= 0x315)&&(Check2 < 0x317))
- 144   1            {
- 145   2            SC_Speech(19);       // 8
- 146   2            Delay(30);
- 147   2            SC_Speech(21);       // 10
- 148   2            Delay(30);
- 149   2            SC_Speech(13);       // 2
- 150   2            Delay(30);
- 151   2            }
- 152   1         else if(Check2 >= 0x317)
- 153   1            {
- 154   2            SC_Speech(20);       // 9
- 155   2            Delay(30);
- 156   2            SC_Speech(21);       // 10
- 157   2            Delay(30);
- 158   2            }     
- 159   1         // 公里
- 160   1         SC_Speech(11);    
- 161   1         Delay(60);  
- 162   1         voice_EN = 0;
- 163   1         SC_RST = 1;
- 164   1         Delay_50ms();
- 165   1         SC_RST = 0;
- 166   1         Delay_50ms();
- 167   1         #endif
- 168   1         }
- 169             
- 170          /*---------------------------------------------------
- 171             end of file
- 172          ----------------------------------------------------*/
-
-
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    621    ----
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
-C51 COMPILER V9.54   BATTERY                                                               11/14/2016 13:39:14 PAGE 4   
-
-   PDATA SIZE       =      2       2
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  1 WARNING(S),  2 ERROR(S)

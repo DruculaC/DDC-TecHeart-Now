@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 1   
-=======
-C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 1   
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:50:54 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE TIMER
@@ -31,6 +27,8 @@ line level    source
   17          #include "operation.h"
   18          #include "hSch51.h"
   19          #include "Elecmotor.h"
+*** ERROR C141 IN LINE 19 OF ..\Library\Elecmotor.h: syntax error near '<<'
+*** ERROR C129 IN LINE 20 OF ..\Library\Elecmotor.h: missing ';' before '=='
   20          
   21          // ------ Public variable declarations -----------------------------
   22          extern sTaskH hSCH_tasks_G[hSCH_MAX_TASKS];
@@ -49,87 +47,66 @@ line level    source
   34          ---------------------------------------------------*/
   35          
   36          void InitTimer(const tByte Tick_ms_T0, Tick_us_T1)
-<<<<<<< HEAD
   37            {
-  38   1        tLong Inc_T0, Inc_T1;
-  39   1        tWord timer0_16, timer1_16;
-  40   1        
-  41   1        //计算Timer0的寄存器值
-  42   1        Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
-  43   1        timer0_16 = (tWord) (65536UL - Inc_T0);
-  44   1        timer0_8H = (tByte) (timer0_16 / 256);
-  45   1        timer0_8L = (tByte) (timer0_16 % 256);
-  46   1        
-  47   1        //计算Timer1的寄存器值
-  48   1        Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
-  49   1        timer1_16 = (tWord) (65536UL - Inc_T1);
-  50   1        timer1_8H = (tByte) (timer1_16 / 256);
-  51   1        timer1_8L = (tByte) (timer1_16 % 256);
-  52   1        
-  53   1        TMOD = 0x11;
-C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 2   
-=======
-  37             {
-  38   1         tLong Inc_T0, Inc_T1;
-  39   1         tWord timer0_16, timer1_16;
-  40   1         
-  41   1         //计算Timer0的寄存器值
-  42   1         Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
-  43   1         timer0_16 = (tWord) (65536UL - Inc_T0);
-  44   1         timer0_8H = (tByte) (timer0_16 / 256);
-  45   1         timer0_8L = (tByte) (timer0_16 % 256);
-  46   1         
-  47   1         //计算Timer1的寄存器值
-  48   1         Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
-  49   1         timer1_16 = (tWord) (65536UL - Inc_T1);
-  50   1         timer1_8H = (tByte) (timer1_16 / 256);
-  51   1         timer1_8L = (tByte) (timer1_16 % 256);
-  52   1         
-  53   1         TMOD = 0x11;
-C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 2   
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
+  38            tLong Inc_T0, Inc_T1;
+  39            tWord timer0_16, timer1_16;
+  40            
+  41            //计算Timer0的寄存器值
+  42            Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
+  43            timer0_16 = (tWord) (65536UL - Inc_T0);
+  44            timer0_8H = (tByte) (timer0_16 / 256);
+  45            timer0_8L = (tByte) (timer0_16 % 256);
+  46            
+  47            //计算Timer1的寄存器值
+  48            Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
+  49            timer1_16 = (tWord) (65536UL - Inc_T1);
+  50            timer1_8H = (tByte) (timer1_16 / 256);
+  51            timer1_8L = (tByte) (timer1_16 % 256);
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:50:54 PAGE 2   
 
-  54   1        
-  55   1        TH0 = timer0_8H;
-  56   1        TL0 = timer0_8L;
-  57   1        TH1 = timer1_8H;
-  58   1        TL1 = timer1_8L;
-  59   1      
-  60   1        ET0 = 1;
-  61   1        TR0 = 1;
-  62   1        ET1 = 1;
-  63   1        TR1 = 1;
-  64   1        PT1 = 1;      
-  65   1        EA = 1;
-  66   1        }
+  52            
+  53            TMOD = 0x11;
+  54            
+  55            TH0 = timer0_8H;
+  56            TL0 = timer0_8L;
+  57            TH1 = timer1_8H;
+  58            TL1 = timer1_8L;
+  59          
+  60            ET0 = 1;
+  61            TR0 = 1;
+  62            ET1 = 1;
+  63            TR1 = 1;
+  64            PT1 = 1;      
+  65            EA = 1;
+  66            }
   67          
   68          /*-----------------------------------------------------------------
   69            初始化T0，在初始化了串口之后
   70          -----------------------------------------------------------------*/
   71          void InitT0(const tByte Tick_ms_T0)
   72            {
-  73   1        tLong Inc_T0;
-  74   1        tWord timer0_16;
-  75   1         tByte i;
-  76   1        
-  77   1        for (i = 0; i < hSCH_MAX_TASKS; i++) 
-  78   1            {
-  79   2            hSCH_Delete_Task(i);
-  80   2            }
-  81   1        
-  82   1        //计算Timer0的寄存器值
-  83   1        Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
-  84   1        timer0_16 = (tWord) (65536UL - Inc_T0);
-  85   1        timer0_8H = (tByte) (timer0_16 / 256);
-  86   1        timer0_8L = (tByte) (timer0_16 % 256);
-  87   1        
-  88   1         TMOD &= 0xF0;  // Clear all T0 bits (T1 left unchanged)
-  89   1         TMOD |= 0x01;  // Set required T0 bits (T1 left unchanged) 
-  90   1        
-  91   1        hSCH_Manual_Timer0_Reload();
-  92   1         // Interrupt Timer 0 enabled
-  93   1         ET0  = 1;
-  94   1        }
+  73            tLong Inc_T0;
+  74            tWord timer0_16;
+  75             tByte i;
+  76            
+  77            for (i = 0; i < hSCH_MAX_TASKS; i++) 
+  78                {
+  79                hSCH_Delete_Task(i);
+  80                }
+  81            
+  82            //计算Timer0的寄存器值
+  83            Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
+  84            timer0_16 = (tWord) (65536UL - Inc_T0);
+  85            timer0_8H = (tByte) (timer0_16 / 256);
+  86            timer0_8L = (tByte) (timer0_16 % 256);
+  87            
+  88             TMOD &= 0xF0;  // Clear all T0 bits (T1 left unchanged)
+  89             TMOD |= 0x01;  // Set required T0 bits (T1 left unchanged) 
+  90            
+  91            hSCH_Manual_Timer0_Reload();
+  92             // Interrupt Timer 0 enabled
+  93             ET0  = 1;
+  94            }
   95          
   96          /*------------------------------------------------------------------*-
   97          
@@ -145,25 +122,19 @@ line level    source
  107          -*------------------------------------------------------------------*/
  108          void hSCH_Start(void) 
  109             {
- 110   1         EA = 1;
- 111   1         }
+ 110             EA = 1;
+ 111             }
  112          
  113          /*---------------------------------------------------------------------
-<<<<<<< HEAD
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:50:54 PAGE 3   
+
  114            sEos_Go_To_Sleep()
  115            将MCU进入休眠状态
-C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 3   
-=======
- 114             sEos_Go_To_Sleep()
- 115             将MCU进入休眠状态
-C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 3   
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
-
  116          ----------------------------------------------------------------------*/
  117          void sEOS_Go_To_Sleep(void)
  118             {
- 119   1         PCON |= 0x01;    // Enter idle mode (generic 8051 version)
- 120   1         }
+ 119             PCON |= 0x01;    // Enter idle mode (generic 8051 version)
+ 120             }
  121          
  122          
  123          /*------------------------------------------------------------------*-
@@ -179,19 +150,19 @@ line level    source
  133          -*------------------------------------------------------------------*/
  134          void hSCH_Manual_Timer0_Reload()
  135             {
- 136   1         // Stop Timer 0
- 137   1         TR0 = 0;
- 138   1      
- 139   1         // 8051, 12 MHz
- 140   1         // The Timer 0 resolution is 1.000 祍
- 141   1         // We set the timer at 64336 to generate interrupt after 1 ms
- 142   1         // -> we are generating timer ticks at ~1 ms intervals
- 143   1         TL0  = timer0_8L;
- 144   1         TH0  = timer0_8H;  
- 145   1      
- 146   1         //  Start Timer 0
- 147   1         TR0  = 1;
- 148   1         }
+ 136             // Stop Timer 0
+ 137             TR0 = 0;
+ 138          
+ 139             // 8051, 12 MHz
+ 140             // The Timer 0 resolution is 1.000 祍
+ 141             // We set the timer at 64336 to generate interrupt after 1 ms
+ 142             // -> we are generating timer ticks at ~1 ms intervals
+ 143             TL0  = timer0_8L;
+ 144             TH0  = timer0_8H;  
+ 145          
+ 146             //  Start Timer 0
+ 147             TR0  = 1;
+ 148             }
  149          
  150          /*------------------------------------------------------------------
  151            timerT0()
@@ -219,14 +190,10 @@ line level    source
  173                         hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
  174                         }
  175                      }
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:50:54 PAGE 4   
+
  176                   else
  177                      {
-<<<<<<< HEAD
-C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 4   
-=======
-C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 4   
->>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
-
  178                      // Not yet ready to run: just decrement the delay 
  179                      hSCH_tasks_G[Index].Delay -= 1;
  180                      }
@@ -256,16 +223,4 @@ line level    source
  204            end of file
  205          ----------------------------------------------------*/
 
-
-MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    215    ----
-   CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
-   PDATA SIZE       =      4       4
-   DATA SIZE        =   ----    ----
-   IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
-END OF MODULE INFORMATION.
-
-
-C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
+C51 COMPILATION COMPLETE.  0 WARNING(S),  2 ERROR(S)
