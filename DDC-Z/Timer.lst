@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 1   
+=======
+C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 1   
+>>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE TIMER
@@ -45,6 +49,7 @@ line level    source
   34          ---------------------------------------------------*/
   35          
   36          void InitTimer(const tByte Tick_ms_T0, Tick_us_T1)
+<<<<<<< HEAD
   37            {
   38   1        tLong Inc_T0, Inc_T1;
   39   1        tWord timer0_16, timer1_16;
@@ -63,6 +68,26 @@ line level    source
   52   1        
   53   1        TMOD = 0x11;
 C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 2   
+=======
+  37             {
+  38   1         tLong Inc_T0, Inc_T1;
+  39   1         tWord timer0_16, timer1_16;
+  40   1         
+  41   1         //计算Timer0的寄存器值
+  42   1         Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
+  43   1         timer0_16 = (tWord) (65536UL - Inc_T0);
+  44   1         timer0_8H = (tByte) (timer0_16 / 256);
+  45   1         timer0_8L = (tByte) (timer0_16 % 256);
+  46   1         
+  47   1         //计算Timer1的寄存器值
+  48   1         Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
+  49   1         timer1_16 = (tWord) (65536UL - Inc_T1);
+  50   1         timer1_8H = (tByte) (timer1_16 / 256);
+  51   1         timer1_8L = (tByte) (timer1_16 % 256);
+  52   1         
+  53   1         TMOD = 0x11;
+C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 2   
+>>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
 
   54   1        
   55   1        TH0 = timer0_8H;
@@ -124,9 +149,15 @@ line level    source
  111   1         }
  112          
  113          /*---------------------------------------------------------------------
+<<<<<<< HEAD
  114            sEos_Go_To_Sleep()
  115            将MCU进入休眠状态
 C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 3   
+=======
+ 114             sEos_Go_To_Sleep()
+ 115             将MCU进入休眠状态
+C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 3   
+>>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
 
  116          ----------------------------------------------------------------------*/
  117          void sEOS_Go_To_Sleep(void)
@@ -190,7 +221,11 @@ line level    source
  175                      }
  176                   else
  177                      {
+<<<<<<< HEAD
 C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 4   
+=======
+C51 COMPILER V9.54   TIMER                                                                 11/14/2016 13:39:16 PAGE 4   
+>>>>>>> c6e65e4f0b4864e969ea86603842dc8b6ee1929b
 
  178                      // Not yet ready to run: just decrement the delay 
  179                      hSCH_tasks_G[Index].Delay -= 1;
