@@ -139,8 +139,9 @@ void ID_speech(void)
 	voice_EN = 1;
 	SC_Speech(26); 
 	Delay(30);
-	Speech_closed_G = 1;
-	Speech_closed_time = 0;
+	voice_EN = 0;
+//	Speech_closed_G = 1;
+//	Speech_closed_time = 0;
 	}
 
 /*----------------------------------------------------
@@ -426,7 +427,9 @@ void Accumulator_voice_promot(void)
 		Check_Motobattery_count = 5;
 		if((Check_Motobattery_flag == 1)&&(EN_host_stolen_alarming == 0)&&(fell_flag == 0)&&(raised_flag == 0)&&(battery_stolen_EN == 0))
 			{
-			Broadcast_battery();			
+			#ifdef BroadcastBattery
+			Broadcast_battery();		
+			#endif
 			Check_Motobattery_flag = 0;
 			}
 		}

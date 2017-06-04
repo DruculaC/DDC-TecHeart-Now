@@ -1,17 +1,17 @@
-C51 COMPILER V9.54   TIMER                                                                 11/03/2016 14:51:07 PAGE 1   
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE TIMER
 OBJECT MODULE PLACED IN .\Timer.obj
-COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\Timer.c COMPACT ROM(COMPACT) OPTIMIZE(8,S
-                    -PEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Timer.lst) TABS(3) OBJECT(.\Timer.obj)
+COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\Timer.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPEED) 
+                    -BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Timer.lst) TABS(2) OBJECT(.\Timer.obj)
 
 line level    source
 
    1          /*---------------------------------------------------
-   2             Timer.c (v1.00)
-   3             
-   4             Timer functions
+   2            Timer.c (v1.00)
+   3            
+   4            Timer functions
    5          ---------------------------------------------------*/ 
    6          
    7          #include "main.h"
@@ -30,81 +30,81 @@ line level    source
   20          
   21          // ------ Public variable declarations -----------------------------
   22          extern sTaskH hSCH_tasks_G[hSCH_MAX_TASKS];
-  23          extern tWord timer0_count;       
+  23          extern tWord timer0_count;      
   24          extern bit CW_flag;
   25          
   26          // ------ Private variable definitions -----------------------------
-  27          tByte timer0_8H, timer0_8L, timer1_8H, timer1_8L;     // register value of timer0 and timer1, caculated from 
+  27          tByte timer0_8H, timer0_8L, timer1_8H, timer1_8L;   // register value of timer0 and timer1, caculated from 
              -InitTimer()
   28          
   29          
   30          /*--------------------------------------------------
-  31             InitTimer()
-  32             
-  33             初始化定时器T0和T1
+  31            InitTimer()
+  32            
+  33            初始化定时器T0和T1
   34          ---------------------------------------------------*/
   35          
   36          void InitTimer(const tByte Tick_ms_T0, Tick_us_T1)
-  37             {
-  38   1         tLong Inc_T0, Inc_T1;
-  39   1         tWord timer0_16, timer1_16;
-  40   1         
-  41   1         //计算Timer0的寄存器值
-  42   1         Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
-  43   1         timer0_16 = (tWord) (65536UL - Inc_T0);
-  44   1         timer0_8H = (tByte) (timer0_16 / 256);
-  45   1         timer0_8L = (tByte) (timer0_16 % 256);
-  46   1         
-  47   1         //计算Timer1的寄存器值
-  48   1         Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
-  49   1         timer1_16 = (tWord) (65536UL - Inc_T1);
-  50   1         timer1_8H = (tByte) (timer1_16 / 256);
-  51   1         timer1_8L = (tByte) (timer1_16 % 256);
-  52   1         
-  53   1         TMOD = 0x11;
-C51 COMPILER V9.54   TIMER                                                                 11/03/2016 14:51:07 PAGE 2   
+  37            {
+  38   1        tLong Inc_T0, Inc_T1;
+  39   1        tWord timer0_16, timer1_16;
+  40   1        
+  41   1        //计算Timer0的寄存器值
+  42   1        Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
+  43   1        timer0_16 = (tWord) (65536UL - Inc_T0);
+  44   1        timer0_8H = (tByte) (timer0_16 / 256);
+  45   1        timer0_8L = (tByte) (timer0_16 % 256);
+  46   1        
+  47   1        //计算Timer1的寄存器值
+  48   1        Inc_T1 = (tLong)Tick_us_T1 * (OSC_FREQ/1000000) / (tLong)OSC_PER_INST;
+  49   1        timer1_16 = (tWord) (65536UL - Inc_T1);
+  50   1        timer1_8H = (tByte) (timer1_16 / 256);
+  51   1        timer1_8L = (tByte) (timer1_16 % 256);
+  52   1        
+  53   1        TMOD = 0x11;
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 2   
 
-  54   1         
-  55   1         TH0 = timer0_8H;
-  56   1         TL0 = timer0_8L;
-  57   1         TH1 = timer1_8H;
-  58   1         TL1 = timer1_8L;
+  54   1        
+  55   1        TH0 = timer0_8H;
+  56   1        TL0 = timer0_8L;
+  57   1        TH1 = timer1_8H;
+  58   1        TL1 = timer1_8L;
   59   1      
-  60   1         ET0 = 1;
-  61   1         TR0 = 1;
-  62   1         ET1 = 1;
-  63   1         TR1 = 1;
-  64   1         PT1 = 1;       
-  65   1         EA = 1;
-  66   1         }
+  60   1        ET0 = 1;
+  61   1        TR0 = 1;
+  62   1        ET1 = 1;
+  63   1        TR1 = 1;
+  64   1        PT1 = 1;      
+  65   1        EA = 1;
+  66   1        }
   67          
   68          /*-----------------------------------------------------------------
-  69             初始化T0，在初始化了串口之后
+  69            初始化T0，在初始化了串口之后
   70          -----------------------------------------------------------------*/
   71          void InitT0(const tByte Tick_ms_T0)
-  72             {
-  73   1         tLong Inc_T0;
-  74   1         tWord timer0_16;
+  72            {
+  73   1        tLong Inc_T0;
+  74   1        tWord timer0_16;
   75   1         tByte i;
   76   1        
-  77   1         for (i = 0; i < hSCH_MAX_TASKS; i++) 
+  77   1        for (i = 0; i < hSCH_MAX_TASKS; i++) 
   78   1            {
   79   2            hSCH_Delete_Task(i);
   80   2            }
-  81   1         
-  82   1         //计算Timer0的寄存器值
-  83   1         Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
-  84   1         timer0_16 = (tWord) (65536UL - Inc_T0);
-  85   1         timer0_8H = (tByte) (timer0_16 / 256);
-  86   1         timer0_8L = (tByte) (timer0_16 % 256);
-  87   1         
+  81   1        
+  82   1        //计算Timer0的寄存器值
+  83   1        Inc_T0 = (tLong)Tick_ms_T0 * (OSC_FREQ/1000) / (tLong)OSC_PER_INST;
+  84   1        timer0_16 = (tWord) (65536UL - Inc_T0);
+  85   1        timer0_8H = (tByte) (timer0_16 / 256);
+  86   1        timer0_8L = (tByte) (timer0_16 % 256);
+  87   1        
   88   1         TMOD &= 0xF0;  // Clear all T0 bits (T1 left unchanged)
   89   1         TMOD |= 0x01;  // Set required T0 bits (T1 left unchanged) 
-  90   1         
-  91   1         hSCH_Manual_Timer0_Reload();
+  90   1        
+  91   1        hSCH_Manual_Timer0_Reload();
   92   1         // Interrupt Timer 0 enabled
   93   1         ET0  = 1;
-  94   1         }
+  94   1        }
   95          
   96          /*------------------------------------------------------------------*-
   97          
@@ -124,9 +124,9 @@ line level    source
  111   1         }
  112          
  113          /*---------------------------------------------------------------------
- 114             sEos_Go_To_Sleep()
- 115             将MCU进入休眠状态
-C51 COMPILER V9.54   TIMER                                                                 11/03/2016 14:51:07 PAGE 3   
+ 114            sEos_Go_To_Sleep()
+ 115            将MCU进入休眠状态
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 3   
 
  116          ----------------------------------------------------------------------*/
  117          void sEOS_Go_To_Sleep(void)
@@ -156,17 +156,17 @@ line level    source
  141   1         // We set the timer at 64336 to generate interrupt after 1 ms
  142   1         // -> we are generating timer ticks at ~1 ms intervals
  143   1         TL0  = timer0_8L;
- 144   1         TH0  = timer0_8H; 
+ 144   1         TH0  = timer0_8H;  
  145   1      
  146   1         //  Start Timer 0
  147   1         TR0  = 1;
  148   1         }
  149          
  150          /*------------------------------------------------------------------
- 151             timerT0()
- 152             operation every ticket.
+ 151            timerT0()
+ 152            operation every ticket.
  153          void timer0() interrupt interrupt_timer_0_overflow
- 154             {
+ 154            {
  155             tByte Index;
  156          
  157             // Reload the timer
@@ -190,35 +190,35 @@ line level    source
  175                      }
  176                   else
  177                      {
-C51 COMPILER V9.54   TIMER                                                                 11/03/2016 14:51:07 PAGE 4   
+C51 COMPILER V9.54   TIMER                                                                 06/04/2017 11:00:45 PAGE 4   
 
  178                      // Not yet ready to run: just decrement the delay 
  179                      hSCH_tasks_G[Index].Delay -= 1;
  180                      }
  181                   }         
  182                }
- 183             timer0_count += 1;
- 184             if(timer0_count > 200)
- 185                {
- 186                TXD = ~TXD;
- 187                timer0_count = 0;
- 188                if(CW_flag == 0)
- 189                   {
- 190                   CW_flag = 1;
- 191                   ElecMotor_CW();
- 192                   }
- 193                else
- 194                   {
- 195                   CW_flag = 0;
- 196                   ElecMotor_ACW();        
- 197                   }
- 198                }
- 199             
- 200             }
+ 183            timer0_count += 1;
+ 184            if(timer0_count > 200)
+ 185              {
+ 186              TXD = ~TXD;
+ 187              timer0_count = 0;
+ 188              if(CW_flag == 0)
+ 189                {
+ 190                CW_flag = 1;
+ 191                ElecMotor_CW();
+ 192                }
+ 193              else
+ 194                {
+ 195                CW_flag = 0;
+ 196                ElecMotor_ACW();      
+ 197                }
+ 198              }
+ 199            
+ 200            }
  201          --------------------------------------------------------------------*/
- 202             
+ 202            
  203          /*---------------------------------------------------
- 204             end of file
+ 204            end of file
  205          ----------------------------------------------------*/
 
 

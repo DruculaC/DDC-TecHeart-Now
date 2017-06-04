@@ -103,9 +103,16 @@ void slave_away_operation(void)
 	{	
 	if(Silence_Flag == 0)
 		{
-		close_lock_speech();	
+			#ifdef voice
+			close_lock_speech();
+			#endif
+			
+			ID_speech();
+			ID_speech();
 
+		#ifdef BroadcastBattery
 		Broadcast_battery();
+		#endif
 		
 //		Check_Motobattery_flag = 1;
 //		Check_Motobattery_count = 0;
@@ -138,18 +145,32 @@ void slave_nearby_operation(void)
 	Delay_500ms();
 	Delay_500ms();
 	Delay_500ms();
-	Externalmotor = 0;
-	Generator_lock = 1;
+//	Externalmotor = 0;
+	
+	if(Emergency_open_G == 0)
+		{
+		Generator_lock = 1;
+		}
+	
+		
+		ID_speech();
 	
 	if(Silence_Flag == 0)
 		{
-		open_lock_speech();
-		Externalmotor = 0;
+		#ifdef voice
+			open_lock_speech();
+		#endif
+//		Externalmotor = 0;
 		
 		if(Just_power_up == 0)
+			{
+			#ifdef BroadcastBattery
 			Broadcast_battery();
-			
+			#endif
+			}
+		#ifdef voice			
 		key_rotate_on_speech();
+		#endif
 		}
 
 
@@ -157,7 +178,7 @@ void slave_nearby_operation(void)
 	if(Silence_Flag == 0)
 		{
 		open_lock_speech();
-		Externalmotor = 0;
+//		Externalmotor = 0;
 		if(Just_power_up == 0)
 			verifybattery(load_battery_result);
 		key_rotate_on_speech();
@@ -166,7 +187,7 @@ void slave_nearby_operation(void)
 		{
 		Delay_500ms();
 		Delay_500ms();
-		Externalmotor = 0;
+//		Externalmotor = 0;
 		}
 */		
 
@@ -196,8 +217,11 @@ void Host_stolen_action(void)
 		{
 		Host_stolen_alarming = 1;
 		
-		stolen_alarm_speech1();
+		#ifdef voice
+			stolen_alarm_speech1();
 		stolen_alarm_speech2();
+		#endif
+			
 		#ifdef Z3
 		if(wire_broken_flag == 0)
 			{
@@ -354,7 +378,7 @@ void Reset_after_stolen_alarming(void)
 	{
 	if(EN_host_stolen_alarming == 1)
 		{
-		if(++Stolen_alarm_reset_count > 5)
+		if(++Stolen_alarm_reset_count > 2)
 			{
 			host_stolen_alarm1_count = 0;
 			EN_host_stolen_alarming = 0;
@@ -362,6 +386,10 @@ void Reset_after_stolen_alarming(void)
 			sensor_3rdalarm_flag = 0;
 			Stolen_alarm_reset_count = 0;
 			close_tranceiver();
+			
+			// 电机锁死关闭，并且控制器电源打开
+			Generator_lock = 0;
+			Externalmotor = 1;
 			}
 		}
 	}
@@ -433,13 +461,12 @@ void Detect_selflearn_action(void)
 		ID_selflearning_flag = 0;
 		
 		Self_learn_programming();
-		
 		Self_learn_speech();
 		
 		#if (defined Z3) && (defined ID)
-		UART_Send_Data_match();
+			UART_Send_Data_match();
 		#endif
-		}	
+		}
 	}
 
 /*---------------------------------------------------
@@ -475,28 +502,32 @@ void Detect_close_action(void)
 	if((((key_rotate == 0)&&(Emergency_open_G == 0))||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))&&(Open_action_flag == 1))
 //	if(((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1)||(Emergency_open_G == 0))&&(Open_action_flag == 1))
 		{
+		
 		if((vibration_flag == 0)&&(wheeled_flag == 0))
 			{
 			key_rotate_off_time += 1;
-			if(key_rotate_off_time >= 1500)
+			if(key_rotate_off_time >= 500)
 				{
 				if((key_rotate == 0)||(slave_nearby_actioned_flag == 0)||(Autolock_G == 1))
 					{
+					Generator_lock = 0;
 					ElecMotor_ACW();
 
 					Open_action_flag = 0;
 					slave_away_operation();
 					IDkey_speech_flash = 0;
-					ID_speeched_flag = 0;		
+					ID_speeched_flag = 0;
 
 					timer0_count2 = 0;
 					Emergency_open_G = 0;
-					}								
+					}
 				}
 			}
 		}
 	else if(key_rotate == 1)
+		{
 		key_rotate_off_time = 0;
+		}
 	}
 
 /*------------------------------------------------------
@@ -506,7 +537,7 @@ void Detect_vibration(void)
 	{
 	if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
 		{
-		if(++vibration_count2 >= 2)
+		if(++vibration_count2 >= 1)
 			{
 			vibration_count2 = 0;
 			vibration_flag = 1;
@@ -523,7 +554,7 @@ void Detect_vibration(void)
 		
     if(vibration_flag == 1)
 		{
-		if(++vibration_count >= 4000)
+		if(++vibration_count >= 2000)
 			{
 			vibration_flag = 0;
 			vibration_count = 0;

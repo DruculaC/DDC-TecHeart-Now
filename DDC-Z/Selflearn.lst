@@ -1,0 +1,160 @@
+C51 COMPILER V9.54   SELFLEARN                                                             11/30/2016 10:29:01 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE SELFLEARN
+OBJECT MODULE PLACED IN .\Selflearn.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\Selflearn.c COMPACT ROM(COMPACT) OPTIMIZE
+                    -(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Selflearn.lst) TABS(3) OBJECT(.\Selflearn.obj)
+
+line level    source
+
+   1          /*------------------------------------------------------------------*-
+   2             A.C (v1.00)
+   3            ------------------------------------------------------------------
+   4             Simple switch interface code, with software debounce.
+   5          
+   6             COPYRIGHT
+   7             ---------
+   8             This code is copyright (c) 2001 by Richard Zhang.
+   9          -*------------------------------------------------------------------*/
+  10          
+  11          #include "Main.h"
+  12          #include "Port.h"
+  13          
+  14          #include "Selflearn.h"
+  15          //#include "Speech.h"
+  16          #include "ISP_DataFlash.h"
+  17          #include "UART.h"
+  18          
+  19          // ------ Public variable definitions ------------------------------
+  20          bit Self_learn_G;
+  21          
+  22          // ------ Public variable declarations -----------------------------
+  23          extern bit Received_finished_G;
+  24          extern tByte Received_cache[7];
+  25          
+  26          // ------ Private variables ----------------------------------------
+  27          tWord Self_learn_HVtime;
+  28          tByte Self_learn_level;
+  29          tByte Self_learn_mode_duration;
+  30          
+  31          // ------ Private constants ----------------------------------------
+  32          
+  33          /*------------------------------------------------------------------*-
+  34            SWITCH_Init()
+  35            Initialisation function for the switch library.
+  36          -*------------------------------------------------------------------*/
+  37          void Selflearn_Init(void)
+  38             {
+  39   1         // Set Selflearn_port(P0.1 PIN26) to input mode.
+  40   1         P0M1 |= 0x02;
+  41   1         P0M2 &= 0xfd;
+  42   1         
+  43   1         Self_learn_level = 0;
+  44   1         Self_learn_mode_duration = 0;
+  45   1         }
+  46          
+  47          /*------------------------------------------------------------------*-
+  48            Selflearn_detection()
+  49            Initialisation function for the switch library.
+  50          -*------------------------------------------------------------------*/
+  51          void Selflearn_detection(bit keyswitch)
+  52             {
+  53   1         if((keyswitch)&&(Selflearn_port))
+  54   1            {
+C51 COMPILER V9.54   SELFLEARN                                                             11/30/2016 10:29:01 PAGE 2   
+
+  55   2            Self_learn_HVtime += 1;
+  56   2            if(Self_learn_HVtime >= 6000)
+  57   2               {
+  58   3               Self_learn_HVtime = 6001;
+  59   3               Self_learn_level = 0;
+  60   3               Self_learn_G = 0;
+  61   3               }
+  62   2            }
+  63   1         else if((keyswitch)&&(!Selflearn_port))
+  64   1            {
+  65   2            if(Self_learn_HVtime >= 300)
+  66   2               {
+  67   3               Self_learn_HVtime = 0;
+  68   3               Self_learn_level += 1;
+  69   3               }
+  70   2            }
+  71   1            
+  72   1         if(Self_learn_level > 5)
+  73   1            {
+  74   2            Self_learn_level = 0;
+  75   2            Self_learn_G = 1;
+  76   2      //    Goto_speech(Ticktack);
+  77   2            }
+  78   1         }
+  79          
+  80          /*------------------------------------------------------------------*-
+  81            Self_learn_action()
+  82            Initialisation function for the switch library.
+  83          -*------------------------------------------------------------------*/
+  84          void Self_learn_action(void)
+  85             {
+  86   1         if(Self_learn_G)
+  87   1            {
+  88   2            if(Received_finished_G)
+  89   2               {
+  90   3               Self_learn_programming();
+  91   3               Received_finished_G = 0;
+  92   3               Self_learn_G = 0;
+  93   3      //       Goto_speech(Ticktack);
+  94   3               }
+  95   2            }
+  96   1         }
+  97          
+  98          /*------------------------------------------------------------------*-
+  99            Self_learn_reset()
+ 100            Initialisation function for the switch library.
+ 101          -*------------------------------------------------------------------*/
+ 102          void Self_learn_reset(void)
+ 103             {
+ 104   1         if(Self_learn_G)
+ 105   1            {
+ 106   2            Self_learn_mode_duration += 1;
+ 107   2            if(Self_learn_mode_duration > 5)
+ 108   2               {
+ 109   3               Self_learn_mode_duration = 0;
+ 110   3               Self_learn_G = 0;
+ 111   3               }
+ 112   2            }
+ 113   1         }
+ 114          
+ 115          /*------------------------------------------------------------------*-
+ 116            Self_learn_programming()
+C51 COMPILER V9.54   SELFLEARN                                                             11/30/2016 10:29:01 PAGE 3   
+
+ 117            Initialisation function for the switch library.
+ 118          -*------------------------------------------------------------------*/
+ 119          void Self_learn_programming(void)
+ 120             {
+ 121   1         Flash_Page_Erase(0x3000);
+ 122   1         Flash_Write_Data(0x3000, Received_cache[5]);    
+ 123   1         Flash_Write_Data(0x3001, Received_cache[4]);    
+ 124   1         Flash_Write_Data(0x3002, Received_cache[3]);    
+ 125   1         Flash_Write_Data(0x3003, Received_cache[2]);    
+ 126   1         Flash_Write_Data(0x3004, Received_cache[1]);
+ 127   1         Flash_Write_Data(0x3005, Received_cache[0]);
+ 128   1         }
+ 129          
+ 130          /*------------------------------------------------------------------*-
+ 131            ---- END OF FILE -------------------------------------------------
+ 132          -*------------------------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    202    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =      4    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      1       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

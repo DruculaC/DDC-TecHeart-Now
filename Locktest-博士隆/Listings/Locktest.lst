@@ -1,0 +1,69 @@
+C51 COMPILER V9.54   LOCKTEST                                                              11/29/2016 15:30:44 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE LOCKTEST
+OBJECT MODULE PLACED IN .\Objects\Locktest.obj
+COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE Locktest.c COMPACT OPTIMIZE(8,SPEED) BROWSE DEBUG OB
+                    -JECTEXTEND PRINT(.\Listings\Locktest.lst) TABS(3) OBJECT(.\Objects\Locktest.obj)
+
+line level    source
+
+   1          /*---------------------------------------------------
+   2             main.c (v1.00)
+   3             
+   4             DDC-Z program, for electrocar.
+   5          ----------------------------------------------------*/
+   6          
+   7          #include "Main.h"
+   8          #include "port.h"
+   9          
+  10          #include "Delay.h"
+  11          #include "ElecMotor.h"
+  12                                           
+  13          /*------- Public variable declarations --------------------------*/
+  14          
+  15          // ------ Private variable definitions -----------------------------
+  16          
+  17          /*------- Private variable declarations --------------------------*/
+  18          
+  19          void main()
+  20             {  
+  21   1         tByte itime = 0;
+  22   1         
+  23   1         Generator_lock = 1;
+  24   1         
+  25   1         while(1)
+  26   1            {
+  27   2            if(Generator_lock == 1)
+  28   2               {
+  29   3               for(itime = 0; itime < 10; itime++)
+  30   3                  Delay_ms(LOOP_TIMEOUT_INIT_500ms);
+  31   3      
+  32   3               ElecMotor_ACW();
+  33   3               
+  34   3               for(itime = 0; itime < 10; itime++)
+  35   3                  Delay_ms(LOOP_TIMEOUT_INIT_500ms);
+  36   3               ElecMotor_CW();         
+  37   3               }
+  38   2            }
+  39   1         }
+  40          
+  41          /*---------------------------------------------------
+  42             end of file
+  43          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     61    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----       1
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+C51 COMPILER V9.54   LOCKTEST                                                              11/29/2016 15:30:44 PAGE 2   
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

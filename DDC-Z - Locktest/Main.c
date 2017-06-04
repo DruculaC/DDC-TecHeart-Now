@@ -89,36 +89,104 @@ bit slave_nearby_actioned_flag = 0;
 tByte slave_nearby_count = 0;
 
 bit ID_speeched_flag = 0;
+bit wire_broken_G = 0;
+extern tByte OC_count;
+tByte Locktest_count = 0;
+extern tWord timer0_count;			
 
+#define Maxcount 50
 
 /*------- Private variable declarations --------------------------*/
 
 void main()
 	{	
-//	InitT0(10);
+	InitVoice();
+	ID_speech();
 	
-	// lock the external motor, ·ÀÖ¹Ëø»¹Ã»ÍêÈ«´ò¿ªµÄÊ±ºò£¬³µÊÖ¼Óµçµ¼ÖÂÂÖ×ÓÓëËøµÄ¸æËßÅö×²¡£ 
+	// lock the external motor,
 	// InitElecmotor();	
+
+	InitT0(50);
+	
+	// é…ç½®P0.1ä¸ºè¾“å…¥æ¨¡å¼
+	P0M1 |= 0x02;
+	P0M2 &= 0xfd;
+
 	
 //	hSCH_Add_Task(ElecMotor_CW, 20, 100, 1);
-  
-	hSCH_Start();
+	Externalmotor = 1;
+	
+	TR0 = 1;
+	ET0 = 1;
+	PS = 1;
+	EA = 1;
+
+//	hSCH_Start();
 
 	while(1)
-		{
-      Delay_500ms();
-      Delay_500ms();
-      Delay_500ms();
-		ElecMotor_ACW();
-      Delay_500ms();
-      Delay_500ms();
-      Delay_500ms();
-		ElecMotor_CW();
-//		hSCH_Dispatch_Tasks();		
+		{		
+//		hSCH_Dispatch_Tasks();
 		}
 	}
 
+void timer0() interrupt interrupt_timer_0_overflow
+	{
+	// manually reload timer0 configuration
+	TH0 = timer0_8H;
+	TL0 = timer0_8L;
+	transmiter_EN = ~transmiter_EN;
 
+	if((Externalmotor == 1)&&(wire_broken_G == 0))
+		Locktest_count += 1;
+
+	if((Externalmotor == 1)&&(Locktest_count <= Maxcount)&&(wire_broken_G == 0))
+		{			
+		Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
+		ElecMotor_ACW();
+		Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
+		ElecMotor_CW();
+		}
+		
+	if(wire_broken == 0)
+		{
+		Delay_50ms();
+		if(wire_broken == 0)
+			{
+			wire_broken_G = 1;
+			Externalmotor = 1;
+			Locktest_count = 0;
+			OC_count = 0;
+			}
+		}
+	else		
+		{		
+		if(wire_broken_G == 1)
+			{
+			wire_broken_G = 0;
+			}
+		}
+	
+	if(++timer0_count >= 40)
+		{
+		// reset timer0 ticket counter every 2s
+		timer0_count=0;
+	
+		if(wire_broken == 1)
+			{
+			if((Locktest_count <= Maxcount)&&(Externalmotor == 0))
+				{
+				Self_learn_speech();		
+				}
+			
+			if(Locktest_count > Maxcount)
+				{				
+				Locktest_count = Maxcount+1;
+				ID_speech();
+				Externalmotor = ~Externalmotor;
+				}				
+			}
+		}
+	}
 /*---------------------------------------------------
 	end of file
 ----------------------------------------------------*/

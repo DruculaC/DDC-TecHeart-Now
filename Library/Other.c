@@ -37,6 +37,8 @@ extern bit sensor_EN;
 extern tByte enable_sensor_delay_count;		
 extern bit enable_sensor_delayEN;
 extern bit sensor_3rdalarm_flag;
+extern tByte Open_action_flag;		
+
 /*-------------------------------------------------------
 	magnet_CW()
 	µç´ÅÌúÕı×ª£¬Ë³Ê±Õë£¬½«Ëø´ò¿ª£¬
@@ -51,7 +53,7 @@ void magnet_CW(tWord x, y, tByte z)
 	Magnet_Delay(x, y);
 	MagentControl_1 = 1;
 	MagentControl_2 = 1;
-	Externalmotor = 0;
+//	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -68,7 +70,7 @@ void magnet_CW_Taili(tWord x, y, tByte z)
 	Magnet_Delay(x, y);
 	MagentControl_1 = 0;
 	MagentControl_2 = 0;
-	Externalmotor = 0;
+//	Externalmotor = 0;
 	}
 
 /*-------------------------------------------------------
@@ -77,7 +79,7 @@ void magnet_CW_Taili(tWord x, y, tByte z)
 --------------------------------------------------------*/
 void magnet_ACW(tWord x, y)
 	{
-	Externalmotor = 1;
+//	Externalmotor = 1;
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	Magnet_Delay(x, y);
@@ -91,7 +93,7 @@ void magnet_ACW(tWord x, y)
 --------------------------------------------------------*/
 void magnet_ACW_Taili(tWord x, y)
 	{
-	Externalmotor = 1;
+//	Externalmotor = 1;
 	MagentControl_1 = 0;
 	MagentControl_2 = 1;
 	Magnet_Delay(x, y);
@@ -137,11 +139,18 @@ void disable_sensor(void)
 	// reset battery stolen
 	battery_stolen_EN = 0;
 	battery_stolen_count = 0;	
+	
+	if(Open_action_flag == 0)
+		{
+		// å…³é—­ä¼ æ„Ÿå™¨çš„æ—¶å€™å°†ç”µæœºé”æ­»åŠŸèƒ½å…³é—­ã€‚
+		Externalmotor = 1;
+		// å…³é—­ä¼ æ„Ÿå™¨çš„æ—¶å€™ï¼Œå°†ç”µåŠ¨è½¦æ§åˆ¶å™¨æ–­ç”µã€‚
+		Generator_lock = 0;
+		}
 	}
 	
 /*--------------------------------------------------------
 	Enable_sensor()
-	´ò¿ª´«¸ĞÆ÷£¬Ê¹Æä¼ì²âÕñ¶¯
 ---------------------------------------------------------*/
 void Enable_sensor(void)
 	{

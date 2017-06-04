@@ -1,0 +1,36 @@
+/*-----------------------------------------------------
+	Delay.h (v1.00)
+	
+	header file for Delay.c
+-----------------------------------------------------*/
+
+#ifndef _DELAY_H
+#define _DELAY_H
+
+// *** Timings vary with compiler optimisation settings ***
+#define LOOP_TIMEOUT_INIT_001ms 65427
+#define LOOP_TIMEOUT_INIT_005ms 64995
+#define LOOP_TIMEOUT_INIT_010ms 64455
+#define LOOP_TIMEOUT_INIT_012ms 64239
+#define LOOP_TIMEOUT_INIT_050ms 60135
+#define LOOP_TIMEOUT_INIT_100ms 54735
+#define LOOP_TIMEOUT_INIT_500ms 11535
+
+//-----public constants-------------------------------
+
+//-----public function prototype----------------------
+void Delay(tByte n);
+void Delay_1ms(void);
+void Delay_5ms(void);
+void Delay_10ms(void);
+void Delay_12ms(void);
+void Delay_50ms(void);
+void Delay_100ms(void);
+void Delay_500ms(void);
+void Delay_ms(tWord xtime);
+
+#endif
+											
+/*---------------------------------------------------
+	end of file
+----------------------------------------------------*/

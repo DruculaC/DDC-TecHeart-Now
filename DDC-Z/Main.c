@@ -4,7 +4,7 @@
 	DDC-Z program, for electrocar.
 ----------------------------------------------------*/
 
-//�綯��
+//
 #include "Main.h"
 #include "port.h"
 
@@ -91,12 +91,23 @@ bit Emergency_open_G = 0;
 bit Speech_closed_G = 0;
 tByte Speech_closed_time = 0;
 
-code tByte IDkey6 _at_ 0x003000;
-code tByte IDkey7 _at_ 0x003001;
-code tByte IDkey8 _at_ 0x003002;
-code tByte IDkey9 _at_ 0x003003;
-code tByte IDkey10 _at_ 0x003004;
-code tByte IDkey11 _at_ 0x003005;
+// If it is a debug program, define IDkey6~11 to RAM
+#ifdef Debug
+	tByte IDkey6;
+	tByte IDkey7;
+	tByte IDkey8;
+	tByte IDkey9;
+	tByte IDkey10;
+	tByte IDkey11;
+// If it is a normal program, define IDkey6~11 to Flash ROM
+#else
+	code tByte IDkey6 _at_ 0x003000;
+	code tByte IDkey7 _at_ 0x003001;
+	code tByte IDkey8 _at_ 0x003002;
+	code tByte IDkey9 _at_ 0x003003;
+	code tByte IDkey10 _at_ 0x003004;
+	code tByte IDkey11 _at_ 0x003005;
+#endif
 
 tWord IDkey_selflearn_HVcount = 0;
 tWord IDkey_selflearn_LVcount = 0;
@@ -151,8 +162,7 @@ void main()
 	InitSensor();
 
 	InitTransceiver();
-
-	Externalmotor = Close;
+	
 	
 	// ��P0.1, P0.2���ó��������ģʽ
 	P0M1 |= 0x06;
@@ -162,8 +172,13 @@ void main()
 	P2M2 &= 0xdf;
 
 	Lock_EN = 1;
+	
+	// �����
 	Generator_lock = 0;
+	Externalmotor = 1;
 
+	lock_power = 0;
+		
 	while(1)
 		{
 		}
@@ -173,7 +188,6 @@ void main()
 	timerT0()
 	operation every ticket.
 --------------------------------------------------------------------*/
-
 void timer0() interrupt interrupt_timer_0_overflow
 	{
 	// manually reload timer0 configuration
@@ -186,10 +200,11 @@ void timer0() interrupt interrupt_timer_0_overflow
 		// reset timer0 ticket counter every 2s
 		timer0_count=0;
 
+
 //		UART_Send_Data_match();
 
 		#ifdef ID
-		if((++timer0_count2 >= 100)&&(Autolock_G == 0))
+		if((++timer0_count2 >= 35)&&(Autolock_G == 0))
 			{
 			Autolock_G = 1;
 			}
@@ -245,10 +260,10 @@ void timer0() interrupt interrupt_timer_0_overflow
 		Raise_Alarm_to_Slave();
 		Batstolen_Alarm_to_Slave();
 		#endif
+		
 		Host_stolen_action();
 
 /*----- Reset flag and disabling sensor relevantly --------------*/
-		Disable_sensor_after_IDcert();
 
 		Reset_after_wirebroken();
 		Reset_after_stolen_alarming();
@@ -262,10 +277,12 @@ void timer0() interrupt interrupt_timer_0_overflow
 	Detect_selflearn_action();
 	Detect_vibration();
 	Detect_wheel_moving();
+	
+	Disable_sensor_after_IDcert();
 
 	Detect_open_action();
-	Detect_close_action();
-
+	Detect_close_action();	
+	
 	if(Battery_hint_flag == 1)
 		{
 		Battery_hint_flag = 0;
@@ -286,22 +303,31 @@ void timer0() interrupt interrupt_timer_0_overflow
 					{					
 					// judge host been touched and also not in vibration alarm
 //					if((sensor_detect == 0)&&(Host_stolen_alarming == 0)&&(transmiter_EN == 1))		
-					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+//					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0)&&(transmiter_EN == 1))		
+					if(((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))&&(Host_stolen_alarming == 0)&&(flashing_flag == 0))		
 						{
 						// judge LV is more than 2ms, if yes, it means a effective touch
 						if(++sensor_1ststage_count >= 1)			
 							{
 							sensor_1ststage_count=0;
 							
+							
+							sensor_2ndstage_time = 0;
 							// sensor trigge status progress to case 1.
 							sensor_trigger_count = 1;
 							// alarm speech for first touch
 //							SCH_Add_Task(host_touch_speech, 0, 0);
-//							host_touch_speech();
-							Delay_500ms();
-							Delay_500ms();
-							Delay_500ms();
-							Delay_500ms();
+
+							// 报警时使控制器供电
+							Generator_lock = 1;
+							// 电机锁死
+							Externalmotor = 0;
+
+							#ifdef voice
+							host_touch_speech();
+							#endif
+							
+							Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
                      }
 						}
 					else
@@ -322,29 +348,90 @@ void timer0() interrupt interrupt_timer_0_overflow
 							{
 							sensor_2ndstage_count = 0;
 							sensor_trigger_count = 2;
+							
+							sensor_3rdstage_time = 0;
 							// alarm speech for 2nd touch
-//							host_2ndtouch_speech();
+							
+							// 报警时使控制器供电
+							Generator_lock = 1;
+							// 电机锁死
+							Externalmotor = 0;
+								
+							#ifdef voice
+							//host_2ndtouch_speech();
 							host_touch_speech();
+							#endif
 							}
 						}
 					else
 						{
 						sensor_2ndstage_count = 0;
 						}
-					
+
 					// if there is no touch in 4s, reset sensor trigger status, etc.
-					if(++sensor_2ndstage_time >= 4000)
+					if(++sensor_2ndstage_time >= 8000)
 						{
 						sensor_trigger_count = 0;
 						sensor_2ndstage_count = 0;
 						sensor_1ststage_count = 0;
 						sensor_2ndstage_time = 0;
+
+						// 报警时使控制器供电
+						Generator_lock = 0;
+						// 电机锁死
+						Externalmotor = 1;
+						}
+					}
+				break;
+
+				case 2:
+					{
+					if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
+						{
+						// LV for 2s, means a effective touch
+						if(++sensor_3rdstage_count >= 2)
+							{
+							sensor_3rdstage_count = 0;
+							sensor_trigger_count = 3;
+							sensor_3rdstage_time = 0;
+
+							// alarm speech for 2nd touch
+//							host_2ndtouch_speech();
+
+							// 报警时使控制器供电
+							Generator_lock = 1;
+							// 电机锁死
+							Externalmotor = 0;
+
+							#ifdef voice
+							host_touch_speech();
+							#endif
+							}
+						}
+					else
+						{
+						sensor_3rdstage_count = 0;
+						}
+						
+					// if there is no touch in 4s, reset sensor trigger status, etc.
+					if(++sensor_3rdstage_time >= 8000)
+						{
+						sensor_trigger_count = 0;
+						sensor_3rdstage_count = 0;
+						sensor_2ndstage_count = 0;
+						sensor_1ststage_count = 0;
+						sensor_3rdstage_time = 0;
+
+						// 报警时使控制器供电
+						Generator_lock = 0;
+						// 电机锁死
+						Externalmotor = 1;
 						}
 					}
 				break;
 				
 				// waiting for 3rd touch
-				case 2:
+				case 3:
 					{
 					if((sensor_detect == 0)||(horizontal_sensor == 0)||(the3rd_sendor == 0))
 						{
@@ -357,6 +444,11 @@ void timer0() interrupt interrupt_timer_0_overflow
 							host_stolen_alarm2_EN = 1;	
 							sensor_3rdalarm_flag = 1;	
 							Stolen_alarm_reset_count = 0;
+							
+							// 报警时使控制器供电
+							Generator_lock = 1;
+							// 电机锁死
+							Externalmotor = 0;
 							}
 						}
 					else
@@ -365,7 +457,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 						}
 					
 					// if there is no touch in 4s, reset all.
-					if(++sensor_3rdstage_time >= 4000)
+					if(++sensor_3rdstage_time >= 8000)
 						{
 						sensor_trigger_count = 0;
 						sensor_1ststage_count = 0;
@@ -373,6 +465,14 @@ void timer0() interrupt interrupt_timer_0_overflow
 						sensor_2ndstage_time = 0;
 						sensor_3rdstage_time = 0;
 						sensor_3rdstage_count = 0;
+						
+						if(EN_host_stolen_alarming == 0)
+							{
+							// 报警时使控制器供电
+							Generator_lock = 0;
+							// 电机锁死
+							Externalmotor = 1;							
+							}
 						}
 					}
 				break;
@@ -385,8 +485,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 				}
 			else
 				battery_stolen_EN = 0;
-			}
-//		}
+				}
+//			}
 	
 	// judge whether position sensor is enable
 	if(position_sensor_EN==1)		
@@ -508,7 +608,8 @@ void uart_isr() interrupt 4
 						
 				if(ID_certificated_numbers++ >= 1)
 					{
-					Silence_Flag = 1;
+					// 静音模式
+					// Silence_Flag = 1;
 					}
 				if(++ID_certificated_numbers >= 11)
 					{

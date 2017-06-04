@@ -25,11 +25,19 @@ extern tByte data_count;
 extern tByte received_data_buffer[7];		
 extern bit receive_data_finished_flag;		
 
-extern code tByte IDkey6;
-extern code tByte IDkey7;
-extern code tByte IDkey8;
-extern code tByte IDkey9;
-extern code tByte IDkey10;
+#ifdef Debug
+	extern tByte IDkey6;
+	extern tByte IDkey7;
+	extern tByte IDkey8;
+	extern tByte IDkey9;
+	extern tByte IDkey10;
+#else
+	extern code tByte IDkey6;
+	extern code tByte IDkey7;
+	extern code tByte IDkey8;
+	extern code tByte IDkey9;
+	extern code tByte IDkey10;
+#endif
 
 /*----------------------------------------------------
 	InitTransceiver()
@@ -44,8 +52,7 @@ void InitTransceiver(void)
 	}
 	
 /*----------------------------------------------------
-	initsignal()
-	
+	initsignal()	
 	初始化信号程序，接收机在接接收信号的时候，需要有
 	一段代码来使接收机打开，而这一段程序有可能无法识别
 	出来，而是相当于废代码，只占用通信时间。

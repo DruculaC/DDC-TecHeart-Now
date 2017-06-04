@@ -1,8 +1,12 @@
-/*----------------------------------------------------
-	port.h (v1.00)
-	port-old.h
-	'port header' (see chap 5) for DDC-Z
-----------------------------------------------------*/
+/*------------------------------------------------------------------*-
+   Port.H (v1.00)
+  ------------------------------------------------------------------
+   'Port Header'
+
+   COPYRIGHT
+   ---------
+   This code is copyright (c) 2001 by Richard.
+-*------------------------------------------------------------------*/
 
 #ifndef _PORT_H
 #define _PORT_H
@@ -10,8 +14,12 @@
 #include "main.h"
 
 /*----------------------------------------------------
-	主机端口定义
+	For DDC-Z2, opag2
 -----------------------------------------------------*/
+// ----- Selflearn.c ----------------------------------
+// P0.1, PIN26, 
+sbit Selflearn_port = P0^1;
+
 
 // P2.5，PIN16，连接到钥匙转动，钥匙转开时，此pin为1；钥匙关闭时，此pin为0
 sbit key_rotate = P2^5;			
@@ -21,7 +29,8 @@ sbit transmiter_power = P2^6;
 
 // P2.7，PIN28，发射机使能端口。0表示开，1表示关
 sbit transmiter_EN = P2^7;
-
+// P2.7，PIN28，防误上锁的电源
+sbit lock_power = P2^7;
 
 // P0.0, PIN3, horizontal sensor input
 sbit sensor_detect = P0^0;
@@ -60,7 +69,6 @@ sbit receiver_EN = P1^3;
 // P0.5, PIN22, Control the External motor, it is vdd of Hall signal actually.
 sbit Externalmotor = P0^5;
 
-
 // P0.1, PIN26, 断线报警检测管脚，常态为1，当为0时，则表示有人剪线。
 sbit wire_broken = P0^1;
 //sbit wire_broken = P1^7;
@@ -82,6 +90,7 @@ sbit Moto_EN = P2^4;
 
 // P3.0, PIN9, 接收开锁密码
 sbit receive_wire = P3^0;
+sbit receive_wire2 = P2^4;
 
 // P1.0, PIN18, 发射信号输出线
 sbit transmit_wire = P1^0;

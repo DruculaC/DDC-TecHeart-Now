@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 1   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE SCHEDULAR
 OBJECT MODULE PLACED IN .\Schedular.obj
-COMPILER INVOKED BY: D:\Program Files (x86)\Keil_v5\C51\BIN\C51.EXE ..\Library\Schedular.c COMPACT ROM(COMPACT) OPTIMIZE
-                    -(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Schedular.lst) TABS(3) OBJECT(.\Schedular.obj)
+COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\Schedular.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPE
+                    -ED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Schedular.lst) TABS(2) OBJECT(.\Schedular.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52          
   53          // ------ Private variables ----------------------------------------
   54          
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 2   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 2   
 
   55          // Keeps track of time since last error was recorded (see below)
   56          static tWord Error_tick_count_G;
@@ -126,7 +126,7 @@ line level    source
  114            Del   - The interval (TICKS) before the task is first executed
  115          
  116            Rep   - If 'Rep' is 0, the function is only called once,
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 3   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 3   
 
  117                    at the time determined by 'Del'.  If Rep is non-zero,
  118                    then the function is called repeatedly at an interval
@@ -190,7 +190,7 @@ line level    source
  176   1         hSCH_tasks_G[Index].pTask = Fn_p;
  177   1           
  178   1         hSCH_tasks_G[Index].Delay  = Del;
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 4   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 4   
 
  179   1         hSCH_tasks_G[Index].Period = Per;
  180   1      
@@ -254,7 +254,7 @@ line level    source
  238          
  239            Errors are only displayed for a limited period 
  240            (60000 ticks = 1 minute at 1ms tick interval).
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 5   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 5   
 
  241            After this the the error code is reset to 0. 
  242          
@@ -318,7 +318,7 @@ line level    source
  300            hardware simulator. See Chapter 14 for examples for this. 
  301          
  302            *** May wish to disable this if using a watchdog ***
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 6   
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 6   
 
  303          
  304            *** ADAPT AS REQUIRED FOR YOUR HARDWARE ***
@@ -337,61 +337,61 @@ line level    source
  317          
  318          
  319          /*-------------------------------------------------------------
- 320             hSCH_Update()
- 321             This is the scheduler ISR.  It is called at a rate 
- 322             determined by the timer settings in hSCH_Init().
- 323             This version is triggered by Timer 0 interrupts:
- 324             timer is manually reloaded.
+ 320            hSCH_Update()
+ 321            This is the scheduler ISR.  It is called at a rate 
+ 322            determined by the timer settings in hSCH_Init().
+ 323            This version is triggered by Timer 0 interrupts:
+ 324            timer is manually reloaded.
  325          --------------------------------------------------------------*/
  326          void hSCH_Update(void)
- 327             {
- 328   1         tByte Index;
- 329   1         // NOTE: calculations are in *TICKS* (not milliseconds)
- 330   1         for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
- 331   1            {
- 332   2            // Check if there is a task at this location
- 333   2            if (hSCH_tasks_G[Index].pTask)
- 334   2               {
- 335   3                  if (hSCH_tasks_G[Index].Delay == 0)
- 336   3                  {
- 337   4                  // The task is due to run
- 338   4                  // 
- 339   4                  if (hSCH_tasks_G[Index].Co_op)
- 340   4                     {
- 341   5                     // If it is a co-operative task, increment the RunMe flag
- 342   5                     hSCH_tasks_G[Index].RunMe += 1;  
- 343   5                     }
- 344   4                  else
- 345   4                     {
- 346   5                     // If it is a pre-emptive task, run it IMMEDIATELY
- 347   5                     (*hSCH_tasks_G[Index].pTask)();  // Run the task
+ 327            {
+ 328   1        tByte Index;
+ 329   1        // NOTE: calculations are in *TICKS* (not milliseconds)
+ 330   1        for (Index = 0; Index < hSCH_MAX_TASKS; Index++)
+ 331   1          {
+ 332   2          // Check if there is a task at this location
+ 333   2          if (hSCH_tasks_G[Index].pTask)
+ 334   2            {
+ 335   3              if (hSCH_tasks_G[Index].Delay == 0)
+ 336   3              {
+ 337   4              // The task is due to run
+ 338   4              // 
+ 339   4              if (hSCH_tasks_G[Index].Co_op)
+ 340   4                 {
+ 341   5                 // If it is a co-operative task, increment the RunMe flag
+ 342   5                 hSCH_tasks_G[Index].RunMe += 1;  
+ 343   5                 }
+ 344   4              else
+ 345   4                 {
+ 346   5                 // If it is a pre-emptive task, run it IMMEDIATELY
+ 347   5                 (*hSCH_tasks_G[Index].pTask)();  // Run the task
  348   5      
- 349   5                     hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
+ 349   5                 hSCH_tasks_G[Index].RunMe -= 1;   // Reset / reduce RunMe flag
  350   5      
- 351   5                     // Periodic tasks will be scheduled again (see below)
- 352   5                     // - if this is a 'one shot' task, remove it from the array
- 353   5                     if (hSCH_tasks_G[Index].Period == 0)
- 354   5                       {
- 355   6                       hSCH_tasks_G[Index].pTask  = 0;
- 356   6                       }
- 357   5                     }
+ 351   5                 // Periodic tasks will be scheduled again (see below)
+ 352   5                 // - if this is a 'one shot' task, remove it from the array
+ 353   5                 if (hSCH_tasks_G[Index].Period == 0)
+ 354   5                  {
+ 355   6                  hSCH_tasks_G[Index].pTask  = 0;
+ 356   6                  }
+ 357   5                 }
  358   4      
- 359   4                  if (hSCH_tasks_G[Index].Period)
- 360   4                     {
- 361   5                     // Schedule this periodic task to run again
- 362   5                     hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
- 363   5                     }
- 364   4                  }
-C51 COMPILER V9.54   SCHEDULAR                                                             11/03/2016 14:51:07 PAGE 7   
+ 359   4              if (hSCH_tasks_G[Index].Period)
+ 360   4                 {
+ 361   5                 // Schedule this periodic task to run again
+ 362   5                 hSCH_tasks_G[Index].Delay = hSCH_tasks_G[Index].Period;
+ 363   5                 }
+ 364   4              }
+C51 COMPILER V9.54   SCHEDULAR                                                             06/04/2017 11:00:46 PAGE 7   
 
- 365   3                  else
- 366   3                  {
- 367   4                  // Not yet ready to run: just decrement the delay 
- 368   4                  hSCH_tasks_G[Index].Delay -= 1;
- 369   4                  }
- 370   3               }         
- 371   2            }  
- 372   1         }
+ 365   3              else
+ 366   3              {
+ 367   4              // Not yet ready to run: just decrement the delay 
+ 368   4              hSCH_tasks_G[Index].Delay -= 1;
+ 369   4              }
+ 370   3            }         
+ 371   2          } 
+ 372   1        }
  373          
  374          /*------------------------------------------------------------------*-
  375            ---- END OF FILE -------------------------------------------------

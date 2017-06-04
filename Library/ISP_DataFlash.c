@@ -3,6 +3,14 @@
 
 extern tByte received_data_buffer[7];		
 
+#ifdef Debug
+	extern tByte IDkey6;
+	extern tByte IDkey7;
+	extern tByte IDkey8;
+	extern tByte IDkey9;
+	extern tByte IDkey10;
+	extern tByte IDkey11;
+#endif
 
 //-----------------------------------------------------------------------------------------------------------
 void Enable_ISP(void)
@@ -80,24 +88,34 @@ unsigned char Flash_Read_Data(unsigned int address)
 
 void Self_learn_programming(void)
 	{
-	Flash_Page_Erase(0x3000);
-	#ifdef ID
-	Flash_Write_Data(0x3000, received_data_buffer[0]);		
-	Flash_Write_Data(0x3001, received_data_buffer[1]);		
-	Flash_Write_Data(0x3002, received_data_buffer[2]);		
-	Flash_Write_Data(0x3003, received_data_buffer[3]);		
-	Flash_Write_Data(0x3004, received_data_buffer[4]);
-	Flash_Write_Data(0x3005, received_data_buffer[5]);
-	#endif
-	#ifdef WX
-	Flash_Write_Data(0x3000, received_data_buffer[2]);		
-	Flash_Write_Data(0x3001, received_data_buffer[3]);		
-	Flash_Write_Data(0x3002, received_data_buffer[4]);		
-	Flash_Write_Data(0x3003, received_data_buffer[5]);		
-	Flash_Write_Data(0x3004, received_data_buffer[6]);
-//	Flash_Write_Data(0x3005, received_data_buffer[7]);
-//	Flash_Write_Data(0x3006, received_data_buffer[0]);		
-//	Flash_Write_Data(0x3007, received_data_buffer[1]);		
+	#ifdef Debug
+		IDkey6 = received_data_buffer[0];
+		IDkey7 = received_data_buffer[1];
+		IDkey8 = received_data_buffer[2];
+		IDkey9 = received_data_buffer[3];
+		IDkey10 = received_data_buffer[4];
+		IDkey11 = received_data_buffer[5];	
+	#else
+		Flash_Page_Erase(0x3000);
+		#ifdef ID
+			Flash_Write_Data(0x3000, received_data_buffer[0]);		
+			Flash_Write_Data(0x3001, received_data_buffer[1]);		
+			Flash_Write_Data(0x3002, received_data_buffer[2]);		
+			Flash_Write_Data(0x3003, received_data_buffer[3]);		
+			Flash_Write_Data(0x3004, received_data_buffer[4]);
+			Flash_Write_Data(0x3005, received_data_buffer[5]);
+		#endif
+		
+		#ifdef WX
+			Flash_Write_Data(0x3000, received_data_buffer[2]);		
+			Flash_Write_Data(0x3001, received_data_buffer[3]);		
+			Flash_Write_Data(0x3002, received_data_buffer[4]);		
+			Flash_Write_Data(0x3003, received_data_buffer[5]);		
+			Flash_Write_Data(0x3004, received_data_buffer[6]);
+			//Flash_Write_Data(0x3005, received_data_buffer[7]);
+			//Flash_Write_Data(0x3006, received_data_buffer[0]);		
+			//Flash_Write_Data(0x3007, received_data_buffer[1]);		
+		#endif
 	#endif
 	}
 

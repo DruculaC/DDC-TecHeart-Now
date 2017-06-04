@@ -77,7 +77,11 @@ tByte lock_time = 0;
 void main(void)
 	{
 	InitTimer(50, 100);
-
+	
+	// Set P2.4(PIN15) to Push Pull Output.
+	P2M1 &= 0xef;
+	P2M2 |= 0x10;
+	
 	Lock_EN = 1;
 	SC_RST = 1;
 
@@ -108,15 +112,14 @@ void timer0() interrupt interrupt_timer_0_overflow
       transmiter_EN = ~transmiter_EN;
 		}		
 		
-/*	if(Lock_EN == 0)
+	if(Lock_EN == 0)
 		{
-		if(++lock_time >= 70)
+		if(++lock_time >= 40)
 			{
 			lock_time = 0;
 			Lock_EN = 1;
 			}
 		}
-*/
 	}
 
 

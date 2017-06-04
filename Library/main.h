@@ -9,10 +9,23 @@
 
 //--------header file--------------------------------
 
+// Whether Debug or Normal
+// #define Debug
+
+// Locktest
+//#define Locktest
+
 // Program version
 //#define Taili, General, Tailing			
+
 // Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General, Xinri
-#define General
+//#define General
+
+// define speech or not
+//#define voice
+
+// 新锁（时间短）或者旧锁（时间长）
+#define Old_lock
 
 // Define PCB board, such as Z2, Z3.
 #define Z2
@@ -23,6 +36,8 @@
 // Define model.
 // ID, WX,
 #define ID
+
+//#define BroadcastBattery
 
 // Define the Lock model.
 //#define Suidongzha, Guxingzha
@@ -36,6 +51,7 @@
 
 // Define PCB version, such as PCB_old, PCB_1606
 #define PCB_1606
+
 
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A

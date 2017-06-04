@@ -12,14 +12,14 @@
       <ToolsetName>MCS-51</ToolsetName>
       <TargetOption>
         <TargetCommonOption>
-          <Device>N79E814</Device>
-          <Vendor>Nuvoton</Vendor>
-          <Cpu>IRAM(0x00-0xFF) IROM(0x000-0x1FFF) XRAM(0x00-0xFF) CLOCK(24000000) </Cpu>
+          <Device>AT89C52</Device>
+          <Vendor>Atmel</Vendor>
+          <Cpu>IRAM(0-0xFF) IROM(0-0x1FFF) CLOCK(24000000)</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
           <StartupFile>"LIB\STARTUP.A51" ("Standard 8051 Startup Code")</StartupFile>
           <FlashDriverDll></FlashDriverDll>
-          <DeviceId>0</DeviceId>
-          <RegisterFile>N79E815_814_8132A.H</RegisterFile>
+          <DeviceId>2980</DeviceId>
+          <RegisterFile>REGX52.H</RegisterFile>
           <MemoryEnv></MemoryEnv>
           <Cmp></Cmp>
           <Asm></Asm>
@@ -35,8 +35,8 @@
           <BinPath></BinPath>
           <IncludePath></IncludePath>
           <LibPath></LibPath>
-          <RegisterFilePath>Nuvoton\</RegisterFilePath>
-          <DBRegisterFilePath>Nuvoton\</DBRegisterFilePath>
+          <RegisterFilePath>Atmel\</RegisterFilePath>
+          <DBRegisterFilePath>Atmel\</DBRegisterFilePath>
           <TargetStatus>
             <Error>0</Error>
             <ExitCodeStop>0</ExitCodeStop>
@@ -109,11 +109,11 @@
           <SimDllName>S8051.DLL</SimDllName>
           <SimDllArguments></SimDllArguments>
           <SimDlgDll>DP51.DLL</SimDlgDll>
-          <SimDlgDllArguments></SimDlgDllArguments>
+          <SimDlgDllArguments>-p52</SimDlgDllArguments>
           <TargetDllName>S8051.DLL</TargetDllName>
           <TargetDllArguments></TargetDllArguments>
           <TargetDlgDll>TP51.DLL</TargetDlgDll>
-          <TargetDlgDllArguments></TargetDlgDllArguments>
+          <TargetDlgDllArguments>-p52</TargetDlgDllArguments>
         </DllOption>
         <DebugOption>
           <OPTHX>
@@ -148,7 +148,7 @@
             <RestoreSysVw>1</RestoreSysVw>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>10</TargetSelection>
+          <TargetSelection>-1</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -195,7 +195,7 @@
             <UseMultipleDPTR>0</UseMultipleDPTR>
             <UseOnchipXram>0</UseOnchipXram>
             <HadIRAM>1</HadIRAM>
-            <HadXRAM>1</HadXRAM>
+            <HadXRAM>0</HadXRAM>
             <HadIROM>1</HadIROM>
             <Moda2>0</Moda2>
             <Moddp2>0</Moddp2>
@@ -280,7 +280,7 @@
               <XRA>
                 <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x100</Size>
+                <Size>0x0</Size>
               </XRA>
               <XRA512>
                 <Type>0</Type>

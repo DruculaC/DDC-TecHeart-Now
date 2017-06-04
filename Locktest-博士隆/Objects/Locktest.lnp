@@ -1,0 +1,6 @@
+".\Objects\STARTUP.obj",
+".\Objects\ElecMotor.obj",
+".\Objects\Locktest.obj",
+".\Objects\Delay.obj" 
+TO ".\Objects\Locktest" 
+PRINT(".\Listings\Locktest.m51") RAMSIZE(256) 
