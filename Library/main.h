@@ -17,18 +17,22 @@
 
 // Program version
 //#define Taili, General, Tailing			
+// #define Shengbaolong
 
 // Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General, Xinri
 //#define General
 
 // define speech or not
-#define voice
+// #define voice
 
 // 新锁（时间短）或者旧锁（时间长）
 #define Old_lock
 
 // Define PCB board, such as Z2, Z3.
 #define Z2
+
+// 定义语音芯片为C4
+// Define Speech_C4
 
 // Define slave model, F2, F3.
 // #define F3
@@ -37,21 +41,20 @@
 // ID, WX,
 #define ID
 
-//#define BroadcastBattery
+// #define BroadcastBattery
 
 // Define the Lock model.
 //#define Suidongzha, Guxingzha
 #define Guxingzha
 
 // Define battery life, Kilometer_110, Kilometer_65
-#define Kilometer_65
+// #define Kilometer_65
 
 // Define voice version, 4031C's version: IC1603_4031C3, IC1512_4031C1, IC1506_4031C1, ICold_4031C1.
 #define IC1603_4031C3
 
 // Define PCB version, such as PCB_old, PCB_1606
 #define PCB_1606
-
 
 // Define Motor battery parameter and whether main board with battery.
 // Withbattery_60V10A, Withbattery_48V10A

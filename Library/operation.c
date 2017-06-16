@@ -93,6 +93,7 @@ extern bit Just_power_up;
 extern bit Autolock_G;
 extern tWord timer0_count2;
 extern bit Emergency_open_G;
+extern bit Battery_flag;
 
 /*-----------------------------------------
 	slave_away_operation()
@@ -101,14 +102,23 @@ extern bit Emergency_open_G;
 ------------------------------------------*/
 void slave_away_operation(void)
 	{	
-	if(Silence_Flag == 0)
+	
+	if(Autolock_G == 1)
+	{
+		close_lock_dingdong_speech();
+	}
+	else
+	{
+		ID_speech();
+		ID_speech();
+	}
+
+		if(Silence_Flag == 0)
 		{
-			#ifdef voice
-			close_lock_speech();
-			#endif
+		#ifdef voice
+		close_lock_speech();
+		#endif
 			
-			ID_speech();
-			ID_speech();
 
 		#ifdef BroadcastBattery
 		Broadcast_battery();
@@ -153,11 +163,13 @@ void slave_nearby_operation(void)
 		}
 	
 		
-		ID_speech();
+	ID_speech();
+
 	
 	if(Silence_Flag == 0)
 		{
 		#ifdef voice
+			key_rotate_on_speech();
 			open_lock_speech();
 		#endif
 //		Externalmotor = 0;
@@ -168,11 +180,7 @@ void slave_nearby_operation(void)
 			Broadcast_battery();
 			#endif
 			}
-		#ifdef voice			
-		key_rotate_on_speech();
-		#endif
 		}
-
 
 /*
 	if(Silence_Flag == 0)
@@ -217,9 +225,9 @@ void Host_stolen_action(void)
 		{
 		Host_stolen_alarming = 1;
 		
-		#ifdef voice
 		stolen_alarm_speech1();
 		stolen_alarm_speech2();
+		#ifdef voice
 		#endif
 			
 		#ifdef Z3
@@ -378,7 +386,7 @@ void Reset_after_stolen_alarming(void)
 	{
 	if(EN_host_stolen_alarming == 1)
 		{
-		if(++Stolen_alarm_reset_count > 2)
+		if(++Stolen_alarm_reset_count > 3)
 			{
 			host_stolen_alarm1_count = 0;
 			EN_host_stolen_alarming = 0;
@@ -486,7 +494,18 @@ void Detect_open_action(void)
 		slave_nearby_actioned_flag = 1;
 		ElecMotor_CW();
 		slave_nearby_operation();
-
+		
+		if(Just_power_up == 1)		//判断
+		{
+			if(ADC_check_result < 0x230)
+			{
+				Battery_flag = 0;		//表示电瓶为48V电瓶
+			}
+			else
+			{
+				Battery_flag = 1;		//表示电瓶为60V电瓶
+			}		
+		}
 		Just_power_up = 0;
 				
 		Autolock_G = 0;

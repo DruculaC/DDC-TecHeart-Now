@@ -49,18 +49,22 @@ void verifybattery(tWord Check2)
 	{	
 	#ifdef Kilometer_65
 	// 电量还能行驶
-	voice_EN = 1;
-	SC_Speech(8);  	
-	Delay(70);	
+	if(Check2 >= 0x1e5)
+		{
+		voice_EN = 1;
+		SC_Speech(8);  	
+		Delay(70);		
+		}
+		
 	// 多少
 	if(Check2 < 0x1dd)
 		{
-		SC_Speech(13);  		// 2
+		SC_Speech(39);  		// 鐢甸噺涓嶈冻
 		Delay(30);
 		}
 	else if((Check2 >= 0x1dd)&&(Check2 < 0x1e5))
 		{
-		SC_Speech(16);  		// 5
+		SC_Speech(39);  		// 鐢甸噺涓嶈冻
 		Delay(30);
 		}
 	else if((Check2 >= 0x1e5)&&(Check2 < 0x1ea))
@@ -132,14 +136,19 @@ void verifybattery(tWord Check2)
 		Delay(30);
 		}		
 	// 公里
-	SC_Speech(11);  	
-	Delay(60);	
-	voice_EN = 0;
-	SC_RST = 1;
-	Delay_50ms();
-	SC_RST = 0;
-	Delay_50ms();
-	#endif
+	if(Check2 >= 0x1e5)
+		{
+
+		SC_Speech(11);  	
+		Delay(60);	
+		voice_EN = 0;
+		SC_RST = 1;
+		Delay_50ms();
+		SC_RST = 0;
+		Delay_50ms();
+		}
+			
+			#endif
 	}
 	
 /*---------------------------------------------------

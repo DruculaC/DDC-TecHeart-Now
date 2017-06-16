@@ -1,0 +1,426 @@
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE ELECMOTOR
+OBJECT MODULE PLACED IN .\ElecMotor.obj
+COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\ElecMotor.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPE
+                    -ED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\ElecMotor.lst) TABS(2) OBJECT(.\ElecMotor.obj)
+
+line level    source
+
+   1          /*---------------------------------------------------
+   2            ElecMotor.c (v1.00)
+   3            
+   4            All programs related to Electric Motor in Main board
+   5          ---------------------------------------------------*/ 
+   6          
+   7          #include "main.h"
+   8          #include "port.h"
+   9          
+  10          #include "ElecMotor.h"
+  11          #include "Delay.h"
+  12          #include "communication.h"
+  13          
+  14          /*------- Public variable declarations -----------------*/
+  15          extern tByte myTxRxData[7];
+  16          
+  17          bit CW_flag = 0;
+  18          tByte Elecmotor_duration_G;
+  19          bit ElecMotor_OC_flag = 0;
+  20          bit ElecMotor_OC_flag2 = 0;
+  21          tByte OC_count = 0;
+  22          
+  23          /*-------------------------------------------------------
+  24            InitElecmotor()
+  25          --------------------------------------------------------*/
+  26          void InitElecmotor(void)
+  27            {
+  28   1        #ifdef Guxingzha
+  29   1        ElecMotor_ACW();
+  30   1        #endif
+  31   1        
+  32   1        #ifdef Suidongzha
+              //  ElecMotor_CW();
+                #endif
+  35   1        }
+  36            
+  37          /*-------------------------------------------------------
+  38            ElecMotor_CW()
+  39            Electric Motor rotates clockwise.
+  40          --------------------------------------------------------*/
+  41          void ElecMotor_CW(void)
+  42            {
+  43   1        tByte i;
+  44   1        
+  45   1        lock_power = 1; 
+  46   1          
+  47   1        // ½«P0.2, PIN25ÉèÖÃÎª×¼Ë«ÏòÄ£Ê½
+  48   1        P0M1 &= 0xfb;
+  49   1        P0M2 &= 0xfb;
+  50   1        wheeled_rotate = 0;
+  51   1        
+  52   1        // -----------------------------------------------
+  53   1        ElecMotor_code();
+  54   1      //  Delay_100ms();
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 2   
+
+  55   1      //  ElecMotor_code();
+  56   1      
+  57   1        MagentControl_1 = 1;
+  58   1        MagentControl_2 = 0;
+  59   1        ElecMotor_Delay_CW();
+  60   1        MagentControl_1 = 1;
+  61   1        MagentControl_2 = 1;
+  62   1        
+  63   1        for(i = 0; i < 7; i++)
+  64   1          {
+  65   2          #ifndef Locktest
+  66   2          if(ElecMotor_OC_flag == 1)
+  67   2            {
+  68   3            ElecMotor_OC_flag = 0;
+  69   3            // å…³é”2ç§’
+  70   3            Delay_100ms();
+  71   3            MagentControl_1 = 0;
+  72   3            MagentControl_2 = 1;
+  73   3            Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
+  74   3            MagentControl_1 = 1;
+  75   3            MagentControl_2 = 1;
+  76   3            // å†æ¬¡å¼€é”
+  77   3            Delay_100ms();Delay_100ms();
+  78   3            ElecMotor_code();
+  79   3            MagentControl_1 = 1;
+  80   3            MagentControl_2 = 0;
+  81   3            ElecMotor_Delay_CW();
+  82   3            MagentControl_1 = 1;
+  83   3            MagentControl_2 = 1;      
+  84   3            }
+  85   2          #endif
+  86   2          
+  87   2          #ifdef Locktest
+                  if(OC_count >= 1)
+                    Externalmotor = 0;
+                  #endif
+  91   2          }
+  92   1        
+  93   1        
+  94   1        wheeled_rotate = 1;
+  95   1        // ½«P0.2, PIN25ÉèÖÃÎª×¼Ë«ÏòÄ£Ê½
+  96   1        P0M1 |= 0x04;
+  97   1        P0M2 &= 0xfb;
+  98   1        
+  99   1        ElecMotor_OC_flag = 0;
+ 100   1      
+ 101   1        Externalmotor = 1;
+ 102   1        
+ 103   1        lock_power = 0;
+ 104   1        }
+ 105          
+ 106          /*-------------------------------------------------------
+ 107            ElecMotor_ACW()
+ 108            Electric Motor rotates anticlockwise.
+ 109          --------------------------------------------------------*/
+ 110          void ElecMotor_ACW(void)
+ 111            {
+ 112   1        tByte i;
+ 113   1        lock_power = 1;
+ 114   1          
+ 115   1        Externalmotor = 1;
+ 116   1        Lock_EN = 1;
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 3   
+
+ 117   1        Generator_lock = 0;
+ 118   1        
+ 119   1        ElecMotor_code(); 
+ 120   1        MagentControl_1 = 0;
+ 121   1        MagentControl_2 = 0;
+ 122   1        Delay_100ms();
+ 123   1      
+ 124   1        MagentControl_1 = 0;
+ 125   1        MagentControl_2 = 1;
+ 126   1        ElecMotor_Delay_ACW();
+ 127   1        MagentControl_1 = 1;
+ 128   1        MagentControl_2 = 1;
+ 129   1        
+ 130   1        ElecMotor_OC_flag2 = 0;
+ 131   1      
+ 132   1        for(i = 0; i < 7; i++)
+ 133   1          {
+ 134   2          #ifndef Locktest
+ 135   2          if(ElecMotor_OC_flag == 1)
+ 136   2            {
+ 137   3            ElecMotor_OC_flag = 0;
+ 138   3            // å¼€é”2ç§’
+ 139   3            Delay_100ms();
+ 140   3            ElecMotor_code();
+ 141   3            MagentControl_1 = 1;
+ 142   3            MagentControl_2 = 0;
+ 143   3            Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
+ 144   3            MagentControl_1 = 1;
+ 145   3            MagentControl_2 = 1;
+ 146   3            // å†æ¬¡å…³é”
+ 147   3            Delay_100ms();
+ 148   3            MagentControl_1 = 0;
+ 149   3            MagentControl_2 = 1;
+ 150   3            ElecMotor_Delay_ACW();
+ 151   3            MagentControl_1 = 1;
+ 152   3            MagentControl_2 = 1;
+ 153   3            }
+ 154   2          #endif
+ 155   2          
+ 156   2          #ifdef Locktest
+                  if(OC_count >= 1)
+                    Externalmotor = 0;
+                  #endif
+ 160   2          }
+ 161   1        
+ 162   1        ElecMotor_OC_flag = 0;
+ 163   1          
+ 164   1          lock_power = 0;
+ 165   1        }
+ 166          
+ 167          /*--------------------------------------------------
+ 168            ElecMotor_code()
+ 169            send the code to Electric Motor.
+ 170          ---------------------------------------------------*/
+ 171          void ElecMotor_code(void) 
+ 172            { 
+ 173   1        tByte i,n;
+ 174   1        myTxRxData[0]=CmdHead;
+ 175   1        myTxRxData[1]=MyAddress;
+ 176   1        myTxRxData[2]=ComMode_1;
+ 177   1        
+ 178   1        for(i=0;i<3;i++)
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 4   
+
+ 179   1          {
+ 180   2          for(n=0;n<8;n++)
+ 181   2            {
+ 182   3            if((myTxRxData[i]&0x80) == 0x80)
+ 183   3              {
+ 184   4              MagentControl_2 = 0;
+ 185   4              Delay_12ms();
+ 186   4              }
+ 187   3            else
+ 188   3              {
+ 189   4              MagentControl_2 = 0;
+ 190   4              Delay_5ms();
+ 191   4              }
+ 192   3            MagentControl_2 = 1;  
+ 193   3            myTxRxData[i] <<= 1;
+ 194   3            Delay_5ms();
+ 195   3            }
+ 196   2          }
+ 197   1        }
+ 198          
+ 199          /*--------------------------------------------------
+ 200            ElecMotor_closecode()
+ 201            send the code to Electric Motor.
+ 202          ---------------------------------------------------*/
+ 203          void ElecMotor_closecode(void)  
+ 204            { 
+ 205   1        tByte i,n;
+ 206   1        myTxRxData[0]=CmdHead;
+ 207   1        myTxRxData[1]=MyAddress;
+ 208   1        myTxRxData[2]=ComMode_2;
+ 209   1        
+ 210   1        for(i=0;i<3;i++)
+ 211   1          {
+ 212   2          for(n=0;n<8;n++)
+ 213   2            {
+ 214   3            if((myTxRxData[i]&0x80) == 0x80)
+ 215   3              {
+ 216   4              TXD = 0;
+ 217   4              Delay_12ms();
+ 218   4              }
+ 219   3            else
+ 220   3              {
+ 221   4              TXD = 0;
+ 222   4              Delay_5ms();
+ 223   4              }
+ 224   3            TXD = 1;  
+ 225   3            myTxRxData[i] <<= 1;
+ 226   3            Delay_5ms();
+ 227   3            }
+ 228   2          }
+ 229   1        }
+ 230          /*--------------------------------------------------
+ 231            ElecMotor_stopcode()
+ 232            send the code to Electric Motor.
+ 233          ---------------------------------------------------*/
+ 234          void ElecMotor_stopcode(void) 
+ 235            { 
+ 236   1        tByte i,n;
+ 237   1        myTxRxData[0]=CmdHead;
+ 238   1        myTxRxData[1]=MyAddress;
+ 239   1        myTxRxData[2]=ComMode_3;
+ 240   1        
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 5   
+
+ 241   1        for(i=0;i<3;i++)
+ 242   1          {
+ 243   2          for(n=0;n<8;n++)
+ 244   2            {
+ 245   3            if((myTxRxData[i]&0x80) == 0x80)
+ 246   3              {
+ 247   4              TXD = 0;
+ 248   4              Delay_12ms();
+ 249   4              }
+ 250   3            else
+ 251   3              {
+ 252   4              TXD = 0;
+ 253   4              Delay_5ms();
+ 254   4              }
+ 255   3            TXD = 1;  
+ 256   3            myTxRxData[i] <<= 1;
+ 257   3            Delay_5ms();
+ 258   3            }
+ 259   2          }
+ 260   1        }
+ 261          
+ 262          /*----------------------------------------------------
+ 263            ElecMotor_Delay_CW()
+ 264            Delay program for Electric Motor.
+ 265          -----------------------------------------------------*/
+ 266          void ElecMotor_Delay_CW(void)
+ 267            {
+ 268   1        tWord zz;
+ 269   1        
+ 270   1        Delay_100ms();  Delay_100ms();Delay_100ms();  Delay_100ms();
+ 271   1        
+ 272   1      
+ 273   1        for(zz = 0; zz < 35; zz++)
+ 274   1          {
+ 275   2          if(ElecMotor_overcurrent == 1)
+ 276   2            ElecMotor_OC_flag = 1;
+ 277   2          
+ 278   2          if(ElecMotor_OC_flag == 0)
+ 279   2            Delay_10ms();
+ 280   2          }
+ 281   1        
+ 282   1        if(ElecMotor_OC_flag == 0)
+ 283   1          {
+ 284   2          Delay_500ms();
+ 285   2          #ifdef Old_lock 
+ 286   2          Delay_500ms();
+ 287   2          Delay_500ms();Delay_500ms();
+ 288   2          Delay_500ms();Delay_500ms();Delay_500ms();
+ 289   2          #endif
+ 290   2          }
+ 291   1      
+ 292   1      /*  for(zz = 0; zz < 200; zz++)
+ 293   1          {
+ 294   1          if(ElecMotor_overcurrent == 1)
+ 295   1            ElecMotor_OC_flag = 1;
+ 296   1          
+ 297   1          if(ElecMotor_OC_flag == 0)
+ 298   1            Delay_10ms();
+ 299   1          }
+ 300   1      */  
+ 301   1      //  Delay_500ms();
+ 302   1      //  Delay_500ms();
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 6   
+
+ 303   1      //  Delay_500ms();
+ 304   1      //  Delay_500ms();
+ 305   1      //  Delay_500ms();
+ 306   1      
+ 307   1      
+ 308   1      /*  #ifdef Z3
+ 309   1        Delay_500ms();
+ 310   1        Delay_500ms();
+ 311   1        Delay_500ms();
+ 312   1        Delay_500ms();
+ 313   1        Delay_500ms();
+ 314   1        #endif
+ 315   1      */
+ 316   1        
+ 317   1        
+ 318   1        if(ElecMotor_OC_flag == 1)
+ 319   1          OC_count += 1;
+ 320   1        }
+ 321          /*----------------------------------------------------
+ 322            ElecMotor_Delay_ACW()
+ 323            Delay program for Electric Motor.
+ 324          -----------------------------------------------------*/
+ 325          void ElecMotor_Delay_ACW(void)
+ 326            {
+ 327   1        tWord zz;
+ 328   1      
+ 329   1      //  Delay_500ms();
+ 330   1      //  Delay_500ms();
+ 331   1      //  Delay_500ms();
+ 332   1        
+ 333   1        Delay_100ms();  Delay_100ms();Delay_100ms();Delay_100ms();
+ 334   1        
+ 335   1        
+ 336   1        for(zz = 0; zz < 35; zz++)
+ 337   1          {
+ 338   2          if(ElecMotor_overcurrent == 1)
+ 339   2            ElecMotor_OC_flag = 1;
+ 340   2          
+ 341   2          if(ElecMotor_OC_flag == 0)
+ 342   2            Delay_10ms();
+ 343   2          }
+ 344   1        
+ 345   1        if(ElecMotor_OC_flag == 0)
+ 346   1          {
+ 347   2          Delay_500ms();
+ 348   2          #ifdef Old_lock
+ 349   2          Delay_500ms();
+ 350   2          Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
+ 351   2          //Delay_500ms();Delay_500ms();Delay_500ms();
+ 352   2          #endif
+ 353   2          }
+ 354   1      
+ 355   1      /*  for(zz = 0; zz < 300; zz++)
+ 356   1          {
+ 357   1          if(ElecMotor_overcurrent == 1)
+ 358   1            ElecMotor_OC_flag = 1;
+ 359   1          
+ 360   1          if(ElecMotor_OC_flag == 0)
+ 361   1            Delay_10ms();
+ 362   1          }
+ 363   1      */
+ 364   1      //  #ifdef Guxingzha
+C51 COMPILER V9.54   ELECMOTOR                                                             06/04/2017 11:00:46 PAGE 7   
+
+ 365   1      //  Delay_500ms();
+ 366   1      //  Delay_500ms();
+ 367   1      //  #endif
+ 368   1        
+ 369   1        #ifdef Z3
+                Delay_500ms();
+                #endif
+ 372   1      
+ 373   1        if(ElecMotor_OC_flag == 1)
+ 374   1          OC_count += 1;
+ 375   1      
+ 376   1      /*  if(ElecMotor_overcurrent == 0)
+ 377   1          {
+ 378   1          Delay_500ms();
+ 379   1          Delay_500ms();
+ 380   1          Delay_500ms();
+ 381   1          Delay_500ms();
+ 382   1          Delay_500ms();
+ 383   1          Delay_500ms();
+ 384   1          }
+ 385   1      */
+ 386   1        }
+ 387          
+ 388          /*---------------------------------------------------
+ 389            end of file
+ 390          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    624    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =      2      12
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      3    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

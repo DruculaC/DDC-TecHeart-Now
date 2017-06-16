@@ -32,6 +32,7 @@ void Battery_hint(void);
 // 测试用的语音播报
 void Product_Test_Voice(void);
 void Cutting_Wire_Voice(void);
+void close_lock_dingdong_speech(void);
 
 // 附机用的语音
 void Battery_low_alarm_speech(void);

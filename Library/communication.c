@@ -603,7 +603,6 @@ void send_code_to_lock(tByte x, y)
 	send_code_to_lock_Taili()
 	
 	将密码发送给锁体。
----------------------------------------------------*/
 void send_code_to_lock_Taili(tByte x, y)	
 {
 	unsigned char i,n;
@@ -614,7 +613,6 @@ void send_code_to_lock_Taili(tByte x, y)
 	myTxRxData[4]=0x00;
 	myTxRxData[5]=0x00;
 	myTxRxData[6]=0x00;
-*/
 	for(i=0;i<3;i++)
 	{
 		for(n=0;n<8;n++)
@@ -635,10 +633,10 @@ void send_code_to_lock_Taili(tByte x, y)
 		}
 	}
 }
+---------------------------------------------------*/
 
 /*------------------------------------------------------------------
 	UART发送数据
-------------------------------------------------------------------*/
 void UART_Send_Data_Broadtest(tByte command)
 	{
    tByte ii = 0;
@@ -662,6 +660,7 @@ void UART_Send_Data_Broadtest(tByte command)
 //	close_tranceiver();
 //	Delay_500ms();
 	}
+------------------------------------------------------------------*/
 
 
 /*---------------------------------------------------

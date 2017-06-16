@@ -1,0 +1,171 @@
+C51 COMPILER V9.54   ISP_DATAFLASH                                                         06/04/2017 11:00:45 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE ISP_DATAFLASH
+OBJECT MODULE PLACED IN .\ISP_DataFlash.obj
+COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\ISP_DataFlash.c COMPACT ROM(COMPACT) OPTIMIZE(8
+                    -,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\ISP_DataFlash.lst) TABS(2) OBJECT(.\ISP_DataFlash.obj)
+
+line level    source
+
+   1          #include "ISP_DataFlash.h"
+   2          #include "main.h"
+   3          
+   4          extern tByte received_data_buffer[7];   
+   5          
+   6          #ifdef Debug
+                extern tByte IDkey6;
+                extern tByte IDkey7;
+                extern tByte IDkey8;
+                extern tByte IDkey9;
+                extern tByte IDkey10;
+                extern tByte IDkey11;
+              #endif
+  14          
+  15          //--------------------------------------------------------------------------------------------------------
+             ----
+  16          void Enable_ISP(void)
+  17          {   
+  18   1        /* Enable ISP  */ 
+  19   1        ISPCN=0x30;
+  20   1        EA=0;
+  21   1        TA = 0xAA;
+  22   1        TA = 0x55;
+  23   1        CHPCON |= 0x01; 
+  24   1        EA=1;
+  25   1        Trigger_ISP();     
+  26   1      }
+  27          //--------------------------------------------------------------------------------------------------------
+             ----
+  28          void Disable_ISP(void)
+  29          {   
+  30   1        /* Disable ISP */ 
+  31   1        ISPCN=0x30;
+  32   1        Trigger_ISP(); 
+  33   1        EA=0;
+  34   1        TA = 0xAA;
+  35   1        TA = 0x55;
+  36   1        CHPCON &= 0xFE; 
+  37   1        EA=1;     
+  38   1      }
+  39          //--------------------------------------------------------------------------------------------------------
+             ----
+  40          void Trigger_ISP(void)
+  41          {       
+  42   1        EA=0;
+  43   1        TA = 0xAA;
+  44   1        TA = 0x55;
+  45   1        ISPTRG |= 0x01;
+  46   1        EA=1;      
+  47   1      }
+  48          
+  49          void Flash_Page_Erase(unsigned int address)
+  50          {
+  51   1        Enable_ISP();
+C51 COMPILER V9.54   ISP_DATAFLASH                                                         06/04/2017 11:00:45 PAGE 2   
+
+  52   1        ISPCN=0x22;
+  53   1        ISPAH=address/256;
+  54   1        ISPAL=address%256;
+  55   1        Trigger_ISP();
+  56   1        Disable_ISP();  
+  57   1      }
+  58          
+  59          void Flash_Write_Data(unsigned int address,unsigned char dat)
+  60          {
+  61   1        Enable_ISP();
+  62   1        ISPCN=0x21;
+  63   1        ISPAH=address/256;
+  64   1        ISPAL=address%256;
+  65   1        ISPFD=dat;
+  66   1        Trigger_ISP();
+  67   1        Disable_ISP();  
+  68   1      }
+  69          
+  70          unsigned char Flash_Read_Data(unsigned int address)
+  71          {
+  72   1        unsigned char dat;
+  73   1        
+  74   1        Enable_ISP();
+  75   1        ISPCN=0x00;
+  76   1        ISPAH=address/256;
+  77   1        ISPAL=address%256;
+  78   1        Trigger_ISP();
+  79   1        dat=ISPFD;
+  80   1        Disable_ISP();
+  81   1        return dat;   
+  82   1      }
+  83          
+  84          /*---------------------------------------------------------------
+  85            Self_learn_programming(void)
+  86            自学习功能，将密码烧录到flash ROM中
+  87          ----------------------------------------------------------------*/
+  88          
+  89          void Self_learn_programming(void)
+  90            {
+  91   1        #ifdef Debug
+                  IDkey6 = received_data_buffer[0];
+                  IDkey7 = received_data_buffer[1];
+                  IDkey8 = received_data_buffer[2];
+                  IDkey9 = received_data_buffer[3];
+                  IDkey10 = received_data_buffer[4];
+                  IDkey11 = received_data_buffer[5];  
+                #else
+  99   1          Flash_Page_Erase(0x3000);
+ 100   1          #ifdef ID
+ 101   1            Flash_Write_Data(0x3000, received_data_buffer[0]);    
+ 102   1            Flash_Write_Data(0x3001, received_data_buffer[1]);    
+ 103   1            Flash_Write_Data(0x3002, received_data_buffer[2]);    
+ 104   1            Flash_Write_Data(0x3003, received_data_buffer[3]);    
+ 105   1            Flash_Write_Data(0x3004, received_data_buffer[4]);
+ 106   1            Flash_Write_Data(0x3005, received_data_buffer[5]);
+ 107   1          #endif
+ 108   1          
+ 109   1          #ifdef WX
+                    Flash_Write_Data(0x3000, received_data_buffer[2]);    
+                    Flash_Write_Data(0x3001, received_data_buffer[3]);    
+                    Flash_Write_Data(0x3002, received_data_buffer[4]);    
+                    Flash_Write_Data(0x3003, received_data_buffer[5]);    
+C51 COMPILER V9.54   ISP_DATAFLASH                                                         06/04/2017 11:00:45 PAGE 3   
+
+                    Flash_Write_Data(0x3004, received_data_buffer[6]);
+                    //Flash_Write_Data(0x3005, received_data_buffer[7]);
+                    //Flash_Write_Data(0x3006, received_data_buffer[0]);    
+                    //Flash_Write_Data(0x3007, received_data_buffer[1]);    
+                  #endif
+ 119   1        #endif
+ 120   1        }
+ 121          
+ 122          /*---------------------------------------------------------------
+ 123            Self_learn_programming(void)
+ 124            自学习功能，将密码烧录到flash ROM中
+ 125          ----------------------------------------------------------------*/
+ 126          
+ 127          void Self_learn_programming_F(void)
+ 128            {
+ 129   1        Flash_Page_Erase(0x3000);
+ 130   1        Flash_Write_Data(0x3000, received_data_buffer[2]);    
+ 131   1        Flash_Write_Data(0x3001, received_data_buffer[3]);    
+ 132   1        Flash_Write_Data(0x3002, received_data_buffer[4]);    
+ 133   1        Flash_Write_Data(0x3003, received_data_buffer[5]);    
+ 134   1        Flash_Write_Data(0x3004, received_data_buffer[6]);
+ 135   1        Flash_Write_Data(0x3005, received_data_buffer[7]);
+ 136   1        }
+ 137            
+ 138          /*---------------------------------------------------
+ 139            end of file
+ 140          ----------------------------------------------------*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    296    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----       8
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

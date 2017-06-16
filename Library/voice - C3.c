@@ -1,7 +1,7 @@
 /*---------------------------------------------------
 	voice.c (v1.00)
 	通用语音文件
-	201603
+	201603 C3语音芯片
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -88,9 +88,9 @@ void key_rotate_on_speech(void)
 	Delay(30);
 	SC_Speech(6);  
 	Delay(30);
-	SC_Speech(4);  
-	Delay(100);	
-	voice_EN = 0;	
+//	SC_Speech(4);  
+//	Delay(100);	
+//	voice_EN = 0;	
 	#endif
 	}
 	

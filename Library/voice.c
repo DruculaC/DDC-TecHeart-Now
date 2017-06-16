@@ -1,7 +1,6 @@
 /*---------------------------------------------------
 	voice.c (v1.00)
-	通用语音文件
-	201603
+	通C4
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -165,7 +164,7 @@ void Self_learn_speech(void)
 void host_touch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(2);  
+	SC_Speech(24);  
 	Delay(50);
 	voice_EN = 0;
 	Delay(30);
@@ -178,8 +177,8 @@ void host_touch_speech(void)
 void host_2ndtouch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(4);  
-	Delay(140);
+	SC_Speech(24);  
+	Delay(50);
 	voice_EN = 0;
 //	Delay(10);
 	}
@@ -240,6 +239,18 @@ void close_lock_speech(void)
 	{
 	voice_EN = 1;
 	SC_Speech(23);  
+	Delay(60);
+	voice_EN = 0;
+	}
+
+	/*----------------------------------------------------
+	close_lock_dingdong_speech()
+	茞讖亟芎k擢矛辕哟汀示
+-----------------------------------------------------*/
+void close_lock_dingdong_speech(void)
+	{
+	voice_EN = 1;
+	SC_Speech(28);  
 	Delay(60);
 	voice_EN = 0;
 	}

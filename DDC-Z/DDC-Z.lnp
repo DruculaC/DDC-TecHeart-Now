@@ -4,7 +4,6 @@
 ".\Delay.obj",
 ".\operation.obj",
 ".\Other.obj",
-".\pwm.obj",
 ".\Timer.obj",
 ".\UART.obj",
 ".\voice.obj",

@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 1   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE COMMUNICATION
@@ -62,7 +62,7 @@ line level    source
   52   1        }
   53            
   54          /*----------------------------------------------------
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 2   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 2   
 
   55            initsignal()  
   56            初始化信号程序，接收机在接接收信号的时候，需要有
@@ -126,7 +126,7 @@ line level    source
  114   4              Custom_Delay(46, 20);
  115   4      //        Delay_5ms();
  116   4              }
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 3   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 3   
 
  117   3            P10=1;
  118   3            mystartbuffer<<=1;
@@ -190,7 +190,7 @@ line level    source
  176   1        receiver_EN = 1;
  177   1        }
  178          
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 4   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 4   
 
  179          /*--------------------------------------------------
  180            ComMode_Data_WX()
@@ -254,7 +254,7 @@ line level    source
  238   1        myTxRxData[2] = IDkey8;
  239   1        myTxRxData[3] = IDkey9;
  240   1        myTxRxData[4] = IDkey10;
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 5   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 5   
 
  241   1        myTxRxData[5] = command;
  242   1      
@@ -318,7 +318,7 @@ line level    source
  300            {
  301   1        #ifdef Z3
                 InitUART(BAUD1200);
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 6   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 6   
 
                 #endif
  304   1        
@@ -382,7 +382,7 @@ line level    source
  362   1        myTxRxData[2] = IDkey6;
  363   1        myTxRxData[3] = IDkey7;
  364   1        myTxRxData[4] = IDkey8;
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 7   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 7   
 
  365   1        myTxRxData[5] = IDkey9;
  366   1        myTxRxData[6] = IDkey10;
@@ -446,7 +446,7 @@ line level    source
  424   3            // set the flag, to judge a bit only one time
  425   3            receive_wire_flag = 1;
  426   3      
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 8   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 8   
 
  427   3            // judge the LV time, if 3.5ms < time < 8ms, we think it is a "0". time<3.5ms means a noise.
  428   3            if((receive_LV_count > 35)&&(receive_LV_count <= 80)) 
@@ -510,7 +510,7 @@ line level    source
  486   2          if(receive_wire_flag == 0)
  487   2            {
  488   3            // set the flag, to judge a bit only one time
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 9   
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 9   
 
  489   3            receive_wire_flag = 1;
  490   3      
@@ -574,7 +574,7 @@ line level    source
  548   2          // judge whether buffer[1] is MyAddress
  549   2          else if((data_count == 1) && (received_data_buffer[1] == MyAddress))
  550   2            {
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 10  
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 10  
 
  551   3            data_count = 2;
  552   3            }
@@ -631,81 +631,80 @@ line level    source
  603            send_code_to_lock_Taili()
  604            
  605            将密码发送给锁体。
- 606          ---------------------------------------------------*/
- 607          void send_code_to_lock_Taili(tByte x, y)  
- 608          {
- 609   1        unsigned char i,n;
- 610   1        myTxRxData[0]=CmdHead;
- 611   1        myTxRxData[1]=MyAddress;
- 612   1        myTxRxData[2]=x;
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 11  
+ 606          void send_code_to_lock_Taili(tByte x, y)  
+ 607          {
+ 608            unsigned char i,n;
+ 609            myTxRxData[0]=CmdHead;
+ 610            myTxRxData[1]=MyAddress;
+ 611            myTxRxData[2]=x;
+ 612          /*  myTxRxData[3]=0x00;
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 11  
 
- 613   1      /*  myTxRxData[3]=0x00;
- 614   1        myTxRxData[4]=0x00;
- 615   1        myTxRxData[5]=0x00;
- 616   1        myTxRxData[6]=0x00;
- 617   1      */
- 618   1        for(i=0;i<3;i++)
- 619   1        {
- 620   2          for(n=0;n<8;n++)
- 621   2          {
- 622   3            if((myTxRxData[i]&0x80) == 0x80)//为1
- 623   3            {
- 624   4              lock_code = 0;
- 625   4              Custom_Delay(36, y);
- 626   4            }
- 627   3            else//为0的情况
- 628   3            {
- 629   4              lock_code = 0;
- 630   4              Custom_Delay(23, y);
- 631   4            }
- 632   3            lock_code = 1;    //常态为高电平
- 633   3            myTxRxData[i] <<= 1;
- 634   3            Custom_Delay(15, y);
- 635   3          }
- 636   2        }
- 637   1      }
- 638          
- 639          /*------------------------------------------------------------------
- 640            UART发送数据
- 641          ------------------------------------------------------------------*/
- 642          void UART_Send_Data_Broadtest(tByte command)
- 643            {
- 644   1         tByte ii = 0;
- 645   1      //  open_tranceiver();
- 646   1      
- 647   1        myTxRxData[0] = IDkey6;
- 648   1        myTxRxData[1] = IDkey7;
- 649   1        myTxRxData[2] = IDkey8;
- 650   1        myTxRxData[3] = IDkey9;
- 651   1        myTxRxData[4] = IDkey10;
- 652   1        myTxRxData[5] = command;
- 653   1        
- 654   1        initsignal();
- 655   1        
- 656   1        for(ii = 0; ii < 10; ii++)
- 657   1          {
- 658   2          SendNByte(myTxRxData, 6);
- 659   2          Delay_10ms();   
- 660   2          }
- 661   1      
- 662   1      //  close_tranceiver();
- 663   1      //  Delay_500ms();
- 664   1        }
+ 613            myTxRxData[4]=0x00;
+ 614            myTxRxData[5]=0x00;
+ 615            myTxRxData[6]=0x00;
+ 616            for(i=0;i<3;i++)
+ 617            {
+ 618              for(n=0;n<8;n++)
+ 619              {
+ 620                if((myTxRxData[i]&0x80) == 0x80)//为1
+ 621                {
+ 622                  lock_code = 0;
+ 623                  Custom_Delay(36, y);
+ 624                }
+ 625                else//为0的情况
+ 626                {
+ 627                  lock_code = 0;
+ 628                  Custom_Delay(23, y);
+ 629                }
+ 630                lock_code = 1;    //常态为高电平
+ 631                myTxRxData[i] <<= 1;
+ 632                Custom_Delay(15, y);
+ 633              }
+ 634            }
+ 635          }
+ 636          ---------------------------------------------------*/
+ 637          
+ 638          /*------------------------------------------------------------------
+ 639            UART发送数据
+ 640          void UART_Send_Data_Broadtest(tByte command)
+ 641            {
+ 642             tByte ii = 0;
+ 643          //  open_tranceiver();
+ 644          
+ 645            myTxRxData[0] = IDkey6;
+ 646            myTxRxData[1] = IDkey7;
+ 647            myTxRxData[2] = IDkey8;
+ 648            myTxRxData[3] = IDkey9;
+ 649            myTxRxData[4] = IDkey10;
+ 650            myTxRxData[5] = command;
+ 651            
+ 652            initsignal();
+ 653            
+ 654            for(ii = 0; ii < 10; ii++)
+ 655              {
+ 656              SendNByte(myTxRxData, 6);
+ 657              Delay_10ms();   
+ 658              }
+ 659          
+ 660          //  close_tranceiver();
+ 661          //  Delay_500ms();
+ 662            }
+ 663          ------------------------------------------------------------------*/
+ 664          
  665          
- 666          
- 667          /*---------------------------------------------------
- 668            end of file
- 669          ----------------------------------------------------*/
+ 666          /*---------------------------------------------------
+ 667            end of file
+ 668          ----------------------------------------------------*/
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1358    ----
+   CODE SIZE        =   1168    ----
    CONSTANT SIZE    =   ----    ----
-C51 COMPILER V9.54   COMMUNICATION                                                         06/04/2017 14:04:50 PAGE 12  
-
    XDATA SIZE       =   ----    ----
-   PDATA SIZE       =      7      31
+C51 COMPILER V9.54   COMMUNICATION                                                         06/14/2017 16:44:53 PAGE 12  
+
+   PDATA SIZE       =      7      26
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----

@@ -10,7 +10,7 @@
 
 #include "AD.h"
 #include "voice.h"
-#include "pwm.h"
+//#include "pwm.h"
 #include "Timer.h"
 #include "Delay.h"
 #include "communication.h"
@@ -146,6 +146,8 @@ bit Battery_hint_flag = 0;
 bit Autolock_G = 0;
 tWord timer0_count2 = 0;
 
+bit Battery_flag = 0;
+
 /*------- Private variable declaratuions --------------------------*/
 
 void main()
@@ -178,7 +180,9 @@ void main()
 	Externalmotor = 1;
 
 	lock_power = 0;
-		
+	
+	ADC_check_result = GetADCResult(6);
+
 	while(1)
 		{
 		}
@@ -227,7 +231,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 				ID_speech();
 				}
 			}
-		
+
 		if(Speech_closed_G == 1)
 			{
 			Speech_closed_time += 1;
@@ -324,7 +328,7 @@ void timer0() interrupt interrupt_timer_0_overflow
 							Externalmotor = 0;
 
 							#ifdef voice
-							host_touch_speech();
+						  //host_touch_speech();
 							#endif
 							
 							Delay_500ms();Delay_500ms();Delay_500ms();Delay_500ms();
@@ -357,9 +361,9 @@ void timer0() interrupt interrupt_timer_0_overflow
 							// 电机锁死
 							Externalmotor = 0;
 								
-							#ifdef voice
 							//host_2ndtouch_speech();
 							host_touch_speech();
+							#ifdef voice
 							#endif
 							}
 						}
@@ -403,8 +407,8 @@ void timer0() interrupt interrupt_timer_0_overflow
 							// 电机锁死
 							Externalmotor = 0;
 
-							#ifdef voice
 							host_2ndtouch_speech();
+							#ifdef voice
 							#endif
 							}
 						}
@@ -609,7 +613,7 @@ void uart_isr() interrupt 4
 				if(ID_certificated_numbers++ >= 1)
 					{
 					// 静音模式
-					// Silence_Flag = 1;
+					Silence_Flag = 1;
 					}
 				if(++ID_certificated_numbers >= 11)
 					{

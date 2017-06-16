@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   UART                                                                  06/04/2017 14:04:51 PAGE 1   
+C51 COMPILER V9.54   UART                                                                  06/14/2017 16:44:54 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE UART
@@ -62,7 +62,7 @@ line level    source
   52   1        while(len--)
   53   1          {
   54   2          SendData(*buf++);
-C51 COMPILER V9.54   UART                                                                  06/04/2017 14:04:51 PAGE 2   
+C51 COMPILER V9.54   UART                                                                  06/14/2017 16:44:54 PAGE 2   
 
   55   2          }
   56   1        }
