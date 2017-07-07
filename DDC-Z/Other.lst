@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   OTHER                                                                 07/07/2017 14:05:19 PAGE 1   
+C51 COMPILER V9.54   OTHER                                                                 07/07/2017 21:16:15 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE OTHER
 OBJECT MODULE PLACED IN .\Other.obj
-COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\Other.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPEED) 
-                    -BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Other.lst) TABS(2) OBJECT(.\Other.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\EDA\Keil_v5\C51\BIN\C51.EXE ..\Library\Other.c COMPACT ROM(COMPACT) OPTIMIZE
+                    -(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\Other.lst) TABS(2) OBJECT(.\Other.obj)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   52   1        MagentControl_2 = 0;
   53   1        Magnet_Delay(x, y);
   54   1        MagentControl_1 = 1;
-C51 COMPILER V9.54   OTHER                                                                 07/07/2017 14:05:19 PAGE 2   
+C51 COMPILER V9.54   OTHER                                                                 07/07/2017 21:16:15 PAGE 2   
 
   55   1        MagentControl_2 = 1;
   56   1      //  Externalmotor = 0;
@@ -126,7 +126,7 @@ line level    source
  114   1        fell_flag=0;  
  115   1        raised_flag=0;
  116   1        sensor_trigger_count = 0;
-C51 COMPILER V9.54   OTHER                                                                 07/07/2017 14:05:19 PAGE 3   
+C51 COMPILER V9.54   OTHER                                                                 07/07/2017 21:16:15 PAGE 3   
 
  117   1        sensor_1ststage_count = 0;
  118   1        sensor_2ndstage_count = 0;
@@ -190,7 +190,7 @@ line level    source
  176            
  177          /*---------------------------------------------------
  178            end of file
-C51 COMPILER V9.54   OTHER                                                                 07/07/2017 14:05:19 PAGE 4   
+C51 COMPILER V9.54   OTHER                                                                 07/07/2017 21:16:15 PAGE 4   
 
  179          ----------------------------------------------------*/
 

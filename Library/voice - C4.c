@@ -1,6 +1,7 @@
 /*---------------------------------------------------
 	voice.c (v1.00)
-	Õ®C4
+	Õ®”√”Ô“ÙŒƒº˛
+	201606 C4”Ô“Ù–æ∆¨
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -164,7 +165,7 @@ void Self_learn_speech(void)
 void host_touch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(24);  
+	SC_Speech(2);  
 	Delay(50);
 	voice_EN = 0;
 	Delay(30);
@@ -177,8 +178,8 @@ void host_touch_speech(void)
 void host_2ndtouch_speech(void)
 	{
 	voice_EN = 1;
-	SC_Speech(24);  
-	Delay(50);
+	SC_Speech(4);  
+	Delay(140);
 	voice_EN = 0;
 //	Delay(10);
 	}
@@ -239,18 +240,6 @@ void close_lock_speech(void)
 	{
 	voice_EN = 1;
 	SC_Speech(23);  
-	Delay(60);
-	voice_EN = 0;
-	}
-
-	/*----------------------------------------------------
-	close_lock_dingdong_speech()
-	∆ê◊èÿΩ‹∫kﬂ™√¨‘Ø”¥Õ° æ
------------------------------------------------------*/
-void close_lock_dingdong_speech(void)
-	{
-	voice_EN = 1;
-	SC_Speech(28);  
 	Delay(60);
 	voice_EN = 0;
 	}

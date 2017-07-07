@@ -24,7 +24,6 @@
 
 // define speech or not
 #define voice
-#define novoice
 
 // 新锁（时间短）或者旧锁（时间长）
 #define Old_lock

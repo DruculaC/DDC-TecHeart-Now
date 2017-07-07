@@ -1,10 +1,11 @@
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 1   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE COMMUNICATION
 OBJECT MODULE PLACED IN .\communication.obj
-COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE ..\Library\communication.c COMPACT ROM(COMPACT) OPTIMIZE(8
-                    -,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\communication.lst) TABS(2) OBJECT(.\communication.obj)
+COMPILER INVOKED BY: D:\Program Files (x86)\EDA\Keil_v5\C51\BIN\C51.EXE ..\Library\communication.c COMPACT ROM(COMPACT) 
+                    -OPTIMIZE(8,SPEED) BROWSE INCDIR(..\Library) DEBUG OBJECTEXTEND PRINT(.\communication.lst) TABS(2) OBJECT(.\communication
+                    -.obj)
 
 line level    source
 
@@ -61,9 +62,9 @@ line level    source
   51   1      //  transmiter_power = 0;     // High power mode
   52   1        }
   53            
-  54          /*----------------------------------------------------
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 2   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 2   
 
+  54          /*----------------------------------------------------
   55            initsignal()  
   56            初始化信号程序，接收机在接接收信号的时候，需要有
   57            一段代码来使接收机打开，而这一段程序有可能无法识别
@@ -125,9 +126,9 @@ line level    source
  113   4              P10=0;
  114   4              Custom_Delay(46, 20);
  115   4      //        Delay_5ms();
- 116   4              }
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 3   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 3   
 
+ 116   4              }
  117   3            P10=1;
  118   3            mystartbuffer<<=1;
  119   3            Custom_Delay(40, 24);
@@ -189,9 +190,9 @@ line level    source
  175   1        transmiter_EN = 1;
  176   1        receiver_EN = 1;
  177   1        }
- 178          
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 4   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 4   
 
+ 178          
  179          /*--------------------------------------------------
  180            ComMode_Data_WX()
  181            
@@ -253,9 +254,9 @@ line level    source
  237   1        myTxRxData[1] = IDkey7;
  238   1        myTxRxData[2] = IDkey8;
  239   1        myTxRxData[3] = IDkey9;
- 240   1        myTxRxData[4] = IDkey10;
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 5   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 5   
 
+ 240   1        myTxRxData[4] = IDkey10;
  241   1        myTxRxData[5] = command;
  242   1      
  243   1        initsignal_F(); 
@@ -317,9 +318,9 @@ line level    source
  299          void open_tranceiver(void)
  300            {
  301   1        #ifdef Z3
-                InitUART(BAUD1200);
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 6   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 6   
 
+                InitUART(BAUD1200);
                 #endif
  304   1        
  305   1        receiver_EN = 1;
@@ -381,9 +382,9 @@ line level    source
  361   1        myTxRxData[1] = ComMode_1;
  362   1        myTxRxData[2] = IDkey6;
  363   1        myTxRxData[3] = IDkey7;
- 364   1        myTxRxData[4] = IDkey8;
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 7   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 7   
 
+ 364   1        myTxRxData[4] = IDkey8;
  365   1        myTxRxData[5] = IDkey9;
  366   1        myTxRxData[6] = IDkey10;
  367   1        
@@ -445,9 +446,9 @@ line level    source
  423   2            {
  424   3            // set the flag, to judge a bit only one time
  425   3            receive_wire_flag = 1;
- 426   3      
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 8   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 8   
 
+ 426   3      
  427   3            // judge the LV time, if 3.5ms < time < 8ms, we think it is a "0". time<3.5ms means a noise.
  428   3            if((receive_LV_count > 35)&&(receive_LV_count <= 80)) 
  429   3              {
@@ -509,9 +510,9 @@ line level    source
  485   2          // and already have LV before, so we think it maybe a bit signal
  486   2          if(receive_wire_flag == 0)
  487   2            {
- 488   3            // set the flag, to judge a bit only one time
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 9   
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 9   
 
+ 488   3            // set the flag, to judge a bit only one time
  489   3            receive_wire_flag = 1;
  490   3      
  491   3            // judge the LV time, if 3.5ms < time < 8ms, we think it is a "0". time<3.5ms means a noise.
@@ -573,9 +574,9 @@ line level    source
  547   3            }
  548   2          // judge whether buffer[1] is MyAddress
  549   2          else if((data_count == 1) && (received_data_buffer[1] == MyAddress))
- 550   2            {
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 10  
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 10  
 
+ 550   2            {
  551   3            data_count = 2;
  552   3            }
  553   2          else if(data_count == 2)
@@ -637,9 +638,9 @@ line level    source
  609            myTxRxData[0]=CmdHead;
  610            myTxRxData[1]=MyAddress;
  611            myTxRxData[2]=x;
- 612          /*  myTxRxData[3]=0x00;
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 11  
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 11  
 
+ 612          /*  myTxRxData[3]=0x00;
  613            myTxRxData[4]=0x00;
  614            myTxRxData[5]=0x00;
  615            myTxRxData[6]=0x00;
@@ -701,9 +702,9 @@ line level    source
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   1168    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
-C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 14:05:19 PAGE 12  
+C51 COMPILER V9.54   COMMUNICATION                                                         07/07/2017 21:16:15 PAGE 12  
 
+   XDATA SIZE       =   ----    ----
    PDATA SIZE       =      7      26
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

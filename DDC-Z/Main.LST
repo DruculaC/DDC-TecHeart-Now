@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN Main.OBJ
-COMPILER INVOKED BY: D:\Program Files\Keil_v5\C51\BIN\C51.EXE Main.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPEED) BROWSE INCDI
-                    -R(..\Library) DEBUG OBJECTEXTEND TABS(2)
+COMPILER INVOKED BY: D:\Program Files (x86)\EDA\Keil_v5\C51\BIN\C51.EXE Main.c COMPACT ROM(COMPACT) OPTIMIZE(8,SPEED) BR
+                    -OWSE INCDIR(..\Library) DEBUG OBJECTEXTEND TABS(2)
 
 line level    source
 
@@ -62,7 +62,7 @@ line level    source
   51          tByte sensor_trigger_count=0;   //´«¸ÐÆ÷´¥·¢¼ÆÊý
   52          tWord sensor_2ndstage_time=0;   //´«¸ÐÆ÷½øÈëµÚ¶þ½×¶ÎºóÁ÷ÊÅÊ±¼äµÄ¼ÆÊý
   53          tByte sensor_1ststage_count=0;  //´«¸ÐÆ÷µÚÒ»½×¶ÎÅÐ¶ÏµÍµçÆ½µÄ¼ÆÊý
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 2   
 
   54          
   55          tByte raised_alarm_count = 0;    //Ö÷»ú±»Ì§Æðºó£¬Ïò¸½»ú·¢³ö±¨¾¯ÐÅºÅµÄ´ÎÊý
@@ -126,7 +126,7 @@ line level    source
  109            code tByte IDkey11 _at_ 0x003005;
  110          #endif
  111          
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 3   
 
  112          tWord IDkey_selflearn_HVcount = 0;
  113          tWord IDkey_selflearn_LVcount = 0;
@@ -190,7 +190,7 @@ line level    source
  171   1        P0M2 &= 0xf9;
  172   1        // ½«P2.5£¬¼´PIN16ÉèÖÃ³ÉÊäÈë¸ß×èÄ£Ê½
  173   1        P2M1 |= 0x20;
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 4   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 4   
 
  174   1        P2M2 &= 0xdf;
  175   1      
@@ -254,7 +254,7 @@ line level    source
  233   3            }
  234   2      
  235   2          if(Speech_closed_G == 1)
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 5   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 5   
 
  236   2            {
  237   3            Speech_closed_time += 1;
@@ -318,7 +318,7 @@ line level    source
  295   1      
  296   1      // judge host is fell or raised every 1ms?
  297   1      //  if((raised_sensor_detect == 1)&&(fell_sensor_detect == 1))
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 6   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 6   
 
  298   1      //    {
  299   1          // judge vibration sensor is enable?
@@ -382,7 +382,7 @@ line level    source
  355   6                    
  356   6                    sensor_3rdstage_time = 0;
  357   6                    // alarm speech for 2nd touch
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 7   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 7   
 
  358   6                    
  359   6                    // æŠ¥è­¦æ—¶ä½¿æŽ§åˆ¶å™¨ä¾›ç”µ
@@ -446,7 +446,7 @@ line level    source
  417   5                  sensor_3rdstage_count = 0;
  418   5                  }
  419   4                  
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 8   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 8   
 
  420   4                // if there is no touch in 4s, reset sensor trigger status, etc.
  421   4                if(++sensor_3rdstage_time >= 8000)
@@ -510,7 +510,7 @@ line level    source
  479   6                    }
  480   5                  }
  481   4                }
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 9   
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 9   
 
  482   3              break;
  483   3              }
@@ -574,7 +574,7 @@ line level    source
  541   3            fell_alarm_count=0;
  542   3            fell_wire_time=0;
  543   3            raised_fell_flag = 0;
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 10  
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 10  
 
  544   3            }
  545   2          }
@@ -638,7 +638,7 @@ line level    source
  603   3            #ifdef ID
  604   3            else if((data_count == 5) && (received_data_buffer[5] == IDkey11))
  605   3              {
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 11  
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 11  
 
  606   4              data_count = 0;
  607   4              ID_certificated_flag = 1;
@@ -702,7 +702,7 @@ line level    source
                         break;
               
                         case ComMode_12:
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 12  
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 12  
 
                           {
                           Battery_hint_flag = 1;
@@ -766,7 +766,7 @@ line level    source
  727          ----------------------------------------------------*/
 
 
-C51 COMPILER V9.54   MAIN                                                                  07/07/2017 14:05:20 PAGE 13  
+C51 COMPILER V9.54   MAIN                                                                  07/07/2017 21:16:16 PAGE 13  
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
    CODE SIZE        =   1067    ----

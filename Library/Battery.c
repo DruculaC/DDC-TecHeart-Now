@@ -1,6 +1,6 @@
 /*---------------------------------------------------
 	Battery.c (v1.00)
-	Battery201603��60km48V��r1
+	C3，圣宝龙48V60V通用程序。
 ---------------------------------------------------*/
 
 #include "main.h"
@@ -69,7 +69,7 @@ void verifybattery(tWord Check2)
 	if(Battery_flag == 0)		// 表明为48V电瓶
 	{
 		
-		if(Check2 < 0x1e5)
+		if(Check2 < 0x1dd)
 		{
 			voice_EN = 1;
 			SC_Speech(39);  		// 电量不足
@@ -81,23 +81,21 @@ void verifybattery(tWord Check2)
 			SC_Speech(8);  	
 			Delay(70);		
 			
-			if((Check2 >= 0x1e5)&&(Check2 < 0x1ea))
+			if((Check2 >= 0x1dd)&&(Check2 < 0x1e5))
 				{
 				SC_Speech(21);  		// 10
 				Delay(30);
-				//SC_Speech(16);  		// 5
-				//Delay(30);
+				SC_Speech(13);  		// 2
+				Delay(30);
 				}
-			else if((Check2 >= 0x1ea)&&(Check2 < 0x1f6))
+			else if((Check2 >= 0x1e5)&&(Check2 < 0x1ee))
 				{
 				SC_Speech(13);  		// 2
 				Delay(30);
 				SC_Speech(21);  		// 10
 				Delay(30);
-				SC_Speech(12);  		// 1
-				Delay(30);
 				}
-			else if((Check2 >= 0x1f6)&&(Check2 < 0x1fa))
+			else if((Check2 >= 0x1ee)&&(Check2 < 0x1f7))
 				{
 				SC_Speech(13);  		// 2
 				Delay(30);
@@ -106,49 +104,40 @@ void verifybattery(tWord Check2)
 				SC_Speech(19);  		// 8
 				Delay(30);
 				}
-			else if((Check2 >= 0x1fa)&&(Check2 < 0x202))
+			else if((Check2 >= 0x1f7)&&(Check2 < 0x202))
 				{
 				SC_Speech(14);  		// 3
 				Delay(30);
 				SC_Speech(21);  		// 10
 				Delay(30);
-				SC_Speech(15);  		// 4
+				SC_Speech(17);  		// 6
 				Delay(30);
 				}
-			else if((Check2 >= 0x202)&&(Check2 < 0x206))
+			else if((Check2 >= 0x202)&&(Check2 < 0x20d))
 				{
 				SC_Speech(15);  		// 4
 				Delay(30);
 				SC_Speech(21);  		// 10
 				Delay(30);
-				SC_Speech(12);  		// 1
-				Delay(30);
-				}
-			else if((Check2 >= 0x206)&&(Check2 < 0x20c))
-				{
 				SC_Speech(15);  		// 4
 				Delay(30);
-				SC_Speech(21);  		// 10
-				Delay(30);
-				SC_Speech(18);  		// 7
-				Delay(30);
 				}
-			else if((Check2 >= 0x20c)&&(Check2 < 0x211))
+			else if((Check2 >= 0x20d)&&(Check2 < 0x215))
 				{
 				SC_Speech(16);  		// 5
 				Delay(30);
 				SC_Speech(21);  		// 10
 				Delay(30);
-				SC_Speech(15);  		// 4
+				SC_Speech(13);  		// 2
 				Delay(30);
 				}
-			else if(Check2 >= 0x211)
+			else if((Check2 >= 0x215)&&(Check2 < 0x22f))
 				{
 				SC_Speech(17);  		// 6
 				Delay(30);
 				SC_Speech(21);  		// 10
 				Delay(30);
-				}		
+				}
 			
 			SC_Speech(11);  	
 			Delay(60);	
@@ -162,7 +151,7 @@ void verifybattery(tWord Check2)
 		else		// 60V 电瓶
 		{
 			
-			if(Check2 < 0x250)
+			if(Check2 < 0x24a)
 			{
 				voice_EN = 1;
 				SC_Speech(39);  		// 电量不足
@@ -175,33 +164,26 @@ void verifybattery(tWord Check2)
 				SC_Speech(8);  	
 				Delay(70);		
 								
-				if((Check2 >= 0x250)&&(Check2 < 0x256))
+				if((Check2 >= 0x24a)&&(Check2 < 0x252))
 					{
 					SC_Speech(21);  		// 10
 					Delay(30);
 					}
-				else if((Check2 >= 0x256)&&(Check2 < 0x25b))
-					{
-					SC_Speech(21);  		// 10
-					Delay(30);
-					SC_Speech(13);  		// 2
-					Delay(30);
-					}
-				else if((Check2 >= 0x25b)&&(Check2 < 0x260))
+				else if((Check2 >= 0x252)&&(Check2 < 0x259))
 					{
 					SC_Speech(21);  		// 10
 					Delay(30);
 					SC_Speech(15);  		// 4
 					Delay(30);
 					}
-				else if((Check2 >= 0x260)&&(Check2 < 0x265))
+				else if((Check2 >= 0x259)&&(Check2 < 0x25d))
 					{
 					SC_Speech(13);  		// 2
 					Delay(30);
 					SC_Speech(21);  		// 10
 					Delay(30);
 					}
-				else if((Check2 >= 0x265)&&(Check2 < 0x26a))
+				else if((Check2 >= 0x25d)&&(Check2 < 0x25f))
 					{
 					SC_Speech(13);  		// 2
 					Delay(30);
@@ -210,7 +192,7 @@ void verifybattery(tWord Check2)
 					SC_Speech(17);  		// 6
 					Delay(30);
 					}
-				else if((Check2 >= 0x26a)&&(Check2 < 0x26f))
+				else if((Check2 >= 0x25f)&&(Check2 < 0x268))
 					{
 					SC_Speech(14);  		// 3
 					Delay(30);
@@ -219,16 +201,7 @@ void verifybattery(tWord Check2)
 					SC_Speech(13);  		// 2
 					Delay(30);
 					}
-				else if((Check2 >= 0x26f)&&(Check2 < 0x274))
-					{
-					SC_Speech(14);  		// 3
-					Delay(30);
-					SC_Speech(21);  		// 10
-					Delay(30);
-					SC_Speech(19);  		// 8
-					Delay(30);
-					}
-				else if((Check2 >= 0x274)&&(Check2 < 0x27f))
+				else if((Check2 >= 0x268)&&(Check2 < 0x273))
 					{
 					SC_Speech(15);  		// 4
 					Delay(30);
@@ -237,14 +210,7 @@ void verifybattery(tWord Check2)
 					SC_Speech(15);  		// 4
 					Delay(30);
 					}
-				else if((Check2 >= 0x27f)&&(Check2 < 0x284))
-					{
-					SC_Speech(16);  		// 5
-					Delay(30);
-					SC_Speech(21);  		// 10
-					Delay(30);
-					}
-				else if((Check2 >= 0x284)&&(Check2 < 0x289))
+				else if((Check2 >= 0x273)&&(Check2 < 0x27e))
 					{
 					SC_Speech(16);  		// 5
 					Delay(30);
@@ -253,16 +219,7 @@ void verifybattery(tWord Check2)
 					SC_Speech(17);  		// 6
 					Delay(30);
 					}
-				else if((Check2 >= 0x289)&&(Check2 < 0x28e))
-					{
-					SC_Speech(17);  		// 6
-					Delay(30);
-					SC_Speech(21);  		// 10
-					Delay(30);
-					SC_Speech(13);  		// 2
-					Delay(30);
-					}
-				else if((Check2 >= 0x28e)&&(Check2 < 0x293))
+				else if((Check2 >= 0x27e)&&(Check2 < 0x282))
 					{
 					SC_Speech(17);  		// 6
 					Delay(30);
@@ -271,7 +228,7 @@ void verifybattery(tWord Check2)
 					SC_Speech(19);  		// 8
 					Delay(30);
 					}
-				else if((Check2 >= 0x293)&&(Check2 < 0x299))
+				else if((Check2 >= 0x282)&&(Check2 < 0x287))
 					{
 					SC_Speech(18);  		// 7
 					Delay(30);
@@ -279,8 +236,8 @@ void verifybattery(tWord Check2)
 					Delay(30);
 					SC_Speech(15);  		// 4
 					Delay(30);
-					}
-				else if(Check2 >= 0x299)
+				}
+				else if(Check2 >= 0x287)
 				{
 					SC_Speech(19);  		// 8
 					Delay(30);

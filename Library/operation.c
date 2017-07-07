@@ -103,7 +103,6 @@ extern bit Battery_flag;
 void slave_away_operation(void)
 	{	
 	
-	#ifdef novoice	
 	if(Autolock_G == 1)
 	{
 		close_lock_dingdong_speech();
@@ -113,8 +112,7 @@ void slave_away_operation(void)
 		ID_speech();
 		ID_speech();
 	}
-	#endif
-	
+
 		if(Silence_Flag == 0)
 		{
 		#ifdef voice
@@ -164,9 +162,9 @@ void slave_nearby_operation(void)
 		Generator_lock = 1;
 		}
 	
-	#ifdef novoice	
+		
 	ID_speech();
-	#endif
+
 	
 	if(Silence_Flag == 0)
 		{
@@ -499,7 +497,7 @@ void Detect_open_action(void)
 		
 		if(Just_power_up == 1)		//判断
 		{
-			if(ADC_check_result < 0x238)
+			if(ADC_check_result < 0x236)
 			{
 				Battery_flag = 0;		//表示电瓶为48V电瓶
 			}
