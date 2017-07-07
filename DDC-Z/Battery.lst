@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 1   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE BATTERY
@@ -62,7 +62,7 @@ line level    source
   51   3            load_battery_result = ADC_check_result;
   52   3            }     
   53   2        }
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 2   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 2   
 
   54   1        
   55   1        verifybattery(load_battery_result);     
@@ -126,7 +126,7 @@ line level    source
  113   4              SC_Speech(21);      // 10
  114   4              Delay(30);
  115   4              SC_Speech(15);      // 4
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 3   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 3   
 
  116   4              Delay(30);
  117   4              }
@@ -190,7 +190,7 @@ line level    source
  175   3              SC_Speech(8);   
  176   3              Delay(70);    
  177   3                      
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 4   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 4   
 
  178   3              if((Check2 >= 0x250)&&(Check2 < 0x256))
  179   3                {
@@ -254,7 +254,7 @@ line level    source
  237   4                SC_Speech(15);      // 4
  238   4                Delay(30);
  239   4                }
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 5   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 5   
 
  240   3              else if((Check2 >= 0x27f)&&(Check2 < 0x284))
  241   3                {
@@ -318,7 +318,7 @@ line level    source
  299   1        }
  300            
  301          /*---------------------------------------------------
-C51 COMPILER V9.54   BATTERY                                                               06/14/2017 16:44:53 PAGE 6   
+C51 COMPILER V9.54   BATTERY                                                               07/07/2017 14:05:19 PAGE 6   
 
  302            end of file
  303          ----------------------------------------------------*/

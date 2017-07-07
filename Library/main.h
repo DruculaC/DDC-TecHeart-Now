@@ -17,13 +17,14 @@
 
 // Program version
 //#define Taili, General, Tailing			
-// #define Shengbaolong
+#define Shengbaolong
 
 // Define customer, such as Taili, Shengbaolong, Wangpai, Tailing, General, Xinri
 //#define General
 
 // define speech or not
-// #define voice
+#define voice
+#define novoice
 
 // 新锁（时间短）或者旧锁（时间长）
 #define Old_lock
@@ -41,7 +42,7 @@
 // ID, WX,
 #define ID
 
-// #define BroadcastBattery
+#define BroadcastBattery
 
 // Define the Lock model.
 //#define Suidongzha, Guxingzha
